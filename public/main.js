@@ -507,14 +507,14 @@ function sortPlacesList(list, sortBy = currentSort) {
       return distA - distB;
     }
     if (sortBy === 'level-asc') {
-      const lvA = getDynamicSoloIndex(a).lv;
-      const lvB = getDynamicSoloIndex(b).lv;
+      const lvA = Number(getDynamicSoloIndex(a).lv) || 3;
+      const lvB = Number(getDynamicSoloIndex(b).lv) || 3;
       if (lvA !== lvB) return lvA - lvB;
       return distA - distB;
     }
     if (sortBy === 'level-desc') {
-      const lvA = getDynamicSoloIndex(a).lv;
-      const lvB = getDynamicSoloIndex(b).lv;
+      const lvA = Number(getDynamicSoloIndex(a).lv) || 3;
+      const lvB = Number(getDynamicSoloIndex(b).lv) || 3;
       if (lvA !== lvB) return lvB - lvA;
       return distA - distB;
     }
@@ -1641,12 +1641,22 @@ filterTabs.forEach((tab) => {
 if (sortSelect) {
   const handleSortChange = () => {
     currentSort = sortSelect.value;
+
+    // ⚡ 난이도 정렬(낮은 순/높은 순)을 선택했을 때 특정 레벨 필터가 켜져 있으면,
+    // 사용자는 '전체 식당을 난이도 순으로' 보고 싶어 하므로 자동으로 '전체(all)'로 전환!
+    if ((currentSort === 'level-asc' || currentSort === 'level-desc') && currentFilter !== 'all') {
+      currentFilter = 'all';
+      filterTabs.forEach((t) => t.classList.toggle('active', t.dataset.filter === 'all'));
+      document.querySelectorAll('.difficulty-index .index-card').forEach((c) => c.classList.remove('active'));
+    }
+
     renderFilteredPlaces();
+    updateMapMarkers();
 
     const sortLabels = {
       'distance': '🚶‍♂️ 가까운 거리순으로 정렬되었습니다.',
-      'level-asc': '🔰 난이도 낮은 순(Lv.1→5)으로 정렬되었습니다.',
-      'level-desc': '🥩 난이도 높은 순(Lv.5→1)으로 정렬되었습니다.',
+      'level-asc': '🔰 전체 식당이 난이도 낮은 순(Lv.1→5)으로 정렬되었습니다.',
+      'level-desc': '🥩 전체 식당이 난이도 높은 순(Lv.5→1)으로 정렬되었습니다.',
       'reviews': '💬 학우 리뷰 많은 순으로 정렬되었습니다.',
       'name': '🔤 식당 가나다순으로 정렬되었습니다.',
     };

@@ -16,8 +16,8 @@
   "8129990": {
     "placeId": "8129990",
     "placeName": "피자스쿨 명지대점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "가성비 최강 고구마피자와 포테이토피자 한 판 만원 안팎! 1판 테이크아웃해서 자취방에서 든든하게 피자 파티.",
     "tags": [
       "#고구마피자",
@@ -72,8 +72,8 @@
   "11902547": {
     "placeId": "11902547",
     "placeName": "이정희떡볶이",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "명지대 떡볶이 골목의 3대장 중 하나! 특유의 깊은 고추장 양념과 바삭한 김말이 버무려 1인 식사로 대만족.",
     "tags": [
       "#명지대3대떡볶이",
@@ -394,8 +394,8 @@
   "21328592": {
     "placeId": "21328592",
     "placeName": "엄마손떡볶이 본점",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "은은한 카레 풍미의 쫄깃한 밀떡볶이와 바삭한 수제 튀김! 1인분도 친절하게 버무려주시는 명지대 전설 분식집.",
     "tags": [
       "#카레향떡볶이",
@@ -506,8 +506,8 @@
   "27513080": {
     "placeId": "27513080",
     "placeName": "미소떡볶이",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "매콤달콤 쫄깃한 떡볶이와 바삭한 튀김범벅! 혼자서 1인 세트 시켜 가볍게 먹고 가기 딱 좋은 학교 앞 분식집.",
     "tags": [
       "#학교앞떡볶이",
@@ -534,8 +534,8 @@
   "62560316": {
     "placeId": "62560316",
     "placeName": "스텔라떡볶이 서울명지대점",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "바삭한 별튀김에 콕 찍어 먹는 재미있는 식감의 떡볶이! 1인 떡볶이 세트로 혼자서도 아기자기하게 식사 가능.",
     "tags": [
       "#별튀김떡볶이",
@@ -618,8 +618,8 @@
   "254800003": {
     "placeId": "254800003",
     "placeName": "춘리마라탕 명지대점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "원하는 재료만 쏙쏙 담아 1인 맞춤 조리! 1인석 완비에 혼마라하는 학생들이 대다수라 시선 신경 0%.",
     "tags": [
       "#내맘대로담는마라탕",
@@ -772,8 +772,8 @@
   "618038326": {
     "placeId": "618038326",
     "placeName": "탕화쿵푸마라탕 명지대점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "고소한 땅콩 소스 풍미가 일품인 명지대 대표 마라탕! 학생 혼밥러들의 성지라 눈치 1도 안 보고 식사.",
     "tags": [
       "#땅콩소스풍미",
@@ -800,8 +800,8 @@
   "710005108": {
     "placeId": "710005108",
     "placeName": "샹츠마라 명지대점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "재료 선택 고민 없이 1인 완성형으로 주문 가능한 마라탕! 혼자 빠르게 식사하고 싶은 날 최고의 선택.",
     "tags": [
       "#1인완성형마라탕",
@@ -828,8 +828,8 @@
   "742273433": {
     "placeId": "742273433",
     "placeName": "다복향마라탕 명지대점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "사골 베이스 국물이 깊고 진한 마라탕! 밥 무료 제공에 1인석이 많아 든든하고 만족스러운 혼마라.",
     "tags": [
       "#밥무료제공",
@@ -1052,8 +1052,8 @@
   "1171098711": {
     "placeId": "1171098711",
     "placeName": "라와마라탕 명지대25호점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "깔끔하고 위생적인 재료 쇼케이스와 한국인 입맛에 딱 맞춘 마라탕! 혼자 가볍게 완뽕하기 좋아요.",
     "tags": [
       "#위생적인매장",
@@ -1192,8 +1192,8 @@
   "1484035102": {
     "placeId": "1484035102",
     "placeName": "신전떡볶이 명지대점",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "후추 향 솔솔 나는 매콤한 1인 떡볶이와 오뎅튀김, 신전치즈김밥! 1인분씩 시킬 수 있어 혼밥 분식으로 최고.",
     "tags": [
       "#후추떡볶이",
@@ -1206,8 +1206,8 @@
   "1493600613": {
     "placeId": "1493600613",
     "placeName": "마라왕 명지점",
-    "soloLevel": 1,
-    "levelLabel": "Lv.1 입문 혼밥",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "진한 사골 육수에 알싸한 마라의 조화! 키오스크 주문 후 1인 좌석에서 초스피드로 마라 수혈 가능.",
     "tags": [
       "#진한사골육수",
@@ -1234,8 +1234,8 @@
   "1536410108": {
     "placeId": "1536410108",
     "placeName": "순이네고릴라떡볶이 본점",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "명지대 떡볶이 골목의 또 다른 강자! 국물 자작한 떡볶이에 수제 튀김 찍어 먹는 1인 분식의 진수.",
     "tags": [
       "#명지대떡볶이골목",
@@ -1402,8 +1402,8 @@
   "1868140784": {
     "placeId": "1868140784",
     "placeName": "성연마라탕&핫오리",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 3,
+    "levelLabel": "Lv.3 일반 밥집",
     "psychology": "현지 풍미 물씬 나는 알싸한 마라 요리와 핫오리! 혼자서도 취향껏 재료 담아 매운맛 즐기기 제격.",
     "tags": [
       "#현지마라풍미",
@@ -1472,8 +1472,8 @@
   "1965498499": {
     "placeId": "1965498499",
     "placeName": "행복한떡볶이",
-    "soloLevel": 2,
-    "levelLabel": "Lv.2 혼밥 성지",
+    "soloLevel": 4,
+    "levelLabel": "Lv.4 다인석 식당",
     "psychology": "달달하고 매콤한 쌀떡볶이와 순대! 혼밥 학생들에게 친절하게 튀김 덤도 얹어주시는 따뜻한 분식집.",
     "tags": [
       "#쫄깃쌀떡볶이",
