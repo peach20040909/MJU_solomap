@@ -1,96 +1,72 @@
-# MJU_solomap - 혼밥 난이도 지도 (solo-map)
+# SoloMap | 명지대학교 혼밥지도
 
-> **혼밥 난이도 지도 (solo-map)**: 사용자들이 식당별 "혼밥 난이도(1~5)"와 혼밥 관점의 솔직한 리뷰를 공유하고 지도에서 확인할 수 있는 서비스입니다.  
-> 
-> 📘 **[기술적 의사결정 및 트러블슈팅 10대 과제 종합 보고서 바로가기 (TROUBLESHOOTING.md)](TROUBLESHOOTING.md)**  
-> *(포트폴리오 면접 및 발표용 문제 해결 과정, 카카오/네이버 API 듀얼 연동, Gemini 2.5 Flash AI 큐레이터 아키텍처 상세 정리)*
+혼자 식사할 곳을 찾는 명지대 학우를 위한 식당 탐색 웹 서비스입니다. 일반적인 맛집 평점에 더해 5단계 혼밥 난이도와 식당별 안내를 제공하고, 지도·목록·랜덤 추천으로 선택을 돕습니다.
 
----
+[서비스 보기](https://mju-solomap.onrender.com/) · [장민준 포트폴리오](https://jmj-archive-portfolio.ai.studio/) · [기술 의사결정과 트러블슈팅](TROUBLESHOOTING.md)
 
-## 🛠️ 기술 스택
-- **언어**: TypeScript (ESM, NodeNext)
-- **런타임 / 프레임워크**: Node.js, Express 5
-- **개발 환경**: `tsx` (핫 리로드 개발 서버), `tsc --noEmit` (타입 검사)
-- **외부 API**: 카카오 로컬 REST API (키워드 및 좌표 기반 식당 검색)
-- **데이터베이스 (예정)**: Prisma ORM + Supabase (PostgreSQL)
+![혼밥지도 지도 화면](사진_캡쳐/presentation_after_map_naver.png)
 
----
+## 문제와 구현
 
-## 📁 프로젝트 폴더 구조
+혼자 방문하기 편한 식당을 빠르게 찾도록 식당 탐색 기준과 화면을 설계했습니다. 개인 프로젝트로 기획과 개발을 진행했습니다.
 
-```
-Final_project/
-├── prisma/               # (추후 수업) Prisma ORM 스키마 및 마이그레이션
-├── public/               # 정적 파일 서빙 (사용자 업로드 이미지 등)
-│   └── uploads/
-├── src/
-│   ├── controllers/      # 요청(req) 검증 및 응답(res) 핸들러 (TODO 뼈대)
-│   │   ├── auth.controller.ts
-│   │   ├── place.controller.ts
-│   │   └── review.controller.ts
-│   ├── lib/              # 외부 API 및 유틸리티
-│   │   └── kakao.ts      # 카카오 로컬 REST API 검색 모듈 (위경도/반경 지원)
-│   ├── middlewares/      # Express 미들웨어 (인증, 전역 에러 핸들러)
-│   │   ├── auth.middleware.ts
-│   │   └── error.middleware.ts
-│   ├── routes/           # 라우터 엔드포인트 정의
-│   │   ├── auth.routes.ts       # POST /api/auth/signup, login, logout
-│   │   ├── place.routes.ts      # GET /api/places/search, /:id
-│   │   └── review.routes.ts     # POST/GET/PATCH/DELETE /api/reviews
-│   ├── services/         # 비즈니스 로직 계층 (추후 DB 쿼리 분리)
-│   └── app.ts            # Express 5 진입점 및 서버 실행
-├── .env.example          # 환경변수 템플릿
-├── .gitignore            # Git 제외 목록 (.env, node_modules 등)
-├── package.json          # 패키지 설정 및 스크립트
-├── tsconfig.json         # TypeScript 컴파일 설정
-└── test-api.ts           # 카카오 로컬 API 연동 검증용 테스트 스크립트
-```
+- 지도와 식당 목록, 권역별 탐색, 오늘 뭐 먹지 랜덤 추천
+- 카카오 로컬 API 검색 결과와 자체 식당 데이터를 함께 사용하는 검색
+- 네이버 지도 연동과 지도 표시 문제에 대한 대응
+- Gemini 기반 식당 안내 생성, 파일 캐시, API를 사용할 수 없을 때의 규칙 기반 대체 안내
 
----
+혼밥 난이도와 AI 안내는 추천용 정보입니다. 이용자 리뷰의 실제 통계로 검증된 평가로 해석하지 않습니다.
 
-## 🚀 실행 및 개발 방법
+## 설계와 배운 점
 
-### 1. 의존성 설치
+Express API가 외부 검색과 식당 큐레이션을 처리하고, 정적 웹 화면에 결과를 전달합니다. 이미 생성한 큐레이션은 캐시에 저장해 재사용합니다. 외부 API 실패 시에도 기본 탐색이 이어지도록 대체 흐름을 마련했습니다.
+
+지도 API 연동, 데이터 매칭, 배포 환경 차이를 해결한 과정은 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)에 정리했습니다.
+
+## 기술 스택
+
+| 영역 | 사용 기술 |
+|---|---|
+| 서버 | Node.js, Express 5, TypeScript |
+| 웹 화면 | HTML, CSS, JavaScript |
+| 외부 연동 | Kakao Local API, Naver Maps, Google Gemini |
+| 배포 | Render |
+| 데이터 | 식당 JSON, 큐레이션 파일 캐시 |
+
+## 현재 범위와 후속 작업
+
+현재 주요 범위는 식당 탐색과 지도, 추천 화면입니다. 회원가입·로그인·리뷰 CRUD 컨트롤러는 `501`을 반환하는 구현 예정 상태입니다. Prisma와 Supabase 기반 사용자·리뷰 저장은 후속 작업이며, 완료 기능으로 소개하지 않습니다.
+
+## 실행
+
 ```bash
 npm install
 ```
 
-### 2. 환경변수 설정
-`.env.example` 파일을 복사하여 `.env` 파일을 생성하고 카카오 REST API 키를 입력합니다.
+`.env.example`을 `.env`로 복사하고 필요한 키를 설정합니다.
+
 ```env
 PORT=3000
-KAKAO_REST_API_KEY=your_kakao_rest_api_key_here
+KAKAO_REST_API_KEY=your_kakao_rest_api_key
+GEMINI_API_KEY=your_gemini_api_key
+NAVER_CLIENT_ID=your_naver_maps_client_id
 ```
 
-### 3. 개발 서버 실행 (코드 저장 시 자동 재시작)
+Gemini 키 없이도 캐시 또는 규칙 기반 안내를 사용합니다. 지도 API는 사용 도메인 등록이 필요할 수 있습니다. 실제 키는 저장소에 올리지 않습니다.
+
 ```bash
 npm run dev
-```
-- 서버 주소: `http://localhost:3000`
-- 기본 헬스체크: `GET /` ➔ `"solo-map API running"`
-
-### 4. 타입 검사 (Type Check)
-```bash
 npm run typecheck
+npm run build
+npm start
 ```
 
-### 5. 카카오 API 연동 테스트
-```bash
-npx tsx test-api.ts
-```
+개발 주소는 `http://localhost:3000`이며, 서버 상태는 `GET /api/health`에서 확인합니다. 식당 검색은 `GET /api/places/search`입니다.
 
----
+## 주요 코드
 
-## 📍 주요 API 엔드포인트 요약
-
-| Method | Endpoint | 설명 | 상태 |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | 서버 헬스체크 ("solo-map API running") | 완료 |
-| `GET` | `/api/places/search` | 식당 키워드/위치 검색 (카카오 로컬 연동) | 완료 |
-| `GET` | `/api/places/:id` | 식당 상세 정보 및 리뷰 통계 | TODO (수업 진행) |
-| `POST` | `/api/auth/signup` | 회원가입 | TODO (수업 진행) |
-| `POST` | `/api/auth/login` | 로그인 (JWT/세션) | TODO (수업 진행) |
-| `POST` | `/api/reviews` | 특정 식당에 혼밥 난이도(1~5) 및 리뷰 작성 | TODO (수업 진행) |
-| `GET` | `/api/reviews/place/:placeId` | 특정 식당의 리뷰 목록 조회 | TODO (수업 진행) |
-| `PATCH` | `/api/reviews/:id` | 리뷰 수정 | TODO (수업 진행) |
-| `DELETE` | `/api/reviews/:id` | 리뷰 삭제 | TODO (수업 진행) |
+- `src/app.ts`: 정적 화면 및 API 라우터 등록
+- `src/controllers/place.controller.ts`: 식당 검색과 데이터 통합
+- `src/lib/kakao.ts`: 카카오 로컬 API 연결
+- `src/lib/gemini.ts`: 큐레이션 생성, 캐시와 대체 안내
+- `public/`: 지도와 식당 탐색 화면
