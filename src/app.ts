@@ -23,30 +23,37 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // 2. 헬스체크 및 공개 설정 엔드포인트
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.send('solo-map API running');
 });
 
-app.get('/api/config', (req, res) => {
+app.get(['/api/config', '/config'], (req, res) => {
   res.json({
     naverClientId: process.env.NAVER_CLIENT_ID || '',
   });
 });
 
-// 3. 기능별 라우터 등록 (/api 접두어로 통일)
+// 3. 기능별 라우터 등록 (로컬 및 Vercel 서버리스 라우팅 완벽 호환)
 app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
+
 app.use('/api/places', placeRouter);
+app.use('/places', placeRouter);
+
 app.use('/api/reviews', reviewRouter);
+app.use('/reviews', reviewRouter);
 
 // 4. 전역 에러 핸들러 미들웨어 등록 (반드시 라우터 등록보다 아래에 위치해야 함)
 app.use(errorHandler);
 
-// 5. 서버 실행
-app.listen(PORT, () => {
-  console.log(`=========================================`);
-  console.log(` 혼밥 난이도 지도 (solo-map) 서버 실행 중!`);
-  console.log(` 포트: http://localhost:${PORT}`);
-  console.log(`=========================================`);
-});
+// 5. 서버 실행 (Vercel 서버리스 환경에서는 자동 호출되므로 로컬 환경에서만 리스닝)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`=========================================`);
+    console.log(` 혼밥 난이도 지도 (solo-map) 서버 실행 중!`);
+    console.log(` 포트: http://localhost:${PORT}`);
+    console.log(`=========================================`);
+  });
+}
 
 export default app;

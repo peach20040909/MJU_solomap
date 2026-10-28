@@ -2,7 +2,7 @@
  * [이 파일이 하는 일]
  * Google GenAI SDK(@google/genai)를 활용하여
  * 식당별 고유한 혼밥 장점, 꿀팁, 심리 멘트 및 맞춤 해시태그를 생성하는 모듈입니다.
- * 모델: gemini-2.5-flash (초고속, 경제적, 고성능)
+ * 모델: gemini-3.8-flash (초고속, 경제적, 고성능)
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -22,7 +22,10 @@ export interface PlaceAiCuration {
   tags: string[];     // 🎯 식당 고유의 추천 해시태그 (4~5개)
 }
 
-// AI 큐레이션 캐시 파일 경로 및 로드 (개발 및 프로덕션 환경 호환)
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// AI 큐레이션 캐시 파일 경로 및 로드 (개발 및 Vercel 프로덕션 환경 호환)
 const candidateCachePaths = [
   path.resolve(process.cwd(), 'src/data/aiCurations.json'),
   path.resolve(process.cwd(), 'dist/data/aiCurations.json'),
@@ -31,14 +34,19 @@ const candidateCachePaths = [
 const validCachePath = candidateCachePaths.find((p) => fs.existsSync(p)) || candidateCachePaths[0];
 let curationCache: Record<string, PlaceAiCuration> = {};
 
-// 캐시 로드
+// 캐시 로드 (정적 require 우선 -> fs fallback)
 try {
-  if (fs.existsSync(validCachePath)) {
-    curationCache = JSON.parse(fs.readFileSync(validCachePath, 'utf8'));
-    console.log(`✅ [Gemini AI 큐레이션] 식당 ${Object.keys(curationCache).length}곳 로드 완료 (경로: ${validCachePath})`);
+  curationCache = require('../data/aiCurations.json');
+  console.log(`✅ [Gemini AI 큐레이션] 식당 ${Object.keys(curationCache).length}곳 정적 로드 완료!`);
+} catch {
+  try {
+    if (fs.existsSync(validCachePath)) {
+      curationCache = JSON.parse(fs.readFileSync(validCachePath, 'utf8'));
+      console.log(`✅ [Gemini AI 큐레이션] 식당 ${Object.keys(curationCache).length}곳 로드 완료 (경로: ${validCachePath})`);
+    }
+  } catch (e) {
+    console.warn('⚠️ aiCurations.json 로드 실패:', e);
   }
-} catch (e) {
-  console.warn('⚠️ aiCurations.json 로드 실패:', e);
 }
 
 // 캐시 저장
@@ -88,7 +96,7 @@ export async function getPlaceCuration(place: {
     return curationCache[place.id];
   }
 
-  // 2. Gemini API 키가 있으면 Gemini 2.5 Flash로 실시간 분석 생성
+  // 2. Gemini API 키가 있으면 Gemini 3.8 Flash로 실시간 분석 생성
   const ai = getGeminiClient();
   if (ai) {
     try {
@@ -110,18 +118,10 @@ export async function getPlaceCuration(place: {
 }
 `;
 
-      let response;
-      try {
-        response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-        });
-      } catch (mErr) {
-        response = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: prompt,
-        });
-      }
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+      });
 
       const text = response.text || '';
       const cleanJson = text.replace(/```json/gi, '').replace(/```/g, '').trim();

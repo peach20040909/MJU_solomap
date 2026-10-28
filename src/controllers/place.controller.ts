@@ -16,24 +16,32 @@ const __dirname = path.dirname(__filename);
 
 import { getPlaceCuration, type PlaceAiCuration } from '../lib/gemini.js';
 
-// 대동명지도 2026 ver. 명지대 실제 대학가 검증 맛집 데이터 로드 (개발 및 프로덕션 환경 완벽 호환)
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// 대동명지도 2026 ver. 명지대 실제 대학가 검증 맛집 데이터 로드 (개발 및 Vercel 프로덕션 환경 완벽 호환)
 let daedongPlaces: KakaoPlaceDocument[] = [];
 try {
-  const candidatePaths = [
-    path.resolve(process.cwd(), 'src/data/daedongPlaces.json'),
-    path.resolve(process.cwd(), 'dist/data/daedongPlaces.json'),
-    path.resolve(__dirname, '../data/daedongPlaces.json'),
-  ];
-  const validPath = candidatePaths.find((p) => fs.existsSync(p));
-  if (validPath) {
-    const raw = fs.readFileSync(validPath, 'utf8');
-    daedongPlaces = JSON.parse(raw);
-    console.log(`✅ [대동명지도 2026] 명지대 맛집 ${daedongPlaces.length}곳 성공적으로 로드됨! (경로: ${validPath})`);
-  } else {
-    console.warn('⚠️ daedongPlaces.json 파일을 찾을 수 없습니다.');
+  daedongPlaces = require('../data/daedongPlaces.json');
+  console.log(`✅ [대동명지도 2026] 명지대 맛집 ${daedongPlaces.length}곳 정적 로드 완료!`);
+} catch {
+  try {
+    const candidatePaths = [
+      path.resolve(process.cwd(), 'src/data/daedongPlaces.json'),
+      path.resolve(process.cwd(), 'dist/data/daedongPlaces.json'),
+      path.resolve(__dirname, '../data/daedongPlaces.json'),
+    ];
+    const validPath = candidatePaths.find((p) => fs.existsSync(p));
+    if (validPath) {
+      const raw = fs.readFileSync(validPath, 'utf8');
+      daedongPlaces = JSON.parse(raw);
+      console.log(`✅ [대동명지도 2026] 명지대 맛집 ${daedongPlaces.length}곳 성공적으로 로드됨! (경로: ${validPath})`);
+    } else {
+      console.warn('⚠️ daedongPlaces.json 파일을 찾을 수 없습니다.');
+    }
+  } catch (err) {
+    console.warn('⚠️ daedongPlaces.json 로드 실패:', err);
   }
-} catch (err) {
-  console.warn('⚠️ daedongPlaces.json 로드 실패:', err);
 }
 
 // 식당 키워드 검색 컨트롤러 (대동명지도 DB + 카카오 로컬 API 실시간 융합 + Gemini 개별 큐레이션)
@@ -118,7 +126,7 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
       // 카테고리 명칭 내 카페/디저트/음료/베이커리/찻집 차단 (식사류인 '본죽&비빔밥'은 예외 허용)
       const cafeCategories = [
         '카페', '커피', '디저트', '제과,베이커리', '베이커리', '제과', '찻집', '전통찻집',
-        '빙수', '아이스크림', '음료', '도넛', '와플', '마카롱', '생과일'
+        '빙수', '아이스크림', '음료', '도넛', '와플', '마카롱', '생과일', '떡,한과'
       ];
       if (cafeCategories.some((c) => cat.includes(c))) {
         if (!name.includes('본죽')) {
@@ -130,13 +138,14 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
       const cafeAndNonMealKeywords = [
         '카페', '커피', 'cafe', 'coffee', '로스터리', 'roastery', '디저트', 'dessert',
         '베이커리', 'bakery', '베이크', '다방', '찻집', '티룸', 'tearoom',
-        '빙수', '설빙', '공차', '버블티', '스무디', '탕후루', '요아정', '요거트', '아이스크림',
+        '떡집', '떡방앗간', '방앗간', '빙수', '설빙', '공차', '버블티', '스무디', '탕후루', '요아정', '요거트', '아이스크림',
         '배스킨', '베스킨', '와플대학', '와플', '도넛', '던킨', '크리스피', '마카롱',
         '스타벅스', '투썸', '이디야', '메가커피', '컴포즈', '빽다방', '할리스', '탐앤탐스',
         '엔제리너스', '파스쿠찌', '폴바셋', '더벤티', '감성커피', '하삼동', '커피빈',
         '달콤커피', '매머드', '쥬씨', '생과일', '파리바게', '파리바게뜨', '뚜레쥬르',
         '푸드마켓', '마켓', '마트', '슈퍼', '식자재', '정육점', '청과', '과일', '식료품',
-        '편의점', 'cu', 'gs25', '세븐일레븐', '이마트24', '다이소', '올리브영'
+        '편의점', 'cu', 'gs25', '세븐일레븐', '이마트24', '다이소', '올리브영',
+        'bhc' // 배달/치맥 위주 프랜차이즈 치킨은 혼밥 목적지가 아니므로 제외
       ];
       if (cafeAndNonMealKeywords.some((kw) => name.includes(kw))) {
         if (!name.includes('본죽')) {
