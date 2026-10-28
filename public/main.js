@@ -860,7 +860,7 @@ btnSubmitReview.addEventListener('click', () => {
 
   const content = document.getElementById('review-textarea').value.trim();
   if (!content) {
-    alert('혼밥러들을 위해 한 줄 후기나 팁을 간단히 작성해 주세요!');
+    showToast('혼밥러들을 위해 한 줄 후기나 팁을 간단히 작성해 주세요!');
     document.getElementById('review-textarea').focus();
     return;
   }

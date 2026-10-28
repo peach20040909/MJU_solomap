@@ -39,6 +39,8 @@ body {
   color: var(--text-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  word-break: keep-all; /* 한글 단어 중간 줄바꿈 방지 (예: 도시/락) */
+  overflow-wrap: break-word;
 }
 
 /* 상단 헤더 */
@@ -1960,6 +1962,14 @@ body {
   align-items: center;
   text-align: center;
   padding: 24px;
+}
+
+/* 클린 카드에서는 배지를 이미지 위가 아닌 본문 흐름에 배치 (absolute면 화면 모서리로 튀어나감) */
+.clean-winner .winner-badges {
+  position: static;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 4px;
 }
 
 .winner-icon-wrap {

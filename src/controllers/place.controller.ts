@@ -145,7 +145,7 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
         '달콤커피', '매머드', '쥬씨', '생과일', '파리바게', '파리바게뜨', '뚜레쥬르',
         '푸드마켓', '마켓', '마트', '슈퍼', '식자재', '정육점', '청과', '과일', '식료품',
         '편의점', 'cu', 'gs25', '세븐일레븐', '이마트24', '다이소', '올리브영',
-        'bhc' // 배달/치맥 위주 프랜차이즈 치킨은 혼밥 목적지가 아니므로 제외
+        'bhc', '굽네' // 배달/치맥 위주 프랜차이즈 치킨은 혼밥 목적지가 아니므로 제외
       ];
       if (cafeAndNonMealKeywords.some((kw) => name.includes(kw))) {
         if (!name.includes('본죽')) {

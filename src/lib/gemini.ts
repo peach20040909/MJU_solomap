@@ -60,6 +60,8 @@ function saveCache() {
   }
 }
 
+const GEMINI_TIMEOUT_MS = 4000;
+
 /**
  * Gemini 클라이언트 초기화
  */
@@ -99,8 +101,11 @@ export async function getPlaceCuration(place: {
   // 2. Gemini API 키가 있으면 Gemini 3.8 Flash로 실시간 분석 생성
   const ai = getGeminiClient();
   if (ai) {
-    try {
-      const prompt = `
+    // Gemini 응답이 늦으면(신규 식당이 많을 때 수십~수백 초) 검색 전체가 멈추므로 제한 시간 내 응답만 사용.
+    // 늦게 도착한 결과는 캐시에 저장되어 다음 검색부터 반영됨.
+    const generation = (async (): Promise<PlaceAiCuration | null> => {
+      try {
+        const prompt = `
 당신은 명지대학교 대학가 혼밥 전문 AI 큐레이터입니다.
 다음 식당 정보를 바탕으로 혼밥하려는 학생에게 식당의 실제 대표 메뉴, 개별 장점, 매장 분위기, 혼밥 꿀팁을 한 줄로 생생하게 전달해주세요.
 모든 식당마다 천편일률적인 설명이 아닌, "이 식당만의 진짜 장점과 혼밥 팁"이어야 합니다.
@@ -118,38 +123,47 @@ export async function getPlaceCuration(place: {
 }
 `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-      });
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt,
+        });
 
-      const text = response.text || '';
-      const cleanJson = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJson);
+        const text = response.text || '';
+        const cleanJson = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleanJson);
 
-      const levelLabels: Record<number, string> = {
-        1: 'Lv.1 입문 혼밥',
-        2: 'Lv.2 혼밥 성지',
-        3: 'Lv.3 일반 밥집',
-        4: 'Lv.4 다인석 식당',
-        5: 'Lv.5 혼밥 끝판왕',
-      };
+        const levelLabels: Record<number, string> = {
+          1: 'Lv.1 입문 혼밥',
+          2: 'Lv.2 혼밥 성지',
+          3: 'Lv.3 일반 밥집',
+          4: 'Lv.4 다인석 식당',
+          5: 'Lv.5 혼밥 끝판왕',
+        };
 
-      const result: PlaceAiCuration = {
-        placeId: place.id,
-        placeName: place.place_name,
-        soloLevel: Math.min(5, Math.max(1, Number(parsed.soloLevel) || 3)),
-        levelLabel: levelLabels[Number(parsed.soloLevel) || 3] || 'Lv.3 일반 밥집',
-        psychology: parsed.psychology || '명지대 학우들이 즐겨 찾는 든든한 한 끼 식당',
-        tags: Array.isArray(parsed.tags) ? parsed.tags.slice(0, 5) : ['#명지대맛집', '#혼밥추천'],
-      };
+        const result: PlaceAiCuration = {
+          placeId: place.id,
+          placeName: place.place_name,
+          soloLevel: Math.min(5, Math.max(1, Number(parsed.soloLevel) || 3)),
+          levelLabel: levelLabels[Number(parsed.soloLevel) || 3] || 'Lv.3 일반 밥집',
+          psychology: parsed.psychology || '명지대 학우들이 즐겨 찾는 든든한 한 끼 식당',
+          tags: Array.isArray(parsed.tags) ? parsed.tags.slice(0, 5) : ['#명지대맛집', '#혼밥추천'],
+        };
 
-      curationCache[place.id] = result;
-      saveCache();
-      return result;
-    } catch (err) {
-      console.warn(`⚠️ Gemini API 호출 실패 (${place.place_name}):`, err);
-    }
+        curationCache[place.id] = result;
+        saveCache();
+        return result;
+      } catch (err) {
+        console.warn(`⚠️ Gemini API 호출 실패 (${place.place_name}):`, err);
+        return null;
+      }
+    })();
+
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), GEMINI_TIMEOUT_MS));
+    const result = await Promise.race([generation, timeout]);
+    if (result) return result;
+    // 시간 초과 시 폴백은 캐시하지 않음 → 늦게 도착한 Gemini 결과가 캐시를 채울 수 있도록
+    if (!curationCache[place.id]) return generateSmartFallbackCuration(place);
+    return curationCache[place.id];
   }
 
   // 3. Fallback: 식당 이름과 메뉴를 분석한 개별 맞춤 장점 생성 (천편일률적 문구 탈피!)
