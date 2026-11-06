@@ -2,7 +2,7 @@
 
 혼자 식사할 곳을 찾는 명지대 학우를 위한 식당 탐색 웹 서비스입니다. 일반적인 맛집 평점에 더해 5단계 혼밥 난이도와 식당별 안내를 제공하고, 지도·목록·랜덤 추천으로 선택을 돕습니다.
 
-[서비스 보기](https://mju-solomap.onrender.com/) · [장민준 포트폴리오](https://jmj-archive-portfolio.ai.studio/) · [기술 의사결정과 트러블슈팅](TROUBLESHOOTING.md)
+[서비스 보기](https://mju-solomap.vercel.app/) · [장민준 포트폴리오](https://jmj-archive-portfolio.ai.studio/) · [기술 의사결정과 트러블슈팅](TROUBLESHOOTING.md)
 
 ![혼밥지도 지도 화면](사진_캡쳐/presentation_after_map_naver.png)
 
