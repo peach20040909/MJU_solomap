@@ -450,7 +450,7 @@ function createCardHtml(place) {
       </details>
       <div class="card-footer-actions">
         <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
-        <button type="button" class="btn-checkin sm-button sm-button--brand" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
+        <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
       </div>
     </article>`;
 }

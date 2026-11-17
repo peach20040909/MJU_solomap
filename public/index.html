@@ -99,8 +99,8 @@
         <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="버거"><span class="kw-icon" data-food="burger" aria-hidden="true"></span>햄버거</button>
         <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="마라탕"><span class="kw-icon" data-food="chinese" aria-hidden="true"></span>마라탕</button>
         <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="김밥"><span class="kw-icon" data-food="snack" aria-hidden="true"></span>김밥/도시락</button>
-        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="떡볶이"><span class="kw-icon" data-food="snack" aria-hidden="true"></span>떡볶이 (도전 Lv.4)</button>
-        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="고기"><span class="kw-icon" data-food="grill" aria-hidden="true"></span>고깃집 (도전 Lv.5)</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="떡볶이"><span class="kw-icon" data-food="snack" aria-hidden="true"></span>떡볶이<span class="kw-sub">도전 Lv.4</span></button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="고기"><span class="kw-icon" data-food="grill" aria-hidden="true"></span>고깃집<span class="kw-sub">도전 Lv.5</span></button>
       </div>
       </div>
     </section>
@@ -112,7 +112,11 @@
     </section>
 
     <!-- 현실적 대중 시각 5단계 혼밥 난이도 기준 카드 바 (클릭 시 해당 레벨 즉시 필터) -->
-    <section class="difficulty-index">
+    <div class="section-head">
+      <h2 class="section-title">혼밥 레벨</h2>
+      <p class="section-sub">카드를 누르면 그 레벨 식당만 모아 볼 수 있어요</p>
+    </div>
+    <section class="difficulty-index" aria-label="혼밥 레벨 5단계">
       <div class="index-card sm-card lv-1" data-level="1" role="button" tabindex="0" title="클릭하여 Lv.1 식당 필터링">
         <div class="index-level lv-1">Lv.1</div>
         <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
