@@ -120,39 +120,36 @@
   margin:auto;
   padding:var(--sm-space-8) var(--sm-space-6) var(--sm-space-16);
 }
-/* A안 소개 영역: 왼쪽 문구·검색, 오른쪽 음식 타일 콜라주 */
+/* 소개 영역: 색 덩어리 없이 굵은 제목 + 큰 흰 검색창 + 메뉴 타일 (당근·토스 레퍼런스) */
 .hero-card {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0, 26rem);
-  gap:var(--sm-space-10);
-  align-items:center;
   box-shadow:none;
-  padding:var(--sm-space-10);
+  padding:var(--sm-space-6) 0 var(--sm-space-4);
   text-align:left;
-  border-radius:var(--sm-radius-panel);
-  background-color:var(--sm-color-surface);
-  border:1px solid var(--sm-color-border);
+  border:0;
+  border-radius:0;
+  background:transparent;
 }
 .hero-copy {
   min-width:0;
 }
 .hero-badge {
-  padding:var(--sm-space-1) var(--sm-space-3);
-  border-radius:var(--sm-radius-pill);
-  background:var(--sm-color-brand-subtle);
   display:inline-flex;
   align-items:center;
   gap:var(--sm-space-2);
-  color:var(--sm-color-brand-text);
+  padding:var(--sm-space-1) var(--sm-space-3);
+  border-radius:var(--sm-radius-pill);
+  background:var(--sm-color-surface);
+  color:var(--sm-color-text-secondary);
   font-size:var(--sm-text-sm);
-  font-weight:var(--sm-weight-bold);
+  font-weight:var(--sm-weight-semibold);
   margin-bottom:var(--sm-space-4);
 }
 .hero-headline {
-  max-width:24ch;
-  font-size:clamp(1.75rem, 3vw, 2.5rem);
-  line-height:1.35;
-  letter-spacing:-.04em;
+  max-width:22ch;
+  font-size:clamp(1.875rem, 3.4vw, 2.75rem);
+  font-weight:800;
+  line-height:1.3;
+  letter-spacing:-.045em;
 }
 .text-gradient {
   color:var(--sm-color-brand);
@@ -162,33 +159,6 @@
   margin-top:var(--sm-space-3);
   color:var(--sm-color-text-secondary);
   font-size:var(--sm-text-md);
-}
-.hero-art {
-  display:grid;
-  grid-template-columns:3fr 2fr;
-  grid-template-rows:1fr 1fr;
-  gap:var(--sm-space-3);
-  aspect-ratio:1 / 1;
-}
-.hero-tile {
-  position:relative;
-  display:grid;
-  place-items:center;
-  border-radius:var(--sm-radius-panel);
-  background:var(--sm-color-brand-subtle);
-}
-.hero-tile--main {
-  grid-row:1 / 3;
-}
-.hero-tile svg {
-  width:55%;
-  height:auto;
-}
-.hero-tile .sm-level-badge {
-  position:absolute;
-  top:var(--sm-space-3);
-  left:var(--sm-space-3);
-  font-size:var(--sm-text-xs);
 }
 .search-actions-row {
   display:flex;
@@ -262,6 +232,18 @@
 .account-menu .account-primary { background:var(--sm-color-brand-subtle); color:var(--sm-color-action); border-color:transparent; }
 .account-menu .sm-button:hover { background:var(--sm-color-surface-subtle); border-color:transparent; }
 .kw-chip.active, .kw-chip[aria-pressed="true"] { border-color:transparent; background:var(--sm-color-text); color:var(--sm-color-surface); }
+/* 주황 소개 영역 안의 추천 칩: 흰 테두리, 선택 시 흰 바탕 */
+/* 추천 메뉴: 흰 타일 + 작은 음식 아이콘. 선택은 굵은 테두리로만 표시 */
+.hero-card .search-input-wrap .sm-input { border-color:transparent; border-radius:var(--sm-radius-card); min-height:3.75rem; font-size:var(--sm-text-lg); }
+.hero-card .search-submit-btn, .hero-card .btn-roulette { min-height:3.75rem; border-radius:var(--sm-radius-card); padding-inline:var(--sm-space-6); }
+.hero-card .btn-roulette { background:var(--sm-color-surface); color:var(--sm-color-text); }
+.hero-card .quick-keywords { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,7.5rem),1fr)); gap:var(--sm-space-3); margin-top:var(--sm-space-6); }
+.hero-card .kw-label { grid-column:1 / -1; color:var(--sm-color-text); font-size:var(--sm-text-lg); font-weight:var(--sm-weight-bold); }
+.hero-card .kw-chip { display:grid; justify-items:start; align-content:space-between; gap:var(--sm-space-3); min-height:5.5rem; padding:var(--sm-space-4); border:0; border-radius:var(--sm-radius-card); background:var(--sm-color-surface); color:var(--sm-color-text); font-weight:var(--sm-weight-bold); text-align:left; }
+.hero-card .kw-chip:hover { background:var(--sm-color-surface); box-shadow:var(--sm-shadow-raised); }
+.hero-card .kw-chip.active, .hero-card .kw-chip[aria-pressed="true"] { background:var(--sm-color-surface); color:var(--sm-color-text); box-shadow:inset 0 0 0 2px var(--sm-color-text); }
+.kw-icon { display:block; width:2rem; height:2rem; }
+.kw-icon svg { width:100%; height:100%; }
 .tab-btn.active, .tab-btn[aria-pressed="true"] { background:var(--sm-color-text); color:var(--sm-color-surface); border-color:transparent; }
 .view-tab-btn.active, .view-tab-btn[aria-pressed="true"] { border-color:transparent; background:var(--sm-color-surface); color:var(--sm-color-text); box-shadow:inset 0 -2px 0 var(--sm-color-text); font-weight:var(--sm-weight-bold); }
 .btn-heart-fav { background:transparent; }
@@ -423,52 +405,15 @@
   min-width:0;
   display:flex;
   flex-direction:column;
-  padding:0 0 var(--sm-space-5);
-  border:1px solid var(--sm-color-border);
-  border-radius:var(--sm-radius-card);
+  padding:var(--sm-space-6);
+  border:0;
+  border-radius:var(--sm-radius-panel);
   background:var(--sm-color-surface);
   box-shadow:none;
   gap:var(--sm-space-3);
-  overflow:hidden;
-}
-.place-card-item > :not(.card-media) {
-  margin-inline:var(--sm-space-5);
+  cursor:pointer;
 }
 .place-card-item:hover {
-  box-shadow:var(--sm-shadow-raised);
-}
-/* 카드 이미지 영역: 사진이 없으면 카테고리 일러스트. 난이도 배지와 찜은 위에 얹는다. */
-.card-media {
-  position:relative;
-  aspect-ratio:16 / 9;
-  background:var(--sm-color-brand-subtle);
-  margin-bottom:var(--sm-space-1);
-}
-.card-media-art {
-  height:100%;
-  display:grid;
-  place-content:center;
-  justify-items:center;
-  gap:var(--sm-space-1);
-  color:var(--sm-color-brand-text);
-  font-size:var(--sm-text-xs);
-  font-weight:var(--sm-weight-bold);
-}
-.card-media-art svg {
-  width:clamp(4rem, 28%, 6rem);
-  height:auto;
-}
-.card-media .solo-badge-chip {
-  position:absolute;
-  top:var(--sm-space-3);
-  left:var(--sm-space-3);
-}
-.card-media .btn-heart-fav {
-  position:absolute;
-  top:var(--sm-space-2);
-  right:var(--sm-space-2);
-  border-radius:var(--sm-radius-pill);
-  background:var(--sm-color-surface);
   box-shadow:var(--sm-shadow-raised);
 }
 .card-header-row {
@@ -476,8 +421,33 @@
   align-items:flex-start;
   gap:var(--sm-space-3);
 }
-.card-header-row .sm-level-meter {
-  margin-top:var(--sm-space-3);
+.card-level-row {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--sm-space-3);
+}
+/* 카드를 누르면 펼쳐지는 상세 */
+.card-more {
+  cursor:auto;
+}
+.card-more summary {
+  display:inline-flex;
+  align-items:center;
+  min-height:var(--sm-control-sm);
+  color:var(--sm-color-text-muted);
+  font-size:var(--sm-text-sm);
+  font-weight:var(--sm-weight-semibold);
+  cursor:pointer;
+  list-style:none;
+}
+.card-more summary::-webkit-details-marker { display:none; }
+.card-more summary::after { content:'⌄'; margin-left:var(--sm-space-2); }
+.card-more[open] summary::after { content:'⌃'; }
+.card-more[open] {
+  display:grid;
+  gap:var(--sm-space-3);
+  padding-top:var(--sm-space-1);
 }
 .card-icon-badge {
   display:flex;
@@ -523,7 +493,7 @@
   align-self:flex-start;
   color:var(--sm-color-text-muted);
 }
-.btn-heart-fav.active, .card-media .btn-heart-fav.active {
+.btn-heart-fav.active {
   color:var(--sm-color-danger);
   background:var(--sm-color-danger-subtle);
   border-color:transparent;
@@ -605,8 +575,11 @@
   display:flex;
   flex-wrap:wrap;
   align-items:center;
+  justify-content:space-between;
   gap:var(--sm-space-2);
   margin-top:auto;
+  padding-top:var(--sm-space-3);
+  border-top:1px solid var(--sm-color-border);
 }
 .map-links-group {
   display:flex;
@@ -638,7 +611,7 @@
   border-color:transparent;
 }
 .btn-review-list { padding-inline:0; color:var(--sm-color-text-secondary); }
-.btn-checkin { flex:1 0 7rem; padding-inline:var(--sm-space-3); }
+.btn-checkin { flex:0 0 auto; padding-inline:var(--sm-space-5); }
 .map-links-group .sm-icon { width:var(--sm-icon-sm); height:var(--sm-icon-sm); }
 .place-meta-list a { color:inherit; text-decoration:none; }
 .review-box-text { margin-top:var(--sm-space-2); }
@@ -982,12 +955,6 @@ body.sm-dialog-open {
   .header-status, .campus-sub {
     display:none;
   }
-  .hero-card {
-    grid-template-columns:minmax(0,1fr);
-  }
-  .hero-art {
-    display:none;
-  }
 }
 @media (max-width:679px) {
   .solo-journey { align-items:flex-end; gap:var(--sm-space-2); padding-inline:0; }
@@ -1058,9 +1025,12 @@ body.sm-dialog-open {
     grid-template-columns:1fr;
     gap:var(--sm-space-2);
   }
+  .index-card .sm-level-meter {
+    display:none;
+  }
   .index-card {
-    grid-template-columns:auto minmax(0,1fr) auto;
-    grid-template-areas:"lv info meter";
+    grid-template-columns:auto minmax(0,1fr);
+    grid-template-areas:"lv info";
     padding:var(--sm-space-3);
     gap:var(--sm-space-3);
   }
@@ -1105,8 +1075,8 @@ body.sm-dialog-open {
     grid-template-columns:1fr;
     gap:var(--sm-space-4);
   }
-  .place-card-item > :not(.card-media) {
-    margin-inline:var(--sm-space-4);
+  .place-card-item {
+    padding:var(--sm-space-5);
   }
   .modal-overlay {
     padding:var(--sm-space-3);

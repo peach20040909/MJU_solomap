@@ -404,6 +404,13 @@ function renderFilteredPlaces() {
   placesContainer.innerHTML = filtered.map((place) => createCardHtml(place)).join('');
 }
 
+// 카드 빈 곳을 누르면 상세(위치·전화·지도·리뷰 작성)를 펼친다. 버튼·링크·펼친 내용 클릭은 그대로 둔다.
+placesContainer.addEventListener('click', (e) => {
+  if (e.target.closest('a, button, summary, .card-more')) return;
+  const more = e.target.closest('.place-card-item')?.querySelector('.card-more');
+  if (more) more.open = !more.open;
+});
+
 // 식당명과 혼밥 정보를 먼저 읽고 필요한 작업을 선택하는 공통 카드.
 function createCardHtml(place) {
   const soloInfo = getDynamicSoloIndex(place);
@@ -412,40 +419,37 @@ function createCardHtml(place) {
   const category = (place.category_name || '음식점').split('>').map(t => t.trim()).filter(Boolean).slice(1, 3).join(' · ') || '음식점';
   const reviews = getPlaceReviews(place.id);
   const reviewCount = place.displaySolo?.reviewCount || reviews.length;
-  // 실제 가게 사진이 없으므로 카테고리 일러스트를 카드 이미지로 쓴다. 난이도와 찜은 이미지 위에 얹는다.
-  const art = soloFoodArt(place.category_name, place.place_name);
+  // 카드에는 고르는 데 필요한 정보만. 위치·전화·태그·지도·리뷰 작성은 카드를 누르면 펼쳐진다.
   return `
     <article class="place-card-item clean-card sm-card ${soloInfo.pillClass}" id="place-card-${place.id}">
-      <div class="card-media">
-        <div class="card-media-art" aria-hidden="true">${art.svg}<span>${art.label}</span></div>
-        <span class="solo-badge-chip sm-level-badge">${soloInfo.label}</span>
-        <button type="button" class="btn-heart-fav ${isPlaceFavorite(place.id) ? 'active' : ''} sm-button sm-button--icon sm-button--ghost" aria-label="찜하기" aria-pressed="${isPlaceFavorite(place.id)}" title="찜하기" onclick="handleToggleFav('${place.id}', event)">${soloIcon('heart')}</button>
-      </div>
       <div class="card-header-row">
         <div class="card-title-group">
           <h3 class="place-title">${escapeHtml(place.place_name)}</h3>
           <div class="card-cat-line"><span class="place-category" title="${escapeHtml(place.category_name || '')}">${escapeHtml(category)}</span><span class="distance-pill">${walkText}</span></div>
         </div>
+        <button type="button" class="btn-heart-fav ${isPlaceFavorite(place.id) ? 'active' : ''} sm-button sm-button--icon sm-button--ghost" aria-label="찜하기" aria-pressed="${isPlaceFavorite(place.id)}" title="찜하기" onclick="handleToggleFav('${place.id}', event)">${soloIcon('heart')}</button>
+      </div>
+      <div class="card-level-row">
+        <span class="solo-badge-chip sm-level-badge">${soloInfo.label}</span>
         <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
       </div>
       <p class="solo-psychology-text">${escapeHtml(soloInfo.psychology)}</p>
-      <div class="solo-tags" aria-label="혼밥 특징">${soloInfo.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
-      <ul class="place-meta-list">
-        <li><span class="meta-icon">${soloIcon('pin')}</span><span>${escapeHtml(cleanAddr)}</span></li>
-        ${place.phone ? `<li><span class="meta-icon">${soloIcon('phone')}</span><a href="tel:${escapeHtml(place.phone)}">${escapeHtml(place.phone)}</a></li>` : ''}
-      </ul>
-      <div class="card-review-box">
-        <div class="review-box-header">
-          <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
-          <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
-        </div>
+      <details class="card-more">
+        <summary>위치 · 전화번호 · 리뷰 보기</summary>
+        <div class="solo-tags" aria-label="혼밥 특징">${soloInfo.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <ul class="place-meta-list">
+          <li><span class="meta-icon">${soloIcon('pin')}</span><span>${escapeHtml(cleanAddr)}</span></li>
+          ${place.phone ? `<li><span class="meta-icon">${soloIcon('phone')}</span><a href="tel:${escapeHtml(place.phone)}">${escapeHtml(place.phone)}</a></li>` : ''}
+        </ul>
         ${reviews.length ? `<p class="review-box-text">${escapeHtml(reviews[0].content)}</p>` : ''}
-      </div>
-      <div class="card-footer-actions">
         <div class="map-links-group">
           <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="카카오맵에서 위치 및 길찾기 보기">카카오맵 ${soloIcon('external')}</a>
           <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="네이버 지도에서 메뉴와 길찾기 보기">네이버 지도 ${soloIcon('external')}</a>
+          <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
         </div>
+      </details>
+      <div class="card-footer-actions">
+        <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
         <button type="button" class="btn-checkin sm-button sm-button--brand" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
       </div>
     </article>`;

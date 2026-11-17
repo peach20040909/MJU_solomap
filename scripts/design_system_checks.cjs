@@ -11,6 +11,8 @@ module.exports = async function auditDesignSystem(page) {
     await page.setViewport({ width, height: 1000 });
     await page.evaluate(() => scrollTo(0, 0));
     const metrics = await page.evaluate(() => {
+      // 지도 링크는 카드 상세(접힘) 안에 있으므로 펼친 뒤 터치 크기를 잰다.
+      document.querySelector('.card-more')?.setAttribute('open', '');
       const root = getComputedStyle(document.documentElement);
       const controls = ['#btn-login', '#btn-signup', '.search-submit-btn', '.kw-chip', '.tab-btn', '.btn-heart-fav', '.btn-map-link'];
       return {
@@ -61,7 +63,8 @@ module.exports = async function auditDesignSystem(page) {
   for (const width of [375, 1440]) {
     await page.setViewport({ width, height: 1000 });
     await page.evaluate(() => document.documentElement.style.fontSize = '200%');
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width}: 200% 텍스트 가로 넘침`);
+    const wide = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth ? [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1).slice(0, 5).map(e => `${e.tagName}.${[...e.classList].join('.')}`) : []);
+    assert.deepEqual(wide, [], `${width}: 200% 텍스트 가로 넘침`);
     const overlap = await page.evaluate(() => { const input = document.querySelector('#search-input').getBoundingClientRect(), submit = document.querySelector('.search-submit-btn').getBoundingClientRect(); return input.left < submit.right && input.right > submit.left && input.top < submit.bottom && input.bottom > submit.top; });
     assert.equal(overlap, false, `${width}: 확대해도 검색 입력과 버튼이 겹치지 않음`);
     await page.evaluate(() => document.documentElement.style.fontSize = '');
