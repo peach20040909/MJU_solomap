@@ -522,7 +522,7 @@ btnRouletteGo.addEventListener('click', () => {
     if (card) {
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       card.style.transition = 'box-shadow 0.4s ease, transform 0.4s ease';
-      card.style.boxShadow = '0 0 0 4px #ff5226, 0 16px 36px rgba(255, 82, 38, 0.35)';
+      card.style.boxShadow = '0 0 0 3px var(--sm-color-brand), var(--sm-shadow-raised)';
       card.style.transform = 'scale(1.02)';
       setTimeout(() => {
         card.style.boxShadow = '';
@@ -1005,6 +1005,10 @@ function initNaverMap() {
       },
     });
     window.naverMap = naverMap;
+    // 넓게 볼 때(줌 16 이하)는 129개 상호명이 겹치므로 숫자 배지만 보이고, 확대·호버·선택 시 이름을 보인다.
+    const syncMarkerDensity = () => document.getElementById('naver-map-canvas').classList.toggle('map-compact', naverMap.getZoom() <= 16);
+    naver.maps.Event.addListener(naverMap, 'zoom_changed', syncMarkerDensity);
+    syncMarkerDensity();
 
     // 1. 명지대학교 인문캠퍼스 마커
     const mjuLandmarkMarker = new naver.maps.Marker({
@@ -1301,7 +1305,10 @@ btnViewMap.addEventListener('click', () => switchViewMode('map'));
 searchForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const q = searchInput.value.trim();
-  if (q) loadPlaces(q);
+  if (!q) return;
+  // 직접 입력한 검색어와 같은 추천 메뉴가 있으면 그 타일만, 없으면 아무 타일도 선택하지 않는다.
+  kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === q));
+  loadPlaces(q);
 });
 
 kwChips.forEach((chip) => {

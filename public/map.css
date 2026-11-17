@@ -776,6 +776,9 @@
 .marker-conquered .marker-level-badge { background:var(--sm-color-success); }
 .map-place-marker.marker-recommended { background:var(--sm-color-brand-subtle); border:2px solid var(--sm-level-4-fill); }
 .marker-recommended .marker-level-badge { background:var(--sm-level-4-fill); color:var(--sm-level-4-on); }
+/* 넓게 볼 때는 상호명을 숨겨 마커 겹침을 줄인다 (호버·선택한 마커는 계속 이름 표시) */
+.map-compact .marker-title { display:none !important; }
+.map-compact .map-marker-anchor-wrap:is(:hover, .hover, .active) .marker-title { display:inline-block !important; }
 /* A안 레벨 색: Lv.1~3은 밝은 엠버라 숫자를 짙은 색으로 */
 .map-place-marker.lv-1 .marker-level-badge, .pin-bubble.lv-1 span { color:var(--lv1-on); }
 .map-place-marker.lv-2 .marker-level-badge, .pin-bubble.lv-2 span { color:var(--lv2-on); }

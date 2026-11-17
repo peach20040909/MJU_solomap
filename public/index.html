@@ -177,11 +177,11 @@
           <!--  거리순/난이도순/리뷰순 다차원 정렬 드롭다운 -->
           <div class="sort-selector-wrap">
             <select id="sort-select" class="sort-select sm-input" title="식당 정렬 기준 선택">
-              <option value="distance">‍ 거리순 (가까운 순)</option>
-              <option value="level-asc"> 난이도 낮은 순 (Lv.1→5)</option>
-              <option value="level-desc"> 난이도 높은 순 (Lv.5→1)</option>
-              <option value="reviews"> 리뷰 많은 순</option>
-              <option value="name"> 이름순</option>
+              <option value="distance">거리순 (가까운 순)</option>
+              <option value="level-asc">난이도 낮은 순 (Lv.1→5)</option>
+              <option value="level-desc">난이도 높은 순 (Lv.5→1)</option>
+              <option value="reviews">리뷰 많은 순</option>
+              <option value="name">이름순</option>
             </select>
           </div>
 
@@ -205,7 +205,7 @@
           <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="4">Lv.4</button>
           <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="5">Lv.5</button>
           <button type="button" class="tab-btn fav-filter-btn sm-button sm-button--ghost" data-filter="fav">
-            <span class="heart-icon" data-icon="heart" aria-hidden="true"></span> 찜한 곳 (<span id="fav-badge-count">0</span>)
+            <span class="heart-icon" data-icon="heart" aria-hidden="true"></span> <span>찜한 곳 (<span id="fav-badge-count">0</span>)</span>
           </button>
         </div>
       </div>
@@ -280,7 +280,7 @@
             다시 뽑기
           </button>
           <button type="button" id="btn-roulette-go" class="btn-primary-action sm-button sm-button--primary">
-            이 식당 바로보기 ‍
+            이 식당 바로보기
           </button>
         </div>
       </div>
@@ -422,8 +422,8 @@
   </div>
 
   <footer class="site-footer">
-    <p>© 2026 solo-map | 고급웹프로그래밍 60231223 장민준 기말 프로젝트</p>
-    <p class="footer-sub">데이터 제공: Kakao Local REST API · Leaflet Map · Express 5 · TypeScript</p>
+    <p>© 2026 혼밥지도 SoloMap | 고급웹프로그래밍 60231223 장민준 기말 프로젝트</p>
+    <p class="footer-sub">데이터 제공: Kakao Local REST API · NAVER Maps · Express 5 · TypeScript</p>
   </footer>
 
   <!-- Leaflet.js 지도 라이브러리 -->

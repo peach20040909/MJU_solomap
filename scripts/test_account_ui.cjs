@@ -64,7 +64,7 @@ const server = createServer(async (req, res) => {
     await page.evaluateOnNewDocument(() => localStorage.setItem('solo_map_reviews_v1', JSON.stringify({ '123': [{ text: '옛 로컬 리뷰', level: 5 }] })));
     // 외부 Naver SDK 경계만 대체한다. 마커/팝업 HTML과 클릭 흐름은 실제 main.js가 만든다.
     await page.evaluateOnNewDocument(() => {
-      class Map { constructor(id) { this.el = document.getElementById(id); } autoResize() {} morph() {} }
+      class Map { constructor(id) { this.el = document.getElementById(id); } autoResize() {} morph() {} getZoom() { return 16; } }
       class Marker {
         constructor(options) { this.options = options; this.el = document.createElement('div'); this.el.innerHTML = options.icon.content; this.setMap(options.map); }
         setMap(map) { this.el.remove(); if (map) map.el.append(this.el); }

@@ -1025,12 +1025,35 @@ body.sm-dialog-open {
     flex-direction:column;
     margin-top:var(--sm-space-6);
   }
+  /* 세로 배치에서는 flex-basis가 높이가 되므로 내용 높이만 쓰게 한다 */
   .main-search-bar {
     flex-direction:column;
+    flex:0 0 auto;
     gap:var(--sm-space-2);
   }
   .search-input-wrap {
-    flex:1 1 auto;
+    flex:0 0 auto;
+  }
+  /* 모바일 추천 메뉴: 4열 작은 아이콘 메뉴 */
+  .hero-card .quick-keywords {
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:var(--sm-space-2);
+  }
+  .hero-card .kw-chip {
+    justify-items:center;
+    align-content:start;
+    gap:var(--sm-space-1);
+    min-height:0;
+    padding:var(--sm-space-3) var(--sm-space-1);
+    font-size:var(--sm-text-xs);
+    text-align:center;
+  }
+  .hero-card .kw-chip .kw-icon {
+    width:2rem;
+    height:2rem;
+  }
+  .hero-card .kw-sub {
+    display:none;
   }
   .search-submit-btn {
     padding-inline:var(--sm-space-3);
