@@ -1,0 +1,9 @@
+# 비밀값·로컬 전용 파일은 배포 소스에 올리지 않는다 (환경변수는 Vercel에 따로 등록됨)
+.env
+.env.*
+!.env.example
+node_modules
+dist
+.claude
+.serena
+사진_캡쳐

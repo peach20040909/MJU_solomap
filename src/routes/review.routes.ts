@@ -9,23 +9,23 @@ import {
   getPlaceReviews,
   updateReview,
   deleteReview,
+  getMyReviews,
 } from '../controllers/review.controller.js';
-import { requireAuth } from '../middlewares/auth.middleware.js';
+import { requireAuth, requireVerified } from '../middlewares/auth.middleware.js';
 
 export const reviewRouter = Router();
 
-// 리뷰 작성: POST /api/reviews
-// TODO: [수업에서 구현] 로그인 인증(requireAuth) 후 리뷰 작성
-reviewRouter.post('/', requireAuth, createReview);
+// 1. 리뷰 작성: POST /api/reviews (학교 메일 인증된 학우만 가능)
+reviewRouter.post('/', requireAuth, requireVerified, createReview);
 
-// 특정 식당의 리뷰 목록 조회: GET /api/reviews/place/:placeId
-// TODO: [수업에서 구현] 누구나 조회 가능
+// 2. 내가 작성한 리뷰 목록 조회: GET /api/reviews/me
+reviewRouter.get('/me', requireAuth, getMyReviews);
+
+// 3. 특정 식당의 리뷰 목록 조회: GET /api/reviews/place/:placeId (누구나 가능)
 reviewRouter.get('/place/:placeId', getPlaceReviews);
 
-// 리뷰 수정: PATCH /api/reviews/:id
-// TODO: [수업에서 구현] 로그인 인증 및 작성자 본인 확인 후 수정
-reviewRouter.patch('/:id', requireAuth, updateReview);
+// 4. 리뷰 수정: PATCH /api/reviews/:id (본인 작성 리뷰만 가능)
+reviewRouter.patch('/:id', requireAuth, requireVerified, updateReview);
 
-// 리뷰 삭제: DELETE /api/reviews/:id
-// TODO: [수업에서 구현] 로그인 인증 및 작성자 본인 확인 후 삭제
-reviewRouter.delete('/:id', requireAuth, deleteReview);
+// 5. 리뷰 삭제: DELETE /api/reviews/:id (본인 작성 리뷰만 가능)
+reviewRouter.delete('/:id', requireAuth, requireVerified, deleteReview);

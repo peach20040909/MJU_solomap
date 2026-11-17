@@ -3,124 +3,12 @@
  * 1. 카카오 로컬 실시간 API 연동 & 현실 반영 혼밥 난이도(Lv.1~Lv.5) 계산
  * 2. 🎲 "오늘 뭐 먹지?" 랜덤 혼밥 추천 룰렛
  * 3. ❤️ "내가 찜한 식당" 즐겨찾기 (localStorage)
- * 4. 💬 실제 혼밥 리뷰 작성 & 실시간 누적/평균 평점 계산 (localStorage)
+ * 4. ${soloIcon('chat')} 학교 인증 리뷰 API 연동 (계정 기능은 account.js)
  * 5. 🗺️ 카드 목록 ↔ Leaflet 인터랙티브 지도 뷰 토글
  */
 
 // 음식 카테고리별 고품질 썸네일 이미지 매핑 (Unsplash Curated & 100% 정상 로드 검증)
 // 카테고리 & 세부 메뉴별 3D 감성 이모지 및 테마 컬러 매핑 (모던 클린 카드 UI)
-function getCategoryEmoji(category = '', name = '') {
-  const t = `${category} ${name}`.toLowerCase();
-
-  // 1. 뷔페 / 패밀리레스토랑 / 애슐리
-  if (t.includes('뷔페') || t.includes('패밀리레스토랑') || t.includes('애슐리') || t.includes('샐러드바')) {
-    return { icon: '🍽️', bg: '#f3e8ff', color: '#7e22ce' };
-  }
-
-  // 2. 찜닭 / 닭요리 / 치킨
-  if (t.includes('찜닭') || t.includes('두찜') || t.includes('동궁') || t.includes('닭요리') || t.includes('닭볶음') || t.includes('치킨')) {
-    return { icon: '🍗', bg: '#ffedd5', color: '#c2410c' };
-  }
-
-  // 3. 보쌈 / 족발
-  if (t.includes('보쌈') || t.includes('족발')) {
-    return { icon: '🥓', bg: '#fef2f2', color: '#b91c1c' };
-  }
-
-  // 4. 두루치기 / 불고기 / 제육볶음 / 쌈밥
-  if (t.includes('두루치기') || t.includes('불고기') || t.includes('제육') || t.includes('주물럭') || t.includes('쌈밥')) {
-    return { icon: '🍳', bg: '#fff1eb', color: '#ea580c' };
-  }
-
-  // 5. 곱창 / 막창 / 대창구이
-  if (t.includes('곱창') || t.includes('막창') || t.includes('대창')) {
-    return { icon: '🔥', bg: '#fee2e2', color: '#dc2626' };
-  }
-
-  // 6. 삼겹살 / 고깃집 / 구이 / 갈비
-  if (t.includes('삼겹살') || t.includes('갈비') || t.includes('고깃집') || t.includes('구이') || t.includes('고기') || t.includes('정육')) {
-    return { icon: '🥩', bg: '#fee2e2', color: '#b91c1c' };
-  }
-
-  // 7. 국밥 / 순대국 / 설렁탕 / 곰탕 / 해장국 / 뚝배기
-  if (t.includes('국밥') || t.includes('순대') || t.includes('설렁탕') || t.includes('곰탕') || t.includes('해장국') || t.includes('추어탕') || t.includes('도가니')) {
-    return { icon: '🍲', bg: '#fff7ed', color: '#ea580c' };
-  }
-
-  // 8. 찌개 / 전골 / 김치찌개 / 된장찌개 / 순두부 / 감자탕
-  if (t.includes('찌개') || t.includes('부대') || t.includes('순두부') || t.includes('감자탕') || t.includes('전골')) {
-    return { icon: '🥘', bg: '#fff1eb', color: '#ea580c' };
-  }
-
-  // 9. 떡볶이 / 즉석떡볶이 / 엽떡 / 두끼 / 신전
-  if (t.includes('떡볶이') || t.includes('엽떡') || t.includes('청년다방') || t.includes('두끼') || t.includes('신전') || t.includes('즉석떡')) {
-    return { icon: '🍢', bg: '#ffe4e6', color: '#e11d48' };
-  }
-
-  // 10. 돈까스 / 일식 카레
-  if (t.includes('돈까스') || t.includes('돈가츠') || t.includes('가츠') || t.includes('카레')) {
-    return { icon: '🍛', bg: '#fefce8', color: '#ca8a04' };
-  }
-
-  // 11. 초밥 / 스시 / 횟집 / 참치
-  if (t.includes('초밥') || t.includes('스시') || t.includes('횟집') || t.includes('회') || t.includes('참치')) {
-    return { icon: '🍣', bg: '#ecfeff', color: '#0891b2' };
-  }
-
-  // 12. 라멘 / 우동 / 소바 / 칼국수 / 냉면 / 국수
-  if (t.includes('라멘') || t.includes('라면') || t.includes('우동') || t.includes('소바') || t.includes('국수') || t.includes('칼국수') || t.includes('냉면')) {
-    return { icon: '🍜', bg: '#fef3c7', color: '#d97706' };
-  }
-
-  // 13. 중식 / 마라탕 / 짬뽕 / 짜장 / 탕수육
-  if (t.includes('중식') || t.includes('마라') || t.includes('짬뽕') || t.includes('짜장') || t.includes('탕수육') || t.includes('양꼬치')) {
-    return { icon: '🥢', bg: '#fef2f2', color: '#e11d48' };
-  }
-
-  // 14. 햄버거 / 패스트푸드
-  if (t.includes('버거') || t.includes('패스트푸드') || t.includes('맥도날드') || t.includes('롯데리아') || t.includes('버거킹') || t.includes('맘스터치') || t.includes('kfc')) {
-    return { icon: '🍔', bg: '#fef2f2', color: '#dc2626' };
-  }
-
-  // 15. 토스트 / 김밥 / 샌드위치 / 도시락 / 한솥 / 만두
-  if (t.includes('토스트') || t.includes('이삭') || t.includes('김밥') || t.includes('도시락') || t.includes('한솥') || t.includes('샌드위치') || t.includes('서브웨이') || t.includes('컵밥') || t.includes('만두') || t.includes('분식')) {
-    return { icon: '🥪', bg: '#fef9c3', color: '#ca8a04' };
-  }
-
-  // 16. 피자
-  if (t.includes('피자')) {
-    return { icon: '🍕', bg: '#fff7ed', color: '#ea580c' };
-  }
-
-  // 17. 파스타 / 양식 / 스테이크
-  if (t.includes('파스타') || t.includes('양식') || t.includes('스파게티') || t.includes('스테이크')) {
-    return { icon: '🍝', bg: '#faf5ff', color: '#9333ea' };
-  }
-
-  // 18. 샐러드 / 포케
-  if (t.includes('샐러드') || t.includes('포케')) {
-    return { icon: '🥗', bg: '#ecfdf5', color: '#059669' };
-  }
-
-  // 19. 카페 / 디저트 / 베이커리
-  if (t.includes('카페') || t.includes('디저트') || t.includes('베이커리') || t.includes('커피')) {
-    return { icon: '☕', bg: '#f5f3ff', color: '#6d28d9' };
-  }
-
-  // 20. 술집 / 주점 / 호프 / 포차
-  if (t.includes('술집') || t.includes('주점') || t.includes('호프') || t.includes('포차') || t.includes('이자카야')) {
-    return { icon: '🍺', bg: '#fef9c3', color: '#854d0e' };
-  }
-
-  // 21. 한식 / 백반 / 밥집 / 가정식 (부안식당 등)
-  if (t.includes('한식') || t.includes('백반') || t.includes('식당') || t.includes('가정식') || t.includes('밥')) {
-    return { icon: '🍱', bg: '#f0fdf4', color: '#16a34a' };
-  }
-
-  return { icon: '🍴', bg: '#f1f5f9', color: '#475569' };
-}
-
-// 네이버 지도 정확한 검색 URL 생성 (불필요한 접미사 없이 상호명 단독 검색 및 플랫폼간 명칭 불일치 예외 처리로 매칭 실패 0건 보장)
 function getNaverMapUrl(place) {
   if (!place) return 'https://map.naver.com';
 
@@ -296,7 +184,6 @@ function isMealRestaurant(place) {
    =================================================== */
 const STORAGE_KEYS = {
   FAVORITES: 'solo_map_favorites_v1',
-  REVIEWS: 'solo_map_reviews_v1',
 };
 
 function getFavorites() {
@@ -332,33 +219,10 @@ function updateFavBadge() {
   if (badge) badge.textContent = count;
 }
 
-function getAllReviews() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.REVIEWS);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
+// 서버에서 조회한 공개 리뷰만 잠시 보관한다. 찜과 달리 localStorage에 쓰지 않는다.
+const reviewCache = new Map();
 function getPlaceReviews(placeId) {
-  const all = getAllReviews();
-  return all[placeId] || [];
-}
-
-function savePlaceReview(placeId, placeName, level, text) {
-  const all = getAllReviews();
-  if (!all[placeId]) all[placeId] = [];
-  const newReview = {
-    id: Date.now().toString(),
-    placeName,
-    level: Number(level),
-    text: text.trim(),
-    createdAt: new Date().toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-  };
-  all[placeId].unshift(newReview);
-  localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(all));
-  return newReview;
+  return reviewCache.get(String(placeId)) || [];
 }
 
 // 식당별 고유 AI 큐레이션 및 사용자 리뷰 가중 평균 난이도 계산
@@ -366,28 +230,11 @@ function getDynamicSoloIndex(place) {
   const base = evaluateSoloIndex(place.category_name, place.place_name);
   const curation = place.curation;
 
-  const reviews = getPlaceReviews(place.id);
-
-  let lv = curation ? curation.soloLevel : base.lv;
-  let label = curation ? curation.levelLabel : base.label;
+  // 리뷰 평균은 서버 한 곳에서 계산한다. 브라우저는 받은 결과를 표시만 한다.
+  const lv = place.displaySolo?.level ?? curation?.soloLevel ?? base.lv;
+  const label = place.displaySolo?.label ?? curation?.levelLabel ?? base.label;
   let psychology = (curation && curation.psychology) ? curation.psychology : base.psychology;
   let tags = (curation && curation.tags && curation.tags.length > 0) ? curation.tags : base.tags;
-
-  // 학우 직접 리뷰가 있을 경우 가중 평균 반영
-  if (reviews.length > 0) {
-    const sum = reviews.reduce((acc, r) => acc + r.level, 0);
-    const avg = Math.round(sum / reviews.length);
-    lv = Math.min(5, Math.max(1, avg));
-
-    const levelLabels = {
-      1: 'Lv.1 입문 혼밥',
-      2: 'Lv.2 혼밥 성지',
-      3: 'Lv.3 일반 밥집',
-      4: 'Lv.4 다인석 식당',
-      5: 'Lv.5 혼밥 끝판왕',
-    };
-    label = `${levelLabels[lv]} (학우평가)`;
-  }
 
   return {
     lv,
@@ -395,7 +242,7 @@ function getDynamicSoloIndex(place) {
     pillClass: `lv-${lv}`,
     psychology,
     tags,
-    userReviewCount: reviews.length,
+    userReviewCount: place.displaySolo?.reviewCount ?? 0,
     isAiCuration: !!curation,
   };
 }
@@ -462,18 +309,12 @@ function showToast(message) {
    식당 검색 API 호출 및 렌더링
    =================================================== */
 async function loadPlaces(keyword) {
-  placesContainer.innerHTML = `
-    <div style="grid-column: 1 / -1; text-align: center; padding: 70px 0; color: #64748b;">
-      <p style="font-size: 32px; margin-bottom: 12px; animation: pulse 1s infinite;">🔍</p>
-      <p style="font-size: 16px; font-weight: 700; color: #0f172a;">명지대 · 명지전문대 · 백련시장 대학가 상권 탐색 중...</p>
-      <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">카카오 로컬 & 네이버 지도 실시간 연동</p>
-    </div>
-  `;
+  placesContainer.innerHTML = soloEmptyState('대학가 식당을 찾고 있어요', '명지대 · 명지전문대 · 백련시장 주변 식당을 탐색합니다.');
   catalogTitle.textContent = `"${keyword}" 검색 결과`;
   catalogCount.textContent = '검색 중...';
 
   try {
-    const res = await fetch(`/api/places/search?query=${encodeURIComponent(keyword)}`);
+    const res = await fetch(`/api/places/search?query=${encodeURIComponent(keyword)}`, { credentials: 'same-origin' });
     const data = await res.json();
 
     if (!data.success) {
@@ -486,12 +327,7 @@ async function loadPlaces(keyword) {
     updateMapMarkers();
   } catch (err) {
     console.error(err);
-    placesContainer.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 16px; color: #dc2626;">
-        <p style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">식당 정보를 가져올 수 없습니다</p>
-        <p style="font-size: 14px; color: #991b1b;">${err.message}</p>
-      </div>
-    `;
+    placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', err.message, { variant: 'error' });
     catalogCount.textContent = '0곳';
   }
 }
@@ -519,8 +355,8 @@ function sortPlacesList(list, sortBy = currentSort) {
       return distA - distB;
     }
     if (sortBy === 'reviews') {
-      const revA = getPlaceReviews(a.id).length;
-      const revB = getPlaceReviews(b.id).length;
+      const revA = a.displaySolo?.reviewCount || 0;
+      const revB = b.displaySolo?.reviewCount || 0;
       if (revA !== revB) return revB - revA;
       return distA - distB;
     }
@@ -561,123 +397,75 @@ function renderFilteredPlaces() {
       ? '아직 찜한 식당이 없습니다! 식당 카드의 하트(❤️) 버튼을 눌러 나만의 혼밥 리스트를 만들어보세요.'
       : '해당 조건의 식당이 없습니다. 상단 필터를 변경하거나 다른 메뉴를 검색해 보세요.';
 
-    placesContainer.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 70px 20px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 20px;">
-        <p style="font-size: 36px; margin-bottom: 12px;">🍚</p>
-        <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">
-          ${currentFilter === 'fav' ? '찜한 식당이 비어있습니다' : '일치하는 식당이 없습니다'}
-        </h4>
-        <p style="font-size: 13.5px; color: #64748b; word-break: keep-all; max-width: 420px; margin: 0 auto;">
-          ${emptyMsg}
-        </p>
-      </div>
-    `;
+    placesContainer.innerHTML = soloEmptyState(currentFilter === 'fav' ? '찜한 식당이 비어있습니다' : '일치하는 식당이 없습니다', emptyMsg, { icon: currentFilter === 'fav' ? 'heart' : 'search' });
     return;
   }
 
   placesContainer.innerHTML = filtered.map((place) => createCardHtml(place)).join('');
 }
 
-// 개별 식당 카드 HTML 생성 (토스/당근마켓 스타일 모던 클린 카드 UI)
+// 식당명과 혼밥 정보를 먼저 읽고 필요한 작업을 선택하는 공통 카드.
 function createCardHtml(place) {
   const soloInfo = getDynamicSoloIndex(place);
-  const catIcon = getCategoryEmoji(place.category_name, place.place_name);
   const walkText = formatDistanceWalking(place.distance);
   const cleanAddr = place.road_address_name || place.address_name || '주소 정보 없음';
-  const cleanPhone = place.phone || '전화번호 미등록';
-  const isFav = isPlaceFavorite(place.id);
+  const category = (place.category_name || '음식점').split('>').map(t => t.trim()).filter(Boolean).slice(1, 3).join(' · ') || '음식점';
   const reviews = getPlaceReviews(place.id);
-
-  // 카카오맵 및 네이버 지도 링크 (양대 플랫폼 듀얼 연동)
-  const kakaoUrl = getKakaoMapUrl(place);
-  const naverUrl = getNaverMapUrl(place);
-
-  const reviewPreviewHtml = reviews.length > 0
-    ? `
-      <div class="card-review-box">
-        <div class="review-box-header">
-          <span class="review-box-tag">💬 학우 실시간 팁</span>
-          <span class="review-box-count">${reviews.length}개 리뷰</span>
-        </div>
-        <p class="review-box-text">"${escapeHtml(reviews[0].text)}"</p>
-      </div>
-    `
-    : `
-      <div class="card-review-box">
-        <div class="review-box-header">
-          <span class="review-box-tag">💬 혼밥 팁</span>
-          <span class="review-box-count">첫 리뷰를 남겨보세요!</span>
-        </div>
-        <p class="review-box-empty">아직 등록된 후기가 없습니다. 직접 혼밥 팁을 남겨보세요!</p>
-      </div>
-    `;
-
+  const reviewCount = place.displaySolo?.reviewCount || reviews.length;
+  // 실제 가게 사진이 없으므로 카테고리 일러스트를 카드 이미지로 쓴다. 난이도와 찜은 이미지 위에 얹는다.
+  const art = soloFoodArt(place.category_name, place.place_name);
   return `
-    <article class="place-card-item clean-card" id="place-card-${place.id}">
-      <!-- 카드 헤더 영역 (3D 카테고리 아이콘 + 타이틀 + 찜 버튼) -->
+    <article class="place-card-item clean-card sm-card ${soloInfo.pillClass}" id="place-card-${place.id}">
+      <div class="card-media">
+        <div class="card-media-art" aria-hidden="true">${art.svg}<span>${art.label}</span></div>
+        <span class="solo-badge-chip sm-level-badge">${soloInfo.label}</span>
+        <button type="button" class="btn-heart-fav ${isPlaceFavorite(place.id) ? 'active' : ''} sm-button sm-button--icon sm-button--ghost" aria-label="찜하기" aria-pressed="${isPlaceFavorite(place.id)}" title="찜하기" onclick="handleToggleFav('${place.id}', event)">${soloIcon('heart')}</button>
+      </div>
       <div class="card-header-row">
-        <div class="card-icon-badge" style="background: ${catIcon.bg}; color: ${catIcon.color};" title="${escapeHtml(place.category_name || '식당')}">
-          <span class="icon-emoji">${catIcon.icon}</span>
-        </div>
         <div class="card-title-group">
-          <div class="card-cat-line">
-            <span class="place-category">${escapeHtml(place.category_name || '일반음식점')}</span>
-            <span class="distance-pill">${walkText}</span>
-          </div>
           <h3 class="place-title">${escapeHtml(place.place_name)}</h3>
+          <div class="card-cat-line"><span class="place-category" title="${escapeHtml(place.category_name || '')}">${escapeHtml(category)}</span><span class="distance-pill">${walkText}</span></div>
         </div>
-        <button 
-          type="button" 
-          class="btn-heart-fav ${isFav ? 'active' : ''}" 
-          title="찜하기"
-          onclick="handleToggleFav('${place.id}', event)"
-        >
-          ${isFav ? '❤️' : '🤍'}
-        </button>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
       </div>
-
-      <!-- 혼밥 난이도 배너 및 심리 안내 -->
-      <div class="card-solo-banner ${soloInfo.pillClass}">
-        <div class="solo-badge-chip">${soloInfo.label}</div>
-        <div class="solo-psychology-text">${soloInfo.psychology}</div>
-      </div>
-
-      <!-- 혼밥 특징 태그 -->
-      <div class="solo-tags">
-        ${soloInfo.tags.map((t) => `<span class="solo-tag">${t}</span>`).join('')}
-      </div>
-
-      <!-- 실시간 학우 혼밥 팁 박스 -->
-      ${reviewPreviewHtml}
-
-      <!-- 주소 및 연락처 정보 -->
+      <p class="solo-psychology-text">${escapeHtml(soloInfo.psychology)}</p>
+      <div class="solo-tags" aria-label="혼밥 특징">${soloInfo.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
       <ul class="place-meta-list">
-        <li>
-          <span class="meta-icon">📍</span>
-          <span>${escapeHtml(cleanAddr)}</span>
-        </li>
-        <li>
-          <span class="meta-icon">📞</span>
-          <span>${escapeHtml(cleanPhone)}</span>
-        </li>
+        <li><span class="meta-icon">${soloIcon('pin')}</span><span>${escapeHtml(cleanAddr)}</span></li>
+        ${place.phone ? `<li><span class="meta-icon">${soloIcon('phone')}</span><a href="tel:${escapeHtml(place.phone)}">${escapeHtml(place.phone)}</a></li>` : ''}
       </ul>
-
-      <!-- 하단 액션 버튼 (카카오맵 + 네이버 지도 듀얼 연동 & 리뷰 작성) -->
-      <div class="card-footer-actions dual-map-actions">
-        <div class="map-links-group">
-          <a href="${escapeHtml(kakaoUrl)}" target="_blank" rel="noopener noreferrer" class="btn-map-link kakao" title="카카오맵에서 위치 및 길찾기 보기">
-            <span>🟡</span> 카카오맵
-          </a>
-          <a href="${escapeHtml(naverUrl)}" target="_blank" rel="noopener noreferrer" class="btn-map-link naver" title="네이버 지도에서 방문자 영수증 리뷰 및 메뉴 사진 보기">
-            <span>🟢</span> 네이버 지도
-          </a>
+      <div class="card-review-box">
+        <div class="review-box-header">
+          <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
+          <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
         </div>
-        <button type="button" class="btn-open-review" onclick="openReviewModalById('${place.id}')">
-          ✏️ 리뷰 작성
-        </button>
+        ${reviews.length ? `<p class="review-box-text">${escapeHtml(reviews[0].content)}</p>` : ''}
       </div>
-    </article>
-  `;
+      <div class="card-footer-actions">
+        <div class="map-links-group">
+          <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="카카오맵에서 위치 및 길찾기 보기">카카오맵 ${soloIcon('external')}</a>
+          <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="네이버 지도에서 메뉴와 길찾기 보기">네이버 지도 ${soloIcon('external')}</a>
+        </div>
+        <button type="button" class="btn-checkin sm-button sm-button--brand" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
+      </div>
+    </article>`;
+}
+
+// 두 지도 엔진에서 같은 정보 위계와 버튼을 사용한다.
+function createMapPopupHtml(place, soloInfo, walk) {
+  return `<div class="map-popup-card clean-popup">
+    <button type="button" class="popup-close-btn sm-button sm-button--icon sm-button--ghost" aria-label="식당 정보 닫기" title="닫기" onclick="closeCurrentInfoWindow()">${soloIcon('close')}</button>
+    <div class="popup-title-box"><h3 class="popup-title">${escapeHtml(place.place_name)}</h3></div>
+    <div class="popup-badges-row"><span class="difficulty-pill index-level ${soloInfo.pillClass}">${escapeHtml(soloInfo.label)}</span><span class="distance-pill">${walk}</span></div>
+    <p class="popup-psychology">${escapeHtml(soloInfo.psychology)}</p>
+    <p class="popup-meta">${soloIcon('pin')} <span>${escapeHtml(place.road_address_name || place.address_name || '주소 정보 없음')}</span></p>
+    <div class="popup-footer-actions">
+      <button type="button" class="popup-btn secondary sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 보기</button>
+      <button type="button" class="popup-btn secondary sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
+      <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="popup-btn map-link sm-button sm-button--ghost">카카오맵 ${soloIcon('external')}</a>
+      <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="popup-btn map-link sm-button sm-button--ghost">네이버 지도 ${soloIcon('external')}</a>
+    </div>
+  </div>`;
 }
 
 // 찜 토글 이벤트
@@ -687,7 +475,8 @@ window.handleToggleFav = function (placeId, event) {
   const isNowFav = toggleFavorite(placeId);
 
   btn.classList.toggle('active', isNowFav);
-  btn.innerHTML = isNowFav ? '❤️' : '🤍';
+  btn.innerHTML = soloIcon('heart');
+  btn.setAttribute('aria-pressed', String(isNowFav));
   btn.classList.add('anim-pop');
   setTimeout(() => btn.classList.remove('anim-pop'), 400);
 
@@ -795,18 +584,18 @@ function spinRoulette() {
     currentWinningPlace = winner;
 
     const soloInfo = getDynamicSoloIndex(winner);
-    const catIcon = getCategoryEmoji(winner.category_name, winner.place_name);
+
     const walk = formatDistanceWalking(winner.distance);
 
     rouletteCardSlot.classList.add('is-winner');
     rouletteCardSlot.innerHTML = `
       <div class="roulette-winner-card clean-winner">
-        <div class="winner-icon-wrap" style="background: ${catIcon.bg}; color: ${catIcon.color};">
-          <span class="winner-emoji">${catIcon.icon}</span>
+        <div class="winner-icon-wrap">
+          <span class="winner-emoji">${soloIcon('utensils')}</span>
         </div>
         <div class="winner-badges">
           <span class="difficulty-pill index-level ${soloInfo.pillClass}">${soloInfo.label}</span>
-          <span class="distance-pill">${walk}</span>
+          <span class="distance-pill sm-badge">${walk}</span>
         </div>
         <h4 class="winner-title">${escapeHtml(winner.place_name)}</h4>
         <span class="winner-category">${escapeHtml(winner.category_name || '식당')}</span>
@@ -821,23 +610,9 @@ function spinRoulette() {
 }
 
 /* ===================================================
-   💬 기능 3: 실제 혼밥 리뷰 모달 및 저장
+   ${soloIcon('chat')} 기능 3: 실제 혼밥 리뷰 모달 및 저장
    =================================================== */
-window.openReviewModalById = function (placeId) {
-  const place = currentPlaces.find((p) => p.id === placeId);
-  if (!place) return;
-  targetReviewPlace = place;
-
-  modalPlaceName.textContent = place.place_name;
-  modalPlaceAddress.textContent = `📍 ${place.road_address_name || place.address_name || '명지대 주변'}`;
-  document.getElementById('review-textarea').value = '';
-
-  selectedReviewLevel = 1;
-  levelOptions.forEach((b) => b.classList.remove('active'));
-  if (levelOptions[0]) levelOptions[0].classList.add('active');
-
-  reviewModal.classList.remove('hidden');
-};
+window.openReviewModalById = (placeId) => openServerReview(placeId);
 
 modalClose.addEventListener('click', () => {
   reviewModal.classList.add('hidden');
@@ -853,24 +628,6 @@ levelOptions.forEach((btn) => {
     btn.classList.add('active');
     selectedReviewLevel = Number(btn.dataset.level);
   });
-});
-
-btnSubmitReview.addEventListener('click', () => {
-  if (!targetReviewPlace) return;
-
-  const content = document.getElementById('review-textarea').value.trim();
-  if (!content) {
-    showToast('혼밥러들을 위해 한 줄 후기나 팁을 간단히 작성해 주세요!');
-    document.getElementById('review-textarea').focus();
-    return;
-  }
-
-  savePlaceReview(targetReviewPlace.id, targetReviewPlace.place_name, selectedReviewLevel, content);
-
-  reviewModal.classList.add('hidden');
-  renderFilteredPlaces();
-  updateMapMarkers();
-  showToast('소중한 혼밥 리뷰가 등록되었습니다! ✨');
 });
 
 /* ===================================================
@@ -893,7 +650,7 @@ function setupLeafletNaverControls(map) {
   const zoomControl = document.createElement('div');
   zoomControl.className = 'naver-style-zoom-control';
   zoomControl.innerHTML = `
-    <button type="button" class="naver-zoom-btn zoom-in" title="확대 (+)">+</button>
+    <button type="button" class="naver-zoom-btn zoom-in sm-button " title="확대 (+)">+</button>
     <div class="naver-zoom-slider-track" title="확대/축소 스케일 조절">
       <div class="naver-zoom-track-line"></div>
       <div class="naver-zoom-ticks">
@@ -907,7 +664,7 @@ function setupLeafletNaverControls(map) {
       <div class="naver-zoom-handle" title="드래그하여 스케일 조절"></div>
       <div class="naver-zoom-tooltip">16.5</div>
     </div>
-    <button type="button" class="naver-zoom-btn zoom-out" title="축소 (−)">−</button>
+    <button type="button" class="naver-zoom-btn zoom-out sm-button " title="축소 (−)">−</button>
   `;
 
   // 지도 드래그 및 클릭 전파 방지
@@ -1099,7 +856,7 @@ function updateMapMarkers() {
   mapMarkers.forEach((m) => leafletMap.removeLayer(m));
   mapMarkers = [];
 
-  const filtered = getFilteredList();
+  const filtered = getMapPlaces();
 
   filtered.forEach((place) => {
     if (!place.y || !place.x) return;
@@ -1108,15 +865,15 @@ function updateMapMarkers() {
     if (isNaN(lat) || isNaN(lng)) return;
 
     const soloInfo = getDynamicSoloIndex(place);
-    const catIcon = getCategoryEmoji(place.category_name, place.place_name);
+
     const walk = formatDistanceWalking(place.distance);
     const kakaoUrl = getKakaoMapUrl(place);
     const naverUrl = getNaverMapUrl(place);
 
     const markerHtml = `
       <div class="map-marker-anchor-wrap">
-        <div class="map-place-marker ${soloInfo.pillClass}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
-          <span class="marker-level-badge">${soloInfo.lv}</span>
+        <div class="map-place-marker ${soloInfo.pillClass} ${personalMarkerLabel(place.id).className}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
+          <span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span>
           <span class="marker-title">${escapeHtml(place.place_name)}</span>
         </div>
       </div>
@@ -1130,38 +887,7 @@ function updateMapMarkers() {
       popupAnchor: [0, -36],
     });
 
-    const popupHtml = `
-      <div class="map-popup-card clean-popup">
-        <button type="button" class="popup-close-btn" title="닫기" onclick="closeCurrentInfoWindow()">&times;</button>
-        <div class="popup-header-row">
-          <div class="popup-icon-badge" style="background: ${catIcon.bg}; color: ${catIcon.color};">
-            <span>${catIcon.icon}</span>
-          </div>
-          <div class="popup-title-box" style="padding-right: 20px;">
-            <h4 class="popup-title">${escapeHtml(place.place_name)}</h4>
-            <div class="popup-badges-row">
-              <span class="difficulty-pill index-level ${soloInfo.pillClass}">${soloInfo.label}</span>
-              <span class="distance-pill">${walk}</span>
-            </div>
-          </div>
-        </div>
-        <div class="popup-body">
-          <p class="popup-psychology">${soloInfo.psychology}</p>
-          <p class="popup-meta">📍 ${escapeHtml(place.road_address_name || place.address_name || '주소 정보 없음')}</p>
-          <div class="popup-footer-actions">
-            <a href="${escapeHtml(kakaoUrl)}" target="_blank" rel="noopener noreferrer" class="popup-btn kakao" title="카카오맵 길찾기">
-              🟡 카카오맵
-            </a>
-            <a href="${escapeHtml(naverUrl)}" target="_blank" rel="noopener noreferrer" class="popup-btn naver" title="네이버 지도 리뷰">
-              🟢 네이버 지도
-            </a>
-            <button type="button" class="popup-btn secondary" onclick="openReviewModalById('${place.id}')">
-              ✏️ 리뷰 작성
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+    const popupHtml = createMapPopupHtml(place, soloInfo, walk);
 
     const marker = L.marker([lat, lng], { icon: pinIcon, zIndexOffset: 100 })
       .addTo(leafletMap)
@@ -1212,7 +938,7 @@ let naverClientId = localStorage.getItem('solo_map_naver_client_id') || 'tnm1g86
 loadNaverMapSdk(naverClientId);
 
 // 서버 환경변수(NAVER_CLIENT_ID) 확인 및 최신 키 동기화
-fetch('/api/config')
+fetch('/api/config', { credentials: 'same-origin' })
   .then((res) => res.json())
   .then(async (cfg) => {
     if (cfg && cfg.naverClientId && cfg.naverClientId !== naverClientId) {
@@ -1358,7 +1084,7 @@ function updateNaverMapMarkers() {
   naverInfoWindows = [];
   currentOpenedNaverMarker = null;
 
-  const filtered = getFilteredList();
+  const filtered = getMapPlaces();
 
   filtered.forEach((place) => {
     if (!place.y || !place.x) return;
@@ -1367,15 +1093,15 @@ function updateNaverMapMarkers() {
     if (isNaN(lat) || isNaN(lng)) return;
 
     const soloInfo = getDynamicSoloIndex(place);
-    const catIcon = getCategoryEmoji(place.category_name, place.place_name);
+
     const walk = formatDistanceWalking(place.distance);
     const kakaoUrl = getKakaoMapUrl(place);
     const naverUrl = getNaverMapUrl(place);
 
     const markerHtml = `
       <div class="map-marker-anchor-wrap">
-        <div class="map-place-marker ${soloInfo.pillClass}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
-          <span class="marker-level-badge">${soloInfo.lv}</span>
+        <div class="map-place-marker ${soloInfo.pillClass} ${personalMarkerLabel(place.id).className}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
+          <span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span>
           <span class="marker-title">${escapeHtml(place.place_name)}</span>
         </div>
       </div>
@@ -1391,42 +1117,7 @@ function updateNaverMapMarkers() {
       zIndex: 100,
     });
 
-    const popupHtml = `
-      <div class="naver-infowindow-wrap">
-        <div class="map-popup-card clean-popup" style="padding: 16px 14px 14px;">
-          <!-- ✕ 팝업 닫기 버튼 -->
-          <button type="button" class="popup-close-btn" title="닫기" onclick="closeCurrentInfoWindow()">&times;</button>
-          
-          <div class="popup-header-row">
-            <div class="popup-icon-badge" style="background: ${catIcon.bg}; color: ${catIcon.color};">
-              <span>${catIcon.icon}</span>
-            </div>
-            <div class="popup-title-box" style="padding-right: 20px;">
-              <h4 class="popup-title">${escapeHtml(place.place_name)}</h4>
-              <div class="popup-badges-row">
-                <span class="difficulty-pill index-level ${soloInfo.pillClass}">${soloInfo.label}</span>
-                <span class="distance-pill">${walk}</span>
-              </div>
-            </div>
-          </div>
-          <div class="popup-body" style="padding-top: 6px;">
-            <p class="popup-psychology">${soloInfo.psychology}</p>
-            <p class="popup-meta">📍 ${escapeHtml(place.road_address_name || place.address_name || '주소 정보 없음')}</p>
-            <div class="popup-footer-actions">
-              <a href="${escapeHtml(kakaoUrl)}" target="_blank" rel="noopener noreferrer" class="popup-btn kakao">
-                🟡 카카오맵
-              </a>
-              <a href="${escapeHtml(naverUrl)}" target="_blank" rel="noopener noreferrer" class="popup-btn naver">
-                🟢 네이버 지도
-              </a>
-              <button type="button" class="popup-btn secondary" onclick="openReviewModalById('${place.id}')">
-                ✏️ 리뷰 작성
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+    const popupHtml = `<div class="naver-infowindow-wrap">${createMapPopupHtml(place, soloInfo, walk)}</div>`;
 
     const infoWindow = new naver.maps.InfoWindow({
       content: popupHtml,
@@ -1539,7 +1230,7 @@ function switchViewMode(mode) {
     if (currentMapEngine === 'naver') {
       if (naverCanvas) naverCanvas.classList.remove('hidden');
       if (leafletCanvas) leafletCanvas.classList.add('hidden');
-      if (mapEngineLabel) mapEngineLabel.textContent = 'Leaflet (오픈맵)';
+      if (mapEngineLabel) mapEngineLabel.textContent = '오픈맵';
       if (btnToggle) btnToggle.title = '클릭 시 Leaflet 오픈맵으로 전환';
 
       if (window.naver && window.naver.maps) {
@@ -1567,7 +1258,7 @@ function switchViewMode(mode) {
             currentMapEngine = 'leaflet';
             if (naverCanvas) naverCanvas.classList.add('hidden');
             if (leafletCanvas) leafletCanvas.classList.remove('hidden');
-            if (mapEngineLabel) mapEngineLabel.textContent = '네이버 지도';
+            if (mapEngineLabel) mapEngineLabel.textContent = '네이버';
             if (btnToggle) btnToggle.title = '클릭 시 네이버 공식 지도로 전환';
             initLeafletMap();
             updateMapMarkers();
@@ -1583,7 +1274,7 @@ function switchViewMode(mode) {
     } else {
       if (naverCanvas) naverCanvas.classList.add('hidden');
       if (leafletCanvas) leafletCanvas.classList.remove('hidden');
-      if (mapEngineLabel) mapEngineLabel.textContent = '네이버 지도';
+      if (mapEngineLabel) mapEngineLabel.textContent = '네이버';
       if (btnToggle) btnToggle.title = '클릭 시 네이버 공식 지도로 전환';
       initLeafletMap();
       updateMapMarkers();
@@ -1657,7 +1348,7 @@ if (sortSelect) {
       'distance': '🚶‍♂️ 가까운 거리순으로 정렬되었습니다.',
       'level-asc': '🔰 전체 식당이 난이도 낮은 순(Lv.1→5)으로 정렬되었습니다.',
       'level-desc': '🥩 전체 식당이 난이도 높은 순(Lv.5→1)으로 정렬되었습니다.',
-      'reviews': '💬 학우 리뷰 많은 순으로 정렬되었습니다.',
+      'reviews': '학우 리뷰 많은 순으로 정렬되었습니다.',
       'name': '🔤 식당 가나다순으로 정렬되었습니다.',
     };
     if (sortLabels[currentSort]) {
@@ -1747,7 +1438,7 @@ if (btnToggleMapEngine) {
       currentMapEngine = 'naver';
       if (leafletCanvas) leafletCanvas.classList.add('hidden');
       if (naverCanvas) naverCanvas.classList.remove('hidden');
-      if (mapEngineLabel) mapEngineLabel.textContent = 'Leaflet (오픈맵)';
+      if (mapEngineLabel) mapEngineLabel.textContent = '오픈맵';
       btnToggleMapEngine.title = '클릭 시 Leaflet 오픈맵으로 전환';
 
       const ok = initNaverMap();
@@ -1766,7 +1457,7 @@ if (btnToggleMapEngine) {
       currentMapEngine = 'leaflet';
       if (naverCanvas) naverCanvas.classList.add('hidden');
       if (leafletCanvas) leafletCanvas.classList.remove('hidden');
-      if (mapEngineLabel) mapEngineLabel.textContent = '네이버 지도';
+      if (mapEngineLabel) mapEngineLabel.textContent = '네이버';
       btnToggleMapEngine.title = '클릭 시 네이버 공식 지도로 전환';
 
       initLeafletMap();
@@ -1791,7 +1482,7 @@ if (btnMapFullscreen) {
 
     const fsText = btnMapFullscreen.querySelector('.fs-text');
     const fsIcon = btnMapFullscreen.querySelector('.fs-icon');
-    if (fsText) fsText.textContent = isNowFullscreen ? '전체화면 닫기' : '전체화면';
+    if (fsText) fsText.textContent = isNowFullscreen ? '축소' : '전체화면';
     if (fsIcon) fsIcon.textContent = isNowFullscreen ? '✕' : '⛶';
 
     // 네이버 지도 캔버스 크기 즉시 리사이징

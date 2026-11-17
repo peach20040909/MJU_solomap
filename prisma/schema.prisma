@@ -1,0 +1,101 @@
+// 명지대학교 혼밥지도(SoloMap) Prisma 스키마
+// Supabase PostgreSQL 연동 (트랜잭션 풀러 + Direct URL)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// 1. 사용자 모델 (명지대 학생 인증 기반)
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique // @mju.ac.kr 이메일만 허용
+  passwordHash String   // bcrypt 해시 비밀번호
+  nickname     String   @unique // 2~12자 유니크 닉네임
+  isVerified   Boolean  @default(false) // 학교 메일 인증 여부
+  createdAt    DateTime @default(now())
+
+  // 관계 설정 (사용자 탈퇴 시 관련 데이터 캐스케이드 삭제)
+  reviews            Review[]
+  checkIns           CheckIn[]
+  emailVerifications EmailVerification[]
+}
+
+// 2. 학교 이메일 6자리 인증 코드 관리 모델
+model EmailVerification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String   // SHA-256 또는 해시된 6자리 인증 코드
+  attempts  Int      @default(0) // 인증 시도 횟수 (최대 5회)
+  expiresAt DateTime // 인증 유효 시간 (발송 후 10분)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// 3. 식당(장소) 모델
+model Place {
+  id            String   @id // 카카오 장소 ID를 그대로 PK로 사용
+  name          String   // 식당 이름
+  category      String   // 카테고리 (예: 음식점 > 분식)
+  roadAddress   String   // 도로명 주소
+  lat           Float    // 위도 (y)
+  lng           Float    // 경도 (x)
+  area          String   // 거점 권역: "명지대" | "명지전문대" | "백련시장"
+  baseSoloLevel Int      // 기본 혼밥 난이도 (1~5)
+  avgSoloLevel  Float?   // 학우들의 리뷰 평균 혼밥 난이도 (리뷰가 없으면 null)
+  reviewCount   Int      @default(0) // 누적 리뷰 수
+
+  // 관계 설정
+  reviews  Review[]
+  checkIns CheckIn[]
+}
+
+// 4. 혼밥 리뷰 모델 (1인 1식당 1리뷰 제약)
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  placeId   String
+  place     Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  soloLevel Int      // 작성자가 체감한 혼밥 난이도 (1~5)
+  content   String   // 리뷰 본문 (1~500자)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 사용자당 식당 1곳에 1개의 리뷰만 등록 가능
+  @@unique([userId, placeId])
+  @@index([placeId])
+}
+
+// 5. 혼밥 방문 체크인 모델 (혼밥 레벨 키우기용, 당일 중복 체크인 방지)
+model CheckIn {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  placeId      String
+  place        Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  levelAtVisit Int      // 방문 체크인 당시 식당 난이도 (경험치 산정 기준)
+  visitDate    String   // 한국 시간(KST) 기준 날짜 문자열 ('YYYY-MM-DD')
+  createdAt    DateTime @default(now())
+
+  // 사용자는 하루에 같은 식당을 1회만 체크인 가능
+  @@unique([userId, placeId, visitDate])
+  @@index([userId])
+  @@index([placeId])
+}
+
+// 6. express-session 세션 영구 저장용 모델 (connect-pg-simple 규격)
+model Session {
+  sid    String   @id @db.VarChar(255)
+  sess   Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+}
+

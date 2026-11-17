@@ -1,0 +1,2 @@
+# Prisma 마이그레이션 provider 고정. 실제 DB에는 아직 적용하지 않았다.
+provider = "postgresql"

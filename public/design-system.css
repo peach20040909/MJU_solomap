@@ -1,0 +1,521 @@
+/* SoloMap DS · tokens → primitives → reusable components. App layout lives in style.css. */
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+}
+:root {
+  color-scheme: light;
+  --sm-font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sm-text-xs: .75rem;
+  --sm-text-sm: .875rem;
+  --sm-text-md: 1rem;
+  --sm-text-lg: 1.25rem;
+  --sm-text-xl: 1.5rem;
+  --sm-text-2xl: 2rem;
+  --sm-text-display: clamp(1.625rem, 2.6vw, 2.125rem);
+  --sm-leading-body: 1.6;
+  --sm-leading-heading: 1.3;
+  --sm-weight-regular: 400;
+  --sm-weight-medium: 500;
+  --sm-weight-semibold: 600;
+  --sm-weight-bold: 700;
+  --sm-weight-heading: 700;
+  --sm-space-1: .25rem;
+  --sm-space-2: .5rem;
+  --sm-space-3: .75rem;
+  --sm-space-4: 1rem;
+  --sm-space-5: 1.25rem;
+  --sm-space-6: 1.5rem;
+  --sm-space-8: 2rem;
+  --sm-space-10: 2.5rem;
+  --sm-space-12: 3rem;
+  --sm-space-16: 4rem;
+  /* A안 · 따뜻한 잉크 뉴트럴 + 엠버 한 계열. 기본 액션은 잉크, 주황은 브랜드·핵심 액션에만. */
+  --sm-color-brand: #ff5a1f;
+  --sm-color-brand-hover: #ff7a47;
+  --sm-color-brand-text: #b03508;
+  --sm-color-on-brand: #161615;
+  --sm-color-action: #161615;
+  --sm-color-action-hover: #3b3b38;
+  --sm-color-on-action: #ffffff;
+  --sm-color-brand-subtle: #fff4ee;
+  --sm-color-page: #fafaf8;
+  --sm-color-surface: #ffffff;
+  --sm-color-surface-subtle: #f3f3f0;
+  --sm-color-text: #161615;
+  --sm-color-text-secondary: #565652;
+  --sm-color-text-muted: #6b6b66;
+  --sm-color-border: #e7e7e3;
+  --sm-color-control-border: #85857f;
+  --sm-color-focus: #1d4ed8;
+  --sm-color-success: #156b4b;
+  --sm-color-success-subtle: #eaf7ef;
+  --sm-color-info: #214eb0;
+  --sm-color-info-subtle: #edf3ff;
+  --sm-color-warning: #845208;
+  --sm-color-warning-subtle: #fff5d9;
+  --sm-color-danger: #b42332;
+  --sm-color-danger-subtle: #fff0f1;
+  /* 난이도: 같은 엠버가 Lv.1(연함) → Lv.5(짙음). fill = 배지 바탕, on = 그 위 글자. */
+  --sm-level-1-fill: #ffe7da;
+  --sm-level-1-on: #7a1d05;
+  --sm-level-2-fill: #ffcdb5;
+  --sm-level-2-on: #7a1d05;
+  --sm-level-3-fill: #ff9e75;
+  --sm-level-3-on: #4a1403;
+  --sm-level-4-fill: #d4420d;
+  --sm-level-4-on: #ffffff;
+  --sm-level-5-fill: #7a1d05;
+  --sm-level-5-on: #ffffff;
+  --sm-level-track: #e7e7e3;
+  --sm-level-1: var(--sm-level-1-on);
+  --sm-level-1-subtle: var(--sm-level-1-fill);
+  --sm-level-2: var(--sm-level-2-on);
+  --sm-level-2-subtle: var(--sm-level-2-fill);
+  --sm-level-3: var(--sm-level-3-on);
+  --sm-level-3-subtle: var(--sm-level-3-fill);
+  --sm-level-4: var(--sm-level-4-on);
+  --sm-level-4-subtle: var(--sm-level-4-fill);
+  --sm-level-5: var(--sm-level-5-on);
+  --sm-level-5-subtle: var(--sm-level-5-fill);
+  --sm-radius-sm: .5rem;
+  --sm-radius-control: .75rem;
+  --sm-radius-card: 1rem;
+  --sm-radius-panel: 1.5rem;
+  --sm-radius-pill: 999px;
+  --sm-control-sm: 2.75rem;
+  --sm-control-md: 3rem;
+  --sm-control-lg: 3.25rem;
+  --sm-icon-sm: 1rem;
+  --sm-icon-md: 1.25rem;
+  --sm-icon-lg: 1.5rem;
+  --sm-container: 78rem;
+  --sm-shadow-card: 0 1px 2px #1616150f;
+  --sm-shadow-raised: 0 4px 16px #16161514, 0 1px 2px #1616150a;
+  --sm-shadow-dialog: 0 16px 40px #16161524, 0 2px 6px #1616150f;
+  --sm-duration-fast: 120ms;
+  --sm-duration-normal: 200ms;
+  --sm-ease: cubic-bezier(.2, 0, 0, 1);
+  --sm-z-header: 50;
+  --sm-z-fullscreen: 99999;
+  --sm-z-dialog: 100000;
+  --sm-z-toast: 100001;
+  /* Map engine compatibility aliases. */
+  --primary: var(--sm-color-action);
+  --primary-light: var(--sm-color-brand-subtle);
+  --primary-hover: var(--sm-color-action-hover);
+  --bg-page: var(--sm-color-page);
+  --bg-card: var(--sm-color-surface);
+  --border-light: var(--sm-color-border);
+  --border-focus: var(--sm-color-control-border);
+  --text-main: var(--sm-color-text);
+  --text-body: var(--sm-color-text-secondary);
+  --text-muted: var(--sm-color-text-muted);
+  --text-dim: var(--sm-color-text-muted);
+  --shadow-sm: var(--sm-shadow-card);
+  --shadow-card: var(--sm-shadow-card);
+  --shadow-hover: var(--sm-shadow-raised);
+  --lv1-color: var(--sm-level-1-fill);
+  --lv1-on: var(--sm-level-1-on);
+  --lv2-color: var(--sm-level-2-fill);
+  --lv2-on: var(--sm-level-2-on);
+  --lv3-color: var(--sm-level-3-fill);
+  --lv3-on: var(--sm-level-3-on);
+  --lv4-color: var(--sm-level-4-fill);
+  --lv4-on: var(--sm-level-4-on);
+  --lv5-color: var(--sm-level-5-fill);
+  --lv5-on: var(--sm-level-5-on);
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 100%;
+  scroll-padding-top: 7rem;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  font: var(--sm-weight-regular) var(--sm-text-md)/var(--sm-leading-body) var(--sm-font);
+  color: var(--sm-color-text);
+  background: var(--sm-color-page);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea {
+  font: inherit;
+}
+button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button, [role="button"] {
+  cursor: pointer;
+}
+button {
+  color: inherit;
+}
+a {
+  color: var(--sm-color-action);
+  text-underline-offset: .2em;
+}
+img, svg {
+  max-width: 100%;
+}
+h1, h2, h3, h4, p, ul, ol {
+  margin: 0;
+}
+h1, h2, h3, h4 {
+  color: var(--sm-color-text);
+  line-height: var(--sm-leading-heading);
+}
+h1 {
+  font-size: var(--sm-text-display);
+  font-weight: var(--sm-weight-heading);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+h2 {
+  font-size: var(--sm-text-xl);
+  font-weight: var(--sm-weight-heading);
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+h3 {
+  font-size: var(--sm-text-lg);
+  font-weight: var(--sm-weight-bold);
+  letter-spacing: -.02em;
+}
+h4 {
+  font-size: var(--sm-text-md);
+  font-weight: var(--sm-weight-bold);
+}
+:focus-visible {
+  outline: 3px solid var(--sm-color-focus);
+  outline-offset: 3px;
+}
+[hidden], .hidden {
+  display: none !important;
+}
+.sm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.sm-skip-link {
+  position: fixed;
+  top: -6rem;
+  left: var(--sm-space-4);
+  z-index: var(--sm-z-toast);
+  background: var(--sm-color-surface);
+  padding: var(--sm-space-3) var(--sm-space-4);
+  border-radius: var(--sm-radius-control);
+}
+.sm-skip-link:focus {
+  top: var(--sm-space-3);
+}
+.sm-icon {
+  display: inline-block;
+  width: var(--sm-icon-md);
+  height: var(--sm-icon-md);
+  flex: 0 0 auto;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sm-button {
+  --button-fill: var(--sm-color-surface-subtle);
+  --button-text: var(--sm-color-text-secondary);
+  --button-border: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sm-space-2);
+  min-width: var(--sm-control-sm);
+  min-height: var(--sm-control-sm);
+  padding: var(--sm-space-2) var(--sm-space-4);
+  border: 1px solid var(--button-border);
+  border-radius: var(--sm-radius-control);
+  background: var(--button-fill);
+  color: var(--button-text);
+  font: var(--sm-weight-semibold) var(--sm-text-sm)/1.4 var(--sm-font);
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--sm-duration-fast) var(--sm-ease), border-color var(--sm-duration-fast) var(--sm-ease), box-shadow var(--sm-duration-fast) var(--sm-ease);
+}
+.sm-button:hover {
+  background: var(--sm-color-border);
+}
+.sm-button:active {
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.sm-button--primary {
+  --button-fill: var(--sm-color-action);
+  --button-text: var(--sm-color-on-action);
+  --button-border: var(--sm-color-action);
+}
+.sm-button--primary:hover {
+  background: var(--sm-color-action-hover);
+  border-color: var(--sm-color-action-hover);
+}
+.sm-button--ghost {
+  --button-fill: transparent;
+  --button-border: transparent;
+}
+.sm-button--danger {
+  --button-text: var(--sm-color-danger);
+  --button-border: var(--sm-color-danger);
+}
+.sm-button--icon {
+  width: var(--sm-control-sm);
+  padding: var(--sm-space-2);
+  flex-shrink: 0;
+}
+.sm-button--lg {
+  min-height: var(--sm-control-lg);
+  font-size: var(--sm-text-md);
+  padding-inline: var(--sm-space-5);
+}
+.sm-button.active, .sm-button[aria-pressed="true"] {
+  background: var(--sm-color-brand-subtle);
+  color: var(--sm-color-action);
+  border-color: var(--sm-color-action);
+}
+.sm-button:disabled, .sm-button[aria-disabled="true"] {
+  background: var(--sm-color-surface-subtle);
+  color: var(--sm-color-text-muted);
+  border-color: var(--sm-color-border);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.sm-button[aria-busy="true"] {
+  cursor: progress;
+}
+.sm-button[aria-busy="true"] .sm-icon {
+  animation: sm-spin 900ms linear infinite;
+}
+@keyframes sm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sm-field {
+  display: grid;
+  gap: var(--sm-space-2);
+}
+.sm-label {
+  font-size: var(--sm-text-sm);
+  font-weight: var(--sm-weight-semibold);
+}
+.sm-input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--sm-control-md);
+  padding: var(--sm-space-3) var(--sm-space-4);
+  border: 1px solid var(--sm-color-control-border);
+  border-radius: var(--sm-radius-control);
+  color: var(--sm-color-text);
+  background: var(--sm-color-surface);
+  font-size: var(--sm-text-md);
+  line-height: 1.5;
+}
+.sm-input::placeholder {
+  color: var(--sm-color-text-muted);
+  opacity: 1;
+}
+.sm-input[aria-invalid="true"] {
+  border-color: var(--sm-color-danger);
+}
+.sm-help {
+  color: var(--sm-color-text-muted);
+  font-size: var(--sm-text-sm);
+}
+.sm-error {
+  color: var(--sm-color-danger);
+  font-size: var(--sm-text-sm);
+}
+.sm-card {
+  background: var(--sm-color-surface);
+  border: 1px solid var(--sm-color-border);
+  border-radius: var(--sm-radius-card);
+  box-shadow: var(--sm-shadow-card);
+}
+.sm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sm-space-1);
+  max-width: 100%;
+  padding: var(--sm-space-1) var(--sm-space-2);
+  border-radius: var(--sm-radius-sm);
+  background: var(--sm-color-surface-subtle);
+  color: var(--sm-color-text-secondary);
+  font-size: var(--sm-text-xs);
+  font-weight: var(--sm-weight-semibold);
+  line-height: 1.5;
+}
+.sm-badge--success {
+  background: var(--sm-color-success-subtle);
+  color: var(--sm-color-success);
+}
+.sm-badge--warning {
+  background: var(--sm-color-warning-subtle);
+  color: var(--sm-color-warning);
+}
+.sm-badge--danger {
+  background: var(--sm-color-danger-subtle);
+  color: var(--sm-color-danger);
+}
+.sm-level, .lv-1 {
+  --level-color: var(--sm-level-1);
+  --level-surface: var(--sm-level-1-subtle);
+}
+.lv-2 {
+  --level-color: var(--sm-level-2);
+  --level-surface: var(--sm-level-2-subtle);
+}
+.lv-3 {
+  --level-color: var(--sm-level-3);
+  --level-surface: var(--sm-level-3-subtle);
+}
+.lv-4 {
+  --level-color: var(--sm-level-4);
+  --level-surface: var(--sm-level-4-subtle);
+}
+.lv-5 {
+  --level-color: var(--sm-level-5);
+  --level-surface: var(--sm-level-5-subtle);
+}
+.sm-level, .lv-1, .lv-2, .lv-3 { --level-meter: var(--sm-level-3-fill); }
+.lv-4 { --level-meter: var(--sm-level-4-fill); }
+.lv-5 { --level-meter: var(--sm-level-5-fill); }
+/* 레벨 배지: 엠버 바탕 + 같은 계열 글자. 미터는 숫자를 보조해 색만으로 구분하지 않게 한다. */
+.sm-level-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sm-space-1) var(--sm-space-3);
+  border-radius: var(--sm-radius-pill);
+  background: var(--level-surface);
+  color: var(--level-color);
+  font-size: var(--sm-text-sm);
+  font-weight: var(--sm-weight-bold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.sm-level-meter {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 3px;
+  width: calc(5 * .875rem + 12px);
+  max-width: 100%;
+}
+.sm-level-meter i {
+  flex: 0 1 .875rem;
+  min-width: .25rem;
+  height: .3125rem;
+  border-radius: 3px;
+  background: var(--sm-level-track);
+}
+.lv-1 .sm-level-meter i:nth-child(-n+1),
+.lv-2 .sm-level-meter i:nth-child(-n+2),
+.lv-3 .sm-level-meter i:nth-child(-n+3),
+.lv-4 .sm-level-meter i:nth-child(-n+4),
+.lv-5 .sm-level-meter i:nth-child(-n+5) {
+  background: var(--level-meter);
+}
+/* 핵심 액션(다녀왔어요·식당 찾기 등)에만 쓰는 주황 버튼 */
+.sm-button--brand {
+  --button-fill: var(--sm-color-brand);
+  --button-text: var(--sm-color-on-brand);
+  --button-border: var(--sm-color-brand);
+}
+.sm-button--brand:hover {
+  background: var(--sm-color-brand-hover);
+  border-color: var(--sm-color-brand-hover);
+}
+.sm-notice {
+  border: 1px solid var(--sm-color-border);
+  border-radius: var(--sm-radius-control);
+  background: var(--sm-color-surface-subtle);
+  padding: var(--sm-space-4);
+  font-size: var(--sm-text-sm);
+  line-height: 1.6;
+}
+.sm-notice--warning {
+  background: var(--sm-color-warning-subtle);
+  color: var(--sm-color-warning);
+}
+.sm-empty-state {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  gap: var(--sm-space-3);
+  padding: var(--sm-space-12) var(--sm-space-6);
+  text-align: center;
+  background: var(--sm-color-surface);
+  border: 1px dashed var(--sm-color-control-border);
+  border-radius: var(--sm-radius-card);
+}
+.sm-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--sm-radius-control);
+  background: var(--sm-color-brand-subtle);
+  color: var(--sm-color-action);
+}
+.sm-empty-state p {
+  max-width: 40rem;
+  font-size: var(--sm-text-sm);
+  color: var(--sm-color-text-secondary);
+}
+.sm-empty-state--error {
+  border-color: var(--sm-color-danger);
+  background: var(--sm-color-danger-subtle);
+}
+.sm-empty-state--error h3, .sm-empty-state--error p {
+  color: var(--sm-color-danger);
+}
+.sm-progress {
+  display: block;
+  width: 100%;
+  height: .75rem;
+  border: 0;
+  border-radius: var(--sm-radius-pill);
+  overflow: hidden;
+  accent-color: var(--sm-color-action);
+  background: var(--sm-color-border);
+}
+.sm-progress::-webkit-progress-bar {
+  background: var(--sm-color-border);
+}
+.sm-progress::-webkit-progress-value {
+  background: var(--sm-color-action);
+  border-radius: var(--sm-radius-pill);
+}
+.sm-progress::-moz-progress-bar {
+  background: var(--sm-color-action);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

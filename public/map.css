@@ -1,0 +1,794 @@
+/* Map engine adapters. Layout-independent legacy engine rules. */
+.map-view-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+  background: #f1f5f9;
+  margin-bottom: 30px;
+}
+.map-view-container.hidden {
+  display: none;
+}
+.leaflet-map-element {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.leaflet-map-element.hidden {
+  display: none;
+}
+.naver-map-element {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.naver-map-element.hidden {
+  display: none;
+}
+/* ===================================================
+   🗺️ 네이버 지도 스타일 정밀 줌 슬라이더 컨트롤러 & 축척 바
+   =================================================== */
+/* 기본 Leaflet 줌 버튼 숨기기 (더 아름다운 네이버 스타일로 대체) */
+.leaflet-control-zoom {
+  display: none !important;
+}
+/* 네이버 지도 스타일 세로형 줌 슬라이더 컨트롤러 */
+.naver-style-zoom-control {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  user-select: none;
+}
+.naver-zoom-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.naver-zoom-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.naver-zoom-btn:active {
+  background: #e2e8f0;
+}
+/* 줌 슬라이더 트랙 바 */
+.naver-zoom-slider-track {
+  width: 32px;
+  height: 104px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.naver-zoom-track-line {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+.naver-zoom-ticks {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.naver-zoom-tick {
+  position: absolute;
+  left: 10px;
+  width: 12px;
+  height: 1.5px;
+  background: #cbd5e1;
+  transform: translateY(-50%);
+}
+.naver-zoom-track-fill {
+  position: absolute;
+  bottom: 10px;
+  width: 4px;
+  background: #2563eb;
+  border-radius: 2px;
+  transition: height 0.08s ease-out;
+}
+.naver-zoom-handle {
+  position: absolute;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.45);
+  transform: translate(-50%, 50%);
+  cursor: grab;
+  transition: bottom 0.08s ease-out, transform 0.15s ease;
+  z-index: 2;
+}
+.naver-zoom-handle:hover, .naver-zoom-handle:active {
+  transform: translate(-50%, 50%) scale(1.2);
+  background: #1d4ed8;
+  cursor: grabbing;
+}
+.naver-zoom-tooltip {
+  position: absolute;
+  left: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.naver-zoom-slider-track:hover .naver-zoom-tooltip {
+  opacity: 1;
+}
+/* 네이버 스타일 실시간 거리 축척 바 */
+.leaflet-control-scale-line {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1.5px solid #64748b !important;
+  border-top: none !important;
+  color: #1e293b !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 0 0 4px 4px !important;
+  font-family: 'Pretendard', sans-serif !important;
+}
+/* 지도 전체화면(Fullscreen) 모드 */
+.map-view-container.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.map-view-container.fullscreen .naver-map-element, .map-view-container.fullscreen .leaflet-map-element {
+  height: 100vh !important;
+}
+.map-ctrl-btn.fullscreen-btn {
+  background: #ffffff;
+}
+.map-ctrl-btn.fullscreen-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+/* 지도 상단 플로팅 컨트롤 바 (명지대 중심 복귀, 전체 식당 맞춤, 네이버 지도 전환) */
+.map-floating-controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+.map-ctrl-btn {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+.map-ctrl-btn:hover {
+  background: #ffffff;
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 82, 38, 0.18);
+}
+.map-ctrl-btn.naver-toggle-btn {
+  background: #03c75a;
+  color: #ffffff;
+  border-color: #02b150;
+}
+.map-ctrl-btn.naver-toggle-btn:hover {
+  background: #02b150;
+  color: #ffffff;
+  border-color: #029443;
+  box-shadow: 0 8px 20px rgba(3, 199, 90, 0.3);
+}
+.map-ctrl-btn.naver-toggle-btn.active {
+  background: #028a3e;
+  border-color: #016b30;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.map-ctrl-btn:active {
+  transform: scale(0.96);
+}
+/* 지도 범례 */
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  pointer-events: auto;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legend-dot.lv1 {
+  background: var(--lv1-color);
+}
+.legend-dot.lv2 {
+  background: var(--lv2-color);
+}
+.legend-dot.lv3 {
+  background: var(--lv3-color);
+}
+.legend-dot.lv4 {
+  background: var(--lv4-color);
+}
+.legend-dot.lv5 {
+  background: var(--lv5-color);
+}
+/* ===================================================
+   🗺️ 모던 캡슐 필(Pill) & 도트 지도 마커 스타일 (네이버 지도급 60fps 고속 최적화)
+   =================================================== */
+.custom-div-icon, .custom-leaflet-marker-icon {
+  background: transparent !important;
+  border: none !important;
+  contain: layout style;
+  will-change: transform;
+}
+/* 마커 앵커 래퍼: 좌표 기준 정중앙 하단 포인터가 정확히 지도 좌표를 가리키도록 정렬 */
+.map-marker-anchor-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, calc(-100% - 5px));
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  z-index: 100;
+  contain: layout style;
+}
+/* 식당 캡슐 마커 본체: [Lv 배지] + [상호명] 한눈에 확인 */
+.map-place-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  padding: 3px 8px 3px 3px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  border: 1.5px solid #e2e8f0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  contain: layout style;
+}
+/* 하단 뾰족한 포인터 화살표 (지도 위치 정확 조준) */
+.map-place-marker::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #ffffff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+/* 레벨 원형 배지 (1~5 색상 뚜렷하게 구분) */
+.marker-level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+/* 상호명(가게명) 텍스트: 숫자 배지 옆에 가게명이 선명하게 상시 표출 */
+.marker-title {
+  display: inline-block !important;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  max-width: 95px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+/* 마우스 호버 및 클릭 시: 상호명 전체 확장 및 강조 */
+.map-marker-anchor-wrap:hover .marker-title, .map-marker-anchor-wrap.hover .marker-title, .map-marker-anchor-wrap.active .marker-title {
+  max-width: 180px;
+  color: #1e3a8a;
+}
+/* 레벨별 테마 색상 (배지 배경 및 테두리 은은한 액센트) */
+.map-place-marker.lv-1 .marker-level-badge {
+  background: var(--lv1-color);
+}
+.map-place-marker.lv-2 .marker-level-badge {
+  background: var(--lv2-color);
+}
+.map-place-marker.lv-3 .marker-level-badge {
+  background: var(--lv3-color);
+}
+.map-place-marker.lv-4 .marker-level-badge {
+  background: var(--lv4-color);
+}
+.map-place-marker.lv-5 .marker-level-badge {
+  background: var(--lv5-color);
+}
+.map-place-marker.lv-1 {
+  border-color: rgba(16, 185, 129, 0.45);
+}
+.map-place-marker.lv-2 {
+  border-color: rgba(59, 130, 246, 0.45);
+}
+.map-place-marker.lv-3 {
+  border-color: rgba(245, 158, 11, 0.45);
+}
+.map-place-marker.lv-4 {
+  border-color: rgba(139, 92, 246, 0.45);
+}
+.map-place-marker.lv-5 {
+  border-color: rgba(239, 68, 68, 0.45);
+}
+/* 마우스 호버 및 활성(클릭) 시: 부드럽게 확대 & 최상단으로 & 전체 이름 표시 */
+.map-marker-anchor-wrap:hover, .map-marker-anchor-wrap.hover, .map-marker-anchor-wrap.active {
+  z-index: 9999 !important;
+}
+.map-marker-anchor-wrap:hover .map-place-marker, .map-marker-anchor-wrap.hover .map-place-marker, .map-marker-anchor-wrap.active .map-place-marker {
+  transform: scale(1.12) translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28), 0 3px 8px rgba(15, 23, 42, 0.15);
+  border-color: #0f172a;
+}
+.map-marker-anchor-wrap:hover .marker-title, .map-marker-anchor-wrap.hover .marker-title, .map-marker-anchor-wrap.active .marker-title {
+  max-width: 170px;
+  /* 호버 시 전체 상호명 시원하게 확인 */
+}
+/* 🏛️ 3대 거점 랜드마크 마커 배지 (명지대, 명지전문대, 백련시장) */
+.map-landmark-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  font-family: 'Pretendard', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  position: relative;
+  letter-spacing: -0.2px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.map-landmark-marker:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+.map-landmark-marker.mju-landmark {
+  background: #002c5f;
+  color: #ffffff;
+  border: 2px solid #ffd100;
+}
+.map-landmark-marker.mju-landmark::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #002c5f;
+}
+.map-landmark-marker.mjc-landmark {
+  background: #1d4ed8;
+  color: #ffffff;
+  border: 2px solid #93c5fd;
+}
+.map-landmark-marker.mjc-landmark::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #1d4ed8;
+}
+.map-landmark-marker.bn-landmark {
+  background: #d97706;
+  color: #ffffff;
+  border: 2px solid #fde68a;
+}
+.map-landmark-marker.bn-landmark::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #d97706;
+}
+/* 모바일 화면 (768px 이하) 마커 크기 최적화 */
+@media (max-width: 768px) {
+  .map-place-marker {
+    padding: 2.5px 7px 2.5px 2.5px;
+    gap: 4px;
+  }
+  .marker-level-badge {
+    width: 19px;
+    height: 19px;
+    font-size: 10.5px;
+  }
+  .marker-title {
+    font-size: 11px;
+    max-width: 68px;
+  }
+  .map-marker-anchor-wrap:hover .marker-title,   .map-marker-anchor-wrap.hover .marker-title,   .map-marker-anchor-wrap.active .marker-title {
+    max-width: 130px;
+  }
+}
+/* 레거시 pin-bubble 호환 유지 */
+.pin-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.pin-bubble:hover {
+  transform: rotate(-45deg) scale(1.22);
+}
+.pin-bubble span {
+  transform: rotate(45deg);
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.pin-bubble.mju-pin {
+  background: #002c5f !important;
+  width: 38px;
+  height: 38px;
+  border-color: #ffd100;
+  box-shadow: 0 4px 16px rgba(0, 44, 95, 0.45);
+}
+.pin-bubble.mjc-pin {
+  background: #1d4ed8 !important;
+  width: 36px;
+  height: 36px;
+  border-color: #93c5fd;
+  box-shadow: 0 4px 16px rgba(29, 78, 216, 0.45);
+}
+.pin-bubble.bn-pin {
+  background: #d97706 !important;
+  width: 36px;
+  height: 36px;
+  border-color: #fde68a;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45);
+}
+.pin-bubble.lv-1 {
+  background: var(--lv1-color);
+}
+.pin-bubble.lv-2 {
+  background: var(--lv2-color);
+}
+.pin-bubble.lv-3 {
+  background: var(--lv3-color);
+}
+.pin-bubble.lv-4 {
+  background: var(--lv4-color);
+}
+.pin-bubble.lv-5 {
+  background: var(--lv5-color);
+}
+/* Leaflet 팝업 스타일 (모던 클린 팝업) */
+.leaflet-popup-content-wrapper {
+  border-radius: 20px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+.map-popup-card {
+  width: 270px;
+  background: #ffffff;
+  overflow: hidden;
+  padding: 16px;
+  position: relative;
+}
+.map-popup-card.clean-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+.naver-infowindow-wrap {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  position: relative;
+}
+.popup-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+.popup-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.1);
+}
+.popup-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.popup-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.popup-title-box {
+  flex: 1;
+  min-width: 0;
+}
+.popup-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.popup-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.popup-badges-row .difficulty-pill {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+.popup-badges-row .distance-pill {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  border-radius: 6px;
+}
+.popup-psychology {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(255, 82, 38, 0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin: 0;
+  word-break: keep-all;
+}
+.popup-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.35;
+}
+.popup-footer-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.popup-btn {
+  flex: 1;
+  text-align: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.popup-btn.kakao {
+  background: #fee500;
+  color: #3c1e1e;
+  border-color: #fada0a;
+}
+.popup-btn.kakao:hover {
+  background: #fdd835;
+}
+.popup-btn.naver {
+  background: #03c75a;
+  color: #ffffff;
+  border-color: #02b150;
+}
+.popup-btn.naver:hover {
+  background: #02b150;
+}
+.popup-btn.secondary {
+  background: #f1f5f9;
+  color: var(--text-main);
+  border-color: #e2e8f0;
+}
+.popup-btn.secondary:hover {
+  background: #e2e8f0;
+}
+/* Shared DS surfaces; map anchors and SDK geometry above remain engine-specific. */
+.map-view-container { border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-card); box-shadow:none; background:var(--sm-color-surface-subtle); }
+.map-floating-controls { top:var(--sm-space-3); right:var(--sm-space-3); gap:var(--sm-space-2); flex-wrap:wrap; max-width:calc(100% - 5rem); }
+.map-ctrl-btn {
+  min-height:var(--sm-control-sm); min-width:var(--sm-control-sm); padding:var(--sm-space-2) var(--sm-space-3);
+  background:var(--sm-color-surface); color:var(--sm-color-text-secondary); border:1px solid var(--sm-color-border);
+  font:var(--sm-weight-medium) var(--sm-text-sm)/1.4 var(--sm-font); border-radius:var(--sm-radius-control); box-shadow:var(--sm-shadow-card);
+  transition:background-color var(--sm-duration-fast) var(--sm-ease);
+}
+.map-ctrl-btn:hover, .map-ctrl-btn:active { background:var(--sm-color-surface-subtle); color:var(--sm-color-text); transform:none; border-color:var(--sm-color-border); box-shadow:var(--sm-shadow-card); }
+.map-ctrl-btn.fullscreen-btn.active { background:var(--sm-color-text); color:var(--sm-color-surface); border-color:var(--sm-color-text); }
+.map-legend { font:var(--sm-weight-medium) var(--sm-text-xs)/1.5 var(--sm-font); gap:var(--sm-space-3); padding:var(--sm-space-2) var(--sm-space-3); background:var(--sm-color-surface); box-shadow:var(--sm-shadow-card); border-radius:var(--sm-radius-control); }
+.map-place-marker { background:var(--sm-color-surface); border-color:var(--sm-color-border); box-shadow:var(--sm-shadow-card); }
+.marker-title { font-family:var(--sm-font); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-semibold); color:var(--sm-color-text); }
+.naver-infowindow-wrap, .leaflet-popup-content-wrapper { border:1px solid var(--sm-color-border) !important; border-radius:var(--sm-radius-card) !important; box-shadow:var(--sm-shadow-raised) !important; background:var(--sm-color-surface); }
+.map-popup-card {
+  position:relative; display:grid; gap:var(--sm-space-3); width:min(340px,calc(100vw - 64px)); padding:var(--sm-space-4);
+  max-height:min(480px,calc(100dvh - 160px)); overflow-y:auto; overscroll-behavior:contain;
+  font:var(--sm-text-sm)/1.6 var(--sm-font); background:var(--sm-color-surface); color:var(--sm-color-text);
+}
+.popup-title-box { padding-right:var(--sm-control-sm); min-width:0; }
+.popup-title { white-space:normal; font-size:var(--sm-text-lg); line-height:1.45; font-weight:var(--sm-weight-bold); color:var(--sm-color-text); margin:0; overflow-wrap:anywhere; }
+.popup-close-btn { position:absolute; top:var(--sm-space-2); right:var(--sm-space-2); width:var(--sm-control-sm); height:var(--sm-control-sm); background:transparent; border-radius:var(--sm-radius-control); color:var(--sm-color-text-muted); }
+.popup-close-btn:hover { transform:none; background:var(--sm-color-surface-subtle); }
+.popup-badges-row { display:flex; align-items:center; flex-wrap:wrap; gap:var(--sm-space-2); }
+.popup-badges-row .difficulty-pill { font-size:var(--sm-text-xs); font-weight:var(--sm-weight-semibold); }
+.popup-badges-row .distance-pill { padding:0; background:transparent; font-size:var(--sm-text-sm); font-weight:var(--sm-weight-medium); color:var(--sm-color-text-secondary); }
+.popup-psychology { font-size:var(--sm-text-sm); font-weight:var(--sm-weight-regular); line-height:1.65; color:var(--sm-color-text); background:transparent; padding:0; margin:0; }
+.popup-meta { display:flex; gap:var(--sm-space-2); font-size:var(--sm-text-xs); line-height:1.6; color:var(--sm-color-text-muted); margin:0; }
+.popup-meta .sm-icon { flex-shrink:0; margin-top:2px; width:var(--sm-icon-sm); height:var(--sm-icon-sm); }
+.popup-footer-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sm-space-2); border-top:1px solid var(--sm-color-border); padding-top:var(--sm-space-3); margin:0; }
+.popup-btn { min-width:var(--sm-control-sm); min-height:var(--sm-control-sm); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-semibold); border-radius:var(--sm-radius-control); line-height:1.4; white-space:normal; }
+.popup-btn.secondary { background:var(--sm-color-surface-subtle); color:var(--sm-color-text-secondary); border-color:transparent; }
+.popup-btn.sm-button--ghost { background:transparent; border-color:transparent; }
+.popup-btn:hover { background:var(--sm-color-surface-subtle); }
+.map-place-marker.marker-conquered { background:var(--sm-color-success-subtle); border:2px solid var(--sm-color-success); }
+.marker-conquered .marker-level-badge { background:var(--sm-color-success); }
+.map-place-marker.marker-recommended { background:var(--sm-color-brand-subtle); border:2px solid var(--sm-level-4-fill); }
+.marker-recommended .marker-level-badge { background:var(--sm-level-4-fill); color:var(--sm-level-4-on); }
+/* A안 레벨 색: Lv.1~3은 밝은 엠버라 숫자를 짙은 색으로 */
+.map-place-marker.lv-1 .marker-level-badge, .pin-bubble.lv-1 span { color:var(--lv1-on); }
+.map-place-marker.lv-2 .marker-level-badge, .pin-bubble.lv-2 span { color:var(--lv2-on); }
+.map-place-marker.lv-3 .marker-level-badge, .pin-bubble.lv-3 span { color:var(--lv3-on); }
+.map-place-marker.lv-4 .marker-level-badge, .pin-bubble.lv-4 span { color:var(--lv4-on); }
+.map-place-marker.lv-5 .marker-level-badge, .pin-bubble.lv-5 span { color:var(--lv5-on); }
+.naver-style-zoom-control { border-color:var(--sm-color-border); border-radius:var(--sm-radius-control); box-shadow:var(--sm-shadow-card); }
+.naver-zoom-btn { min-width:var(--sm-control-sm); min-height:var(--sm-control-sm); background:var(--sm-color-surface); color:var(--sm-color-text); }
+.naver-zoom-track-fill, .naver-zoom-handle { background:var(--sm-color-action); }
+@media(max-width:679px) {
+  .map-view-container { height:clamp(30rem,72dvh,40rem); }
+  .map-floating-controls { top:var(--sm-space-3); right:var(--sm-space-3); left:4rem; max-width:none; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sm-space-1); }
+  .map-ctrl-btn { justify-content:center; padding:var(--sm-space-2) var(--sm-space-1); font-size:var(--sm-text-xs); }
+  .map-ctrl-btn .fs-icon { display:none; }
+  .map-legend { bottom:var(--sm-space-3); left:var(--sm-space-3); right:auto; max-width:calc(100% - 1.5rem); gap:var(--sm-space-2); }
+}

@@ -14,11 +14,12 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=solo">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/design-system.css">
+  <link rel="stylesheet" href="/map.css">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+  <a class="sm-skip-link" href="#main-content">본문으로 건너뛰기</a>
   <!-- 헤더 네비게이션 -->
   <header class="site-header">
     <div class="header-inner">
@@ -33,8 +34,8 @@
       </a>
 
       <div class="campus-selector">
-        <span class="campus-pin">📍</span>
-        <span class="campus-name">명지대학교 인문캠퍼스</span>
+        <span class="campus-pin" data-icon="pin" aria-hidden="true"></span>
+        <span class="campus-name">명지대 인문캠퍼스</span>
         <span class="campus-sub">서대문구 거북골로</span>
       </div>
 
@@ -43,13 +44,18 @@
           <span class="pulse-dot"></span> 라이브 검색
         </span>
       </div>
+      <nav id="account-menu" class="account-menu" aria-label="내 계정" aria-live="polite">
+        <button id="btn-login" type="button" class="sm-button ">로그인</button>
+        <button id="btn-signup" class="account-primary sm-button sm-button--primary" type="button">회원가입</button>
+      </nav>
     </div>
   </header>
 
   <!-- 메인 본문 -->
-  <main class="page-body">
+  <main id="main-content" class="page-body" tabindex="-1">
     <!-- 검색 및 필터 헤더 섹션 -->
-    <section class="hero-card">
+    <section class="hero-card sm-card">
+      <div class="hero-copy">
       <div class="hero-badge">명지대 인문캠 혼밥 가이드</div>
       <h1 class="hero-headline">
         혼자여도 편안하고 맛있는 한 끼,<br>
@@ -63,22 +69,22 @@
       <div class="search-actions-row">
         <form id="search-form" class="main-search-bar">
           <div class="search-input-wrap">
-            <span class="search-icon">🔍</span>
-            <input 
-              type="text" 
-              id="search-input" 
-              placeholder="메뉴 검색 (예: 국밥, 라멘, 돈까스, 떡볶이, 삼겹살)" 
+            <span class="search-icon" data-icon="search" aria-hidden="true"></span>
+            <input
+              type="text"
+              aria-label="메뉴 또는 식당 검색" id="search-input"
+              placeholder="메뉴 검색 (예: 국밥, 라멘, 돈까스, 떡볶이, 삼겹살)"
               value="혼밥"
               autocomplete="off"
-            />
-            <button type="button" id="btn-search-clear" class="btn-input-clear" title="검색어 지우기" aria-label="검색어 지우기">&times;</button>
+              class="sm-input">
+            <button type="button" id="btn-search-clear" class="btn-input-clear sm-button sm-button--icon sm-button--ghost" title="검색어 지우기" aria-label="검색어 지우기">&times;</button>
           </div>
-          <button type="submit" class="search-submit-btn">식당 찾기</button>
+          <button type="submit" class="search-submit-btn sm-button sm-button--primary">식당 찾기</button>
         </form>
 
-        <!-- 🎲 오늘 뭐 먹지? 랜덤 룰렛 버튼 -->
-        <button type="button" id="btn-random-roulette" class="btn-roulette" title="오늘 뭐 먹을지 고민될 때 눌러보세요!">
-          <span class="roulette-icon">🎲</span>
+        <!--  오늘 뭐 먹지? 랜덤 룰렛 버튼 -->
+        <button type="button" id="btn-random-roulette" class="btn-roulette sm-button " title="오늘 뭐 먹을지 고민될 때 눌러보세요!">
+          <span class="roulette-icon" data-icon="dice" aria-hidden="true"></span>
           <span class="roulette-label">오늘 뭐 먹지? (랜덤 뽑기)</span>
         </button>
       </div>
@@ -86,54 +92,73 @@
       <!-- 빠른 카테고리 칩 (한 줄에 균형 있게 쏙 들어가도록 최적화) -->
       <div class="quick-keywords">
         <span class="kw-label">추천 메뉴:</span>
-        <button type="button" class="kw-chip active" data-query="혼밥">전체</button>
-        <button type="button" class="kw-chip" data-query="국밥">🍲 든든국밥</button>
-        <button type="button" class="kw-chip" data-query="라멘">🍜 라멘/우동</button>
-        <button type="button" class="kw-chip" data-query="돈까스">🍛 돈까스</button>
-        <button type="button" class="kw-chip" data-query="버거">🍔 햄버거</button>
-        <button type="button" class="kw-chip" data-query="마라탕">🌶️ 마라탕</button>
-        <button type="button" class="kw-chip" data-query="김밥">🍙 김밥/도시락</button>
-        <button type="button" class="kw-chip" data-query="떡볶이">🍢 떡볶이 (도전 Lv.4)</button>
-        <button type="button" class="kw-chip" data-query="고기">🥩 고깃집 (도전 Lv.5)</button>
+        <button type="button" class="kw-chip active sm-button sm-button--ghost" data-query="혼밥">전체</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="국밥"> 든든국밥</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="라멘"> 라멘/우동</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="돈까스"> 돈까스</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="버거"> 햄버거</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="마라탕"> 마라탕</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="김밥"> 김밥/도시락</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="떡볶이"> 떡볶이 (도전 Lv.4)</button>
+        <button type="button" class="kw-chip sm-button sm-button--ghost" data-query="고기"> 고깃집 (도전 Lv.5)</button>
       </div>
+      </div>
+
+      <!-- A안 소개 이미지: 실제 사진 대신 카테고리 일러스트 타일 (ui.js가 data-food로 채움) -->
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-tile hero-tile--main lv-2" data-food="noodle"><span class="sm-level-badge">Lv.2 혼밥 성지</span></div>
+        <div class="hero-tile lv-1" data-food="rice"><span class="sm-level-badge">Lv.1</span></div>
+        <div class="hero-tile lv-3" data-food="stew"><span class="sm-level-badge">Lv.3</span></div>
+      </div>
+    </section>
+
+    <!-- 탐색 흐름을 가리지 않는 간단한 계정 안내. 개인 수치는 서버 응답만 사용한다. -->
+    <section id="solo-journey" class="solo-journey" aria-label="나의 혼밥 기록">
+      <div id="journey-status" aria-live="polite"></div>
+      <button id="btn-growth-guide" type="button" class="journey-guide-link sm-button sm-button--ghost">레벨 안내 <span aria-hidden="true">↗</span></button>
     </section>
 
     <!-- 현실적 대중 시각 5단계 혼밥 난이도 기준 카드 바 (클릭 시 해당 레벨 즉시 필터) -->
     <section class="difficulty-index">
-      <div class="index-card" data-level="1" role="button" tabindex="0" title="클릭하여 Lv.1 식당 필터링">
+      <div class="index-card sm-card lv-1" data-level="1" role="button" tabindex="0" title="클릭하여 Lv.1 식당 필터링">
         <div class="index-level lv-1">Lv.1</div>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <div class="index-info">
           <h4>입문 혼밥</h4>
           <p>편의점 · 학식 · 버거 · 토스트 · 도시락</p>
           <span class="index-mindset">시선 신경 0% · 키오스크 선불</span>
         </div>
       </div>
-      <div class="index-card" data-level="2" role="button" tabindex="0" title="클릭하여 Lv.2 식당 필터링">
+      <div class="index-card sm-card lv-2" data-level="2" role="button" tabindex="0" title="클릭하여 Lv.2 식당 필터링">
         <div class="index-level lv-2">Lv.2</div>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <div class="index-info">
           <h4>혼밥 성지</h4>
           <p>국밥(순대/설렁탕) · 라멘 · 1인 바 테이블</p>
           <span class="index-mindset">한국인 공인 1위 · 1인 뚝배기 환영</span>
         </div>
       </div>
-      <div class="index-card" data-level="3" role="button" tabindex="0" title="클릭하여 Lv.3 식당 필터링">
+      <div class="index-card sm-card lv-3" data-level="3" role="button" tabindex="0" title="클릭하여 Lv.3 식당 필터링">
         <div class="index-level lv-3">Lv.3</div>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <div class="index-info">
           <h4>일반 밥집</h4>
           <p>백반 · 찌개 · 중식 · 마라탕 · 돈까스</p>
           <span class="index-mindset">든든한 한 끼 · 피크시간엔 눈치 살짝</span>
         </div>
       </div>
-      <div class="index-card" data-level="4" role="button" tabindex="0" title="클릭하여 Lv.4 식당 필터링">
+      <div class="index-card sm-card lv-4" data-level="4" role="button" tabindex="0" title="클릭하여 Lv.4 식당 필터링">
         <div class="index-level lv-4">Lv.4</div>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <div class="index-info">
           <h4>다인석 식당</h4>
           <p>떡볶이(즉석/엽떡) · 샤브 · 파스타 · 피자</p>
           <span class="index-mindset">2인 냄비 or 데이트 위주 · 혼밥 도전</span>
         </div>
       </div>
-      <div class="index-card" data-level="5" role="button" tabindex="0" title="클릭하여 Lv.5 식당 필터링">
+      <div class="index-card sm-card lv-5" data-level="5" role="button" tabindex="0" title="클릭하여 Lv.5 식당 필터링">
         <div class="index-level lv-5">Lv.5</div>
+        <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <div class="index-info">
           <h4>혼밥 끝판왕</h4>
           <p>삼겹살/고깃집 · 곱창/막창 · 횟집 · 술집</p>
@@ -152,38 +177,38 @@
 
         <!-- 상단 우측 컨트롤 바: 정렬 드롭다운 & 뷰 모드 전환 -->
         <div class="catalog-controls-group">
-          <!-- ⚡ 거리순/난이도순/리뷰순 다차원 정렬 드롭다운 -->
+          <!--  거리순/난이도순/리뷰순 다차원 정렬 드롭다운 -->
           <div class="sort-selector-wrap">
-            <select id="sort-select" class="sort-select" title="식당 정렬 기준 선택">
-              <option value="distance">🚶‍♂️ 거리순 (가까운 순)</option>
-              <option value="level-asc">🔰 난이도 낮은 순 (Lv.1→5)</option>
-              <option value="level-desc">🥩 난이도 높은 순 (Lv.5→1)</option>
-              <option value="reviews">💬 리뷰 많은 순</option>
-              <option value="name">🔤 이름순</option>
+            <select id="sort-select" class="sort-select sm-input" title="식당 정렬 기준 선택">
+              <option value="distance">‍ 거리순 (가까운 순)</option>
+              <option value="level-asc"> 난이도 낮은 순 (Lv.1→5)</option>
+              <option value="level-desc"> 난이도 높은 순 (Lv.5→1)</option>
+              <option value="reviews"> 리뷰 많은 순</option>
+              <option value="name"> 이름순</option>
             </select>
           </div>
 
           <!-- 뷰 모드 전환 (목록 보기 vs 지도로 보기) -->
           <div class="view-switch-tabs">
-            <button type="button" id="btn-view-list" class="view-tab-btn active">
-              <span class="v-icon">📋</span> 목록 보기
+            <button type="button" id="btn-view-list" class="view-tab-btn active sm-button sm-button--ghost">
+              <span class="v-icon" data-icon="list" aria-hidden="true"></span> 목록 보기
             </button>
-            <button type="button" id="btn-view-map" class="view-tab-btn">
-              <span class="v-icon">🗺️</span> 지도로 보기
+            <button type="button" id="btn-view-map" class="view-tab-btn sm-button sm-button--ghost">
+              <span class="v-icon" data-icon="map" aria-hidden="true"></span> 지도로 보기
             </button>
           </div>
         </div>
 
         <!-- 필터 탭 -->
         <div class="filter-tabs">
-          <button type="button" class="tab-btn active" data-filter="all">전체</button>
-          <button type="button" class="tab-btn" data-filter="1">Lv.1</button>
-          <button type="button" class="tab-btn" data-filter="2">Lv.2</button>
-          <button type="button" class="tab-btn" data-filter="3">Lv.3</button>
-          <button type="button" class="tab-btn" data-filter="4">Lv.4</button>
-          <button type="button" class="tab-btn" data-filter="5">Lv.5</button>
-          <button type="button" class="tab-btn fav-filter-btn" data-filter="fav">
-            <span class="heart-icon">❤️</span> 찜한 곳 (<span id="fav-badge-count">0</span>)
+          <button type="button" class="tab-btn active sm-button sm-button--ghost" data-filter="all">전체</button>
+          <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="1">Lv.1</button>
+          <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="2">Lv.2</button>
+          <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="3">Lv.3</button>
+          <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="4">Lv.4</button>
+          <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="5">Lv.5</button>
+          <button type="button" class="tab-btn fav-filter-btn sm-button sm-button--ghost" data-filter="fav">
+            <span class="heart-icon" data-icon="heart" aria-hidden="true"></span> 찜한 곳 (<span id="fav-badge-count">0</span>)
           </button>
         </div>
       </div>
@@ -194,52 +219,50 @@
       </div>
 
       <!-- 2) 인터랙티브 네이버 순정 지도 뷰 (기본 숨김) -->
+      <div id="personal-map-note" class="personal-map-note hidden"> 정복한 식당 · <span> 다음 도전 추천</span><button id="btn-exit-personal-map" type="button" class="sm-button ">검색 결과 지도로 돌아가기</button></div>
       <div id="map-view-container" class="map-view-container hidden">
         <!-- 지도 플로팅 컨트롤 바 (명지대, 명지전문대, 백련시장, 전체 권역 맞춤, 지도 엔진 전환, 전체화면) -->
         <div class="map-floating-controls">
-          <button type="button" id="btn-map-center-mju" class="map-ctrl-btn" title="명지대학교 인문캠퍼스 중심으로 이동">
-            📍 명지대
+          <button type="button" id="btn-map-center-mju" class="map-ctrl-btn sm-button " title="명지대학교 인문캠퍼스 중심으로 이동">
+             명지대
           </button>
-          <button type="button" id="btn-map-center-mjc" class="map-ctrl-btn" title="명지전문대학 방면으로 이동">
-            🏫 명지전문대
+          <button type="button" id="btn-map-center-mjc" class="map-ctrl-btn sm-button " title="명지전문대학 방면으로 이동">
+             전문대
           </button>
-          <button type="button" id="btn-map-center-bn" class="map-ctrl-btn" title="백련시장 맛집 골목 방면으로 이동">
-            🛒 백련시장
+          <button type="button" id="btn-map-center-bn" class="map-ctrl-btn sm-button " title="백련시장 맛집 골목 방면으로 이동">
+             백련시장
           </button>
-          <button type="button" id="btn-map-fit-bounds" class="map-ctrl-btn active-fit" title="명지대 · 명지전문대 · 백련시장 전체 식당을 한 화면에 맞춤">
-            🎯 전체 권역 맞춤
+          <button type="button" id="btn-map-fit-bounds" class="map-ctrl-btn active-fit sm-button " title="명지대 · 명지전문대 · 백련시장 전체 식당을 한 화면에 맞춤">
+             전체보기
           </button>
-          <button type="button" id="btn-toggle-map-engine" class="map-ctrl-btn engine-toggle-btn" title="클릭 시 Leaflet 오픈맵으로 전환">
-            🌐 <span id="map-engine-label">Leaflet (오픈맵)</span>
+          <button type="button" id="btn-toggle-map-engine" class="map-ctrl-btn engine-toggle-btn sm-button " title="클릭 시 Leaflet 오픈맵으로 전환">
+             <span id="map-engine-label">오픈맵</span>
           </button>
-          <button type="button" id="btn-map-fullscreen" class="map-ctrl-btn fullscreen-btn" title="지도를 화면 가득 크게 보기">
-            <span class="fs-icon">⛶</span> <span class="fs-text">전체화면</span>
+          <button type="button" id="btn-map-fullscreen" class="map-ctrl-btn fullscreen-btn sm-button " title="지도를 화면 가득 크게 보기">
+            <span class="fs-icon"></span> <span class="fs-text">전체화면</span>
           </button>
         </div>
         <div id="naver-map-canvas" class="naver-map-element"></div>
         <div id="leaflet-map" class="leaflet-map-element hidden"></div>
         <div class="map-legend">
-          <span class="legend-item"><span class="legend-dot mju">🏛️</span> 명지대</span>
-          <span class="legend-item"><span class="legend-dot mjc">🏫</span> 명지전문대</span>
-          <span class="legend-item"><span class="legend-dot bn">🛒</span> 백련시장</span>
-          <span class="legend-item"><span class="legend-dot lv1"></span> Lv.1 입문</span>
-          <span class="legend-item"><span class="legend-dot lv2"></span> Lv.2 성지</span>
-          <span class="legend-item"><span class="legend-dot lv3"></span> Lv.3 일반</span>
-          <span class="legend-item"><span class="legend-dot lv4"></span> Lv.4 다인석</span>
-          <span class="legend-item"><span class="legend-dot lv5"></span> Lv.5 끝판왕</span>
+          <span class="legend-item"><span class="legend-dot lv1"></span> 1 입문</span>
+          <span class="legend-item"><span class="legend-dot lv2"></span> 2 성지</span>
+          <span class="legend-item"><span class="legend-dot lv3"></span> 3 일반</span>
+          <span class="legend-item"><span class="legend-dot lv4"></span> 4 다인석</span>
+          <span class="legend-item"><span class="legend-dot lv5"></span> 5 도전</span>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- 🎲 랜덤 혼밥 추천 룰렛 모달 -->
+  <!--  랜덤 혼밥 추천 룰렛 모달 -->
   <div id="roulette-modal" class="modal-overlay hidden">
-    <div class="modal-sheet roulette-sheet">
+    <div class="modal-sheet roulette-sheet sm-card">
       <div class="modal-top">
-        <span class="modal-tag roulette-tag">🎲 오늘 뭐 먹지?</span>
-        <button type="button" id="roulette-close" class="btn-close">&times;</button>
+        <span class="modal-tag roulette-tag"> 오늘 뭐 먹지?</span>
+        <button type="button" id="roulette-close" class="btn-close sm-button sm-button--icon sm-button--ghost" aria-label="닫기">&times;</button>
       </div>
-      
+
       <div class="roulette-content">
         <h3 class="roulette-heading">오늘의 혼밥 메뉴 추천!</h3>
         <p class="roulette-sub">명지대 주변 식당 중 엄선된 혼밥 추천 결과입니다.</p>
@@ -256,11 +279,11 @@
         </div>
 
         <div class="roulette-footer-actions">
-          <button type="button" id="btn-roulette-again" class="btn-secondary-action">
-            다시 뽑기 🔄
+          <button type="button" id="btn-roulette-again" class="btn-secondary-action sm-button ">
+            다시 뽑기
           </button>
-          <button type="button" id="btn-roulette-go" class="btn-primary-action">
-            이 식당 바로보기 🏃‍♂️
+          <button type="button" id="btn-roulette-go" class="btn-primary-action sm-button sm-button--primary">
+            이 식당 바로보기 ‍
           </button>
         </div>
       </div>
@@ -269,53 +292,54 @@
 
   <!-- 리뷰 작성 모달 -->
   <div id="review-modal" class="modal-overlay hidden">
-    <div class="modal-sheet">
+    <div class="modal-sheet sm-card">
       <div class="modal-top">
         <span class="modal-tag">혼밥 리뷰 작성</span>
-        <button type="button" id="modal-close" class="btn-close">&times;</button>
+        <button type="button" id="modal-close" class="btn-close sm-button sm-button--icon sm-button--ghost" aria-label="닫기">&times;</button>
       </div>
-      
+
       <div class="modal-content">
         <h3 id="modal-place-name" class="modal-place-title">식당명</h3>
         <p id="modal-place-address" class="modal-place-addr">식당 주소</p>
 
-        <div class="input-section">
-          <label class="section-label">체감 혼밥 난이도</label>
+        <fieldset class="input-section">
+          <legend class="section-label sm-label">체감 혼밥 난이도</legend>
           <div class="level-selector">
-            <button type="button" class="level-opt active" data-level="1">
+            <button type="button" class="level-opt active sm-button sm-button--ghost" data-level="1">
               <span class="opt-lv">Lv.1</span>
               <span class="opt-desc">혼자 편함</span>
             </button>
-            <button type="button" class="level-opt" data-level="2">
+            <button type="button" class="level-opt sm-button sm-button--ghost" data-level="2">
               <span class="opt-lv">Lv.2</span>
               <span class="opt-desc">혼밥 성지</span>
             </button>
-            <button type="button" class="level-opt" data-level="3">
+            <button type="button" class="level-opt sm-button sm-button--ghost" data-level="3">
               <span class="opt-lv">Lv.3</span>
               <span class="opt-desc">일반 식당</span>
             </button>
-            <button type="button" class="level-opt" data-level="4">
+            <button type="button" class="level-opt sm-button sm-button--ghost" data-level="4">
               <span class="opt-lv">Lv.4</span>
               <span class="opt-desc">살짝 눈치</span>
             </button>
-            <button type="button" class="level-opt" data-level="5">
+            <button type="button" class="level-opt sm-button sm-button--ghost" data-level="5">
               <span class="opt-lv">Lv.5</span>
               <span class="opt-desc">혼밥 도전</span>
             </button>
           </div>
-        </div>
+        </fieldset>
 
         <div class="input-section">
-          <label class="section-label" for="review-textarea">혼밥러들을 위한 팁 & 솔직 후기</label>
-          <textarea 
-            id="review-textarea" 
-            rows="4" 
+          <label class="sm-label section-label" for="review-textarea">혼밥러들을 위한 팁 & 솔직 후기</label>
+          <textarea
+            id="review-textarea"
+            rows="4"
+              maxlength="500"
             placeholder="좌석 구조는 어떤가요? (예: 1인석 완비, 키오스크 주문, 셀프바 있음, 2인 이상 주문 필수라 혼밥 어려움 등)"
-          ></textarea>
+           class="sm-input"></textarea>
         </div>
 
         <div class="modal-footer">
-          <button type="button" id="btn-submit-review" class="btn-submit">
+          <button type="button" id="btn-submit-review" class="btn-submit sm-button sm-button--primary">
             리뷰 등록하기
           </button>
         </div>
@@ -325,10 +349,10 @@
 
   <!-- 학우 리뷰 전체보기 및 삭제 모달 -->
   <div id="reviews-list-modal" class="modal-overlay hidden">
-    <div class="modal-sheet reviews-list-sheet">
+    <div class="modal-sheet reviews-list-sheet sm-card">
       <div class="modal-top">
-        <span class="modal-tag">💬 학우 실시간 혼밥 팁</span>
-        <button type="button" id="reviews-list-close" class="btn-close">&times;</button>
+        <span class="modal-tag"> 학우 실시간 혼밥 팁</span>
+        <button type="button" id="reviews-list-close" class="btn-close sm-button sm-button--icon sm-button--ghost" aria-label="닫기">&times;</button>
       </div>
 
       <div class="modal-content">
@@ -337,8 +361,8 @@
             <h3 id="reviews-list-place-name" class="modal-place-title">식당명</h3>
             <p id="reviews-list-place-addr" class="modal-place-addr">식당 주소</p>
           </div>
-          <button type="button" id="btn-write-review-shortcut" class="btn-primary-action btn-shortcut-review">
-            ✏️ 새 리뷰 작성
+          <button type="button" id="btn-write-review-shortcut" class="btn-primary-action btn-shortcut-review sm-button sm-button--primary">
+             새 리뷰 작성
           </button>
         </div>
 
@@ -349,9 +373,54 @@
     </div>
   </div>
 
+  <div id="growth-guide-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="growth-guide-title">
+    <div class="modal-sheet account-sheet sm-card">
+      <div class="modal-top"><span class="modal-tag"> 혼밥 레벨 가이드</span><button type="button" class="btn-close sm-button sm-button--icon sm-button--ghost" data-close="growth-guide-modal" aria-label="닫기">&times;</button></div>
+      <div class="modal-content growth-guide-content">
+        <h2 id="growth-guide-title">첫 혼밥부터, 나만의 지도까지</h2>
+        <p>이미 다녀온 한 끼가 다음 도전의 시작이 돼요.</p>
+        <ol class="growth-guide-steps">
+          <li><span>01</span><div><h3>학교 메일로 인증하기</h3><p>학교 계정으로 가입하고 받은 인증 코드를 입력해요.</p></div></li>
+          <li><span>02</span><div><h3>식당에서 다녀왔어요 누르기</h3><p>방문한 식당의 혼밥 난이도만큼 경험치가 쌓여요. 같은 식당은 하루 한 번 기록할 수 있어요.</p></div></li>
+          <li><span>03</span><div><h3>내 성장 기록 펼쳐보기</h3><p>새 칭호와 정복한 식당, 내 레벨에 맞는 다음 도전 식당을 확인해요.</p></div></li>
+        </ol>
+        <button type="button" class="btn-submit sm-button sm-button--primary" data-journey-action="start">나의 혼밥 여정 시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 세션 쿠키로 로그인하고 학교 메일로 인증한다. 비밀번호는 화면에 저장하지 않는다. -->
+  <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="modal-sheet account-sheet sm-card">
+      <div class="modal-top"><h2 id="auth-title">로그인</h2><button type="button" class="btn-close sm-button sm-button--icon sm-button--ghost" data-close="auth-modal" aria-label="닫기">&times;</button></div>
+      <div class="modal-content">
+        <p id="auth-guide">학교 계정으로 혼밥 기록을 모아보세요.</p>
+        <p id="account-service-notice" class="account-service-notice hidden" role="status"></p>
+        <form id="auth-form" class="account-form">
+          <label class="sm-label" for="auth-email">학교 이메일</label><input id="auth-email" type="email" autocomplete="username" placeholder="student@mju.ac.kr" required class="sm-input">
+          <label class="sm-label" for="auth-password">비밀번호</label><input id="auth-password" type="password" autocomplete="current-password" required class="sm-input">
+          <div id="nickname-field" class="account-form hidden"><label class="sm-label" for="auth-nickname">닉네임 (2~12자)</label><input id="auth-nickname" minlength="2" maxlength="12" autocomplete="nickname" class="sm-input"></div>
+          <button id="auth-submit" class="btn-submit sm-button sm-button--primary" type="submit">로그인</button>
+          <button id="auth-mode-toggle" class="account-link sm-button sm-button--ghost" type="button">처음 오셨나요? 회원가입</button>
+        </form>
+        <form id="verify-form" class="account-form hidden">
+          <label class="sm-label" for="verify-code">학교 메일로 받은 6자리 인증 코드</label><input id="verify-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required class="sm-input">
+          <button id="verify-submit" class="btn-submit sm-button sm-button--primary" type="submit">학교 인증 완료하기</button>
+          <button id="btn-resend-code" type="button" class="account-link sm-button sm-button--ghost">인증 코드 재발송</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="mypage-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mypage-title">
+    <div class="modal-sheet reviews-list-sheet sm-card">
+      <div class="modal-top"><h2 id="mypage-title">나의 혼밥 성장 기록</h2><button id="mypage-close" type="button" class="btn-close sm-button sm-button--icon sm-button--ghost" data-close="mypage-modal" aria-label="닫기">&times;</button></div>
+      <div id="mypage-content" class="modal-content" aria-live="polite"></div>
+    </div>
+  </div>
+
   <!-- 토스트 알림 팝업 -->
-  <div id="toast-message" class="toast-popup hidden">
-    <span class="toast-icon">✨</span>
+  <div role="status" aria-live="polite" id="toast-message" class="toast-popup hidden">
+    <span class="toast-icon" data-icon="check" aria-hidden="true"></span>
     <span id="toast-text" class="toast-text">리뷰가 등록되었습니다!</span>
   </div>
 
@@ -362,6 +431,8 @@
 
   <!-- Leaflet.js 지도 라이브러리 -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/ui.js"></script>
   <script src="/main.js"></script>
+  <script src="/account.js"></script>
 </body>
 </html>

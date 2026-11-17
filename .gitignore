@@ -3,6 +3,7 @@ node_modules/
 
 # TypeScript 컴파일 출력 결과 폴더
 dist/
+src/generated/
 
 # 민감한 환경변수 설정 파일 (API 키, DB 접속정보 등 절대 Git에 올리지 마세요!)
 .env
@@ -14,6 +15,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 logs/
+artifacts/
 *.log
 
 # 사용자가 업로드한 정적 파일 (기본 .gitkeep 제외하고 무시)

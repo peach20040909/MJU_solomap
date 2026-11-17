@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SoloMap 디자인 시스템</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/design-system.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .ds-page { max-width:var(--sm-container); margin:auto; padding:var(--sm-space-10) var(--sm-space-6); }
+    .ds-nav { display:flex; align-items:center; justify-content:space-between; gap:var(--sm-space-4); margin-bottom:var(--sm-space-12); flex-wrap:wrap; }
+    .ds-kicker { color:var(--sm-color-action); font-size:var(--sm-text-sm); font-weight:700; margin-bottom:var(--sm-space-4); letter-spacing:.08em; }
+    .ds-intro { max-width:52rem; margin-top:var(--sm-space-4); color:var(--sm-color-text-secondary); }
+    .ds-section { padding-top:var(--sm-space-10); margin-top:var(--sm-space-10); border-top:1px solid var(--sm-color-border); }
+    .ds-section > p { color:var(--sm-color-text-secondary); margin:var(--sm-space-3) 0 var(--sm-space-6); }
+    .ds-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sm-space-6); }
+    .ds-sample { padding:var(--sm-space-6); min-width:0; }
+    .ds-sample h3 { margin-bottom:var(--sm-space-4); }
+    .ds-row { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sm-space-3); margin-bottom:var(--sm-space-4); }
+    .ds-swatch { height:5rem; border-radius:var(--sm-radius-control); border:1px solid var(--sm-color-border); background:var(--swatch); margin-bottom:var(--sm-space-3); }
+    .ds-token { display:block; font:var(--sm-text-xs)/1.6 monospace; color:var(--sm-color-text-muted); overflow-wrap:anywhere; margin-top:var(--sm-space-2); }
+    .ds-type-row { display:grid; grid-template-columns:10rem minmax(0,1fr); align-items:baseline; padding:var(--sm-space-4) 0; border-bottom:1px solid var(--sm-color-border); gap:var(--sm-space-4); }
+    .ds-type-row small { color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+    .ds-code { margin-top:var(--sm-space-5); background:var(--sm-color-surface-subtle); border-radius:var(--sm-radius-control); padding:var(--sm-space-4); white-space:pre-wrap; overflow-wrap:anywhere; font-size:var(--sm-text-xs); }
+    .ds-space-row { display:flex; align-items:center; gap:var(--sm-space-4); margin-top:var(--sm-space-3); font-size:var(--sm-text-sm); }
+    .ds-space-bar { height:var(--sm-space-3); border-radius:var(--sm-radius-sm); background:var(--sm-color-action); }
+    .ds-state { display:grid; gap:var(--sm-space-3); }
+    @media(max-width:900px) { .ds-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:679px) { .ds-page { padding:var(--sm-space-6) var(--sm-space-4); } .ds-grid { grid-template-columns:1fr; } .ds-type-row { grid-template-columns:1fr; gap:var(--sm-space-2); } .ds-nav { margin-bottom:var(--sm-space-8); } }
+  </style>
+</head>
+<body>
+  <a class="sm-skip-link" href="#ds-main">본문으로 건너뛰기</a>
+  <main id="ds-main" class="ds-page" tabindex="-1">
+    <nav class="ds-nav" aria-label="디자인 시스템"><a href="/" class="brand"><img src="/logo.svg" width="40" height="40" alt=""><strong>SoloMap <span class="sm-badge">DESIGN SYSTEM 1.2</span></strong></a><a href="/" class="sm-button">서비스 화면 보기 <span data-icon="arrow"></span></a></nav>
+    <p class="ds-kicker">SOLOMAP / FOUNDATIONS & COMPONENTS</p>
+    <h1>탐색에 집중하는<br>SoloMap 디자인 시스템</h1>
+    <p class="ds-intro">오렌지는 주요 작업에, 회색은 보조 작업에 사용합니다. 테두리는 입력과 정보의 경계에만 남겨 검색과 식당 정보가 먼저 읽히도록 정돈했습니다. 이 페이지의 버튼·입력창·카드는 실제 서비스와 같은 CSS를 사용합니다.</p>
+
+    <section class="ds-section" aria-labelledby="ds-colors"><h2 id="ds-colors">01. 컬러 시스템</h2><p>브랜드·액션·피드백·난이도 색은 서로 다른 역할을 갖습니다. 주요 버튼의 흰 글자와 보조 텍스트는 색 대비를 검사합니다.</p>
+      <div class="ds-grid">
+        <div class="sm-card ds-sample"><div class="ds-swatch" style="--swatch:var(--sm-color-brand)"></div><h3>브랜드 / SoloMap 오렌지</h3><code class="ds-token" data-token="--sm-color-brand"></code></div>
+        <div class="sm-card ds-sample"><div class="ds-swatch" style="--swatch:var(--sm-color-action)"></div><h3>주요 액션 / 진한 오렌지</h3><code class="ds-token" data-token="--sm-color-action"></code></div>
+        <div class="sm-card ds-sample"><div class="ds-swatch" style="--swatch:var(--sm-color-page)"></div><h3>배경 / 쿨 뉴트럴</h3><code class="ds-token" data-token="--sm-color-page"></code></div>
+      </div>
+      <div class="ds-row" style="margin-top:var(--sm-space-6)"><span class="sm-badge sm-badge--success">학교 인증 완료</span><span class="sm-badge sm-badge--warning">확인이 필요해요</span><span class="sm-badge sm-badge--danger">다시 시도해주세요</span><span class="sm-badge">보조 정보</span></div>
+      <div class="ds-row"><span class="index-level lv-1">Lv.1 입문 혼밥</span><span class="index-level lv-2">Lv.2 혼밥 성지</span><span class="index-level lv-3">Lv.3 일반 밥집</span><span class="index-level lv-4">Lv.4 다인석 식당</span><span class="index-level lv-5">Lv.5 혼밥 끝판왕</span></div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="ds-roles"><h2 id="ds-roles">컴포넌트의 역할</h2><p>같은 모양을 모든 용도로 반복하지 않습니다. 중요도와 선택 상태를 함께 보여줍니다.</p>
+      <div class="ds-grid">
+        <div class="sm-card ds-sample"><h3>작업</h3><div class="ds-row"><button class="sm-button sm-button--primary">식당 찾기</button><button class="sm-button">다녀왔어요</button></div><p class="sm-help">한 영역에서 가장 중요한 작업만 진하게 표시합니다.</p></div>
+        <div class="sm-card ds-sample"><h3>메뉴</h3><div class="ds-row"><button class="kw-chip sm-button sm-button--ghost active" aria-pressed="true">전체</button><button class="kw-chip sm-button sm-button--ghost" aria-pressed="false">국밥</button><button class="kw-chip sm-button sm-button--ghost" aria-pressed="false">돈까스</button></div><p class="sm-help">메뉴는 가벼운 텍스트로, 선택한 항목만 옅게 강조합니다.</p></div>
+        <div class="sm-card ds-sample"><h3>보기 전환</h3><div class="view-switch-tabs"><button class="view-tab-btn sm-button sm-button--ghost active" aria-pressed="true">목록 보기</button><button class="view-tab-btn sm-button sm-button--ghost" aria-pressed="false">지도로 보기</button></div><p class="sm-help" style="margin-top:var(--sm-space-4)">같은 기능의 다른 보기는 하나의 그룹으로 묶습니다.</p></div>
+      </div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="ds-type"><h2 id="ds-type">02. 폰트와 정보 위계</h2><p>한 가지 폰트 안에서 크기·굵기·줄 높이로 구분합니다. 본문은 16px, 보조 본문은 14px, 캡션은 12px부터 사용합니다.</p>
+      <div class="ds-type-row"><small>Display · 26–34 / 700</small><span style="font-size:var(--sm-text-display);font-weight:700;line-height:1.3">오늘의 혼밥을 찾아보세요</span></div>
+      <div class="ds-type-row"><small>Heading · 24 / 700</small><h2>학교 근처, 나에게 맞는 한 끼</h2></div>
+      <div class="ds-type-row"><small>Title · 20 / 700</small><h3>정복한 식당과 다음 도전</h3></div>
+      <div class="ds-type-row"><small>Body · 16 / 400</small><p>같은 학교 학우의 리뷰를 읽고 혼자서도 편안한 식당을 찾아요.</p></div>
+      <div class="ds-type-row"><small>Supporting · 14 / 400</small><p class="sm-help">하루 한 번 체크인으로 방문 기록을 남길 수 있어요.</p></div>
+      <div class="ds-type-row"><small>Caption · 12 / 600</small><span class="sm-badge">명지대학교 인문캠퍼스 · 도보 5분</span></div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="ds-controls"><h2 id="ds-controls">03. 버튼과 입력창</h2><p>버튼은 최소 44px, 기본 입력창은 48px입니다. Tab 키로 포커스 상태도 확인할 수 있습니다.</p>
+      <div class="ds-grid">
+        <div class="sm-card ds-sample"><h3>주요 · 보조 · 텍스트</h3><p class="sm-help" style="margin-bottom:var(--sm-space-4)">주요 작업만 오렌지로 채웁니다. 보조 작업은 회색, 이동과 안내는 텍스트 버튼을 사용합니다.</p><div class="ds-row"><button class="sm-button sm-button--primary">주요 액션 <span data-icon="arrow"></span></button><button class="sm-button">보조 액션</button></div><div class="ds-row"><button class="sm-button sm-button--ghost">텍스트 액션</button><button class="sm-button sm-button--danger">삭제하기</button></div><code class="ds-code">&lt;button class="sm-button sm-button--primary"&gt;주요 액션&lt;/button&gt;</code></div>
+        <div class="sm-card ds-sample"><h3>상태</h3><div class="ds-state"><button class="sm-button sm-button--primary" disabled>이용할 수 없어요</button><button class="sm-button" aria-busy="true"><span data-icon="grow"></span>처리하고 있어요</button><button class="sm-button active" aria-pressed="true">선택됨</button></div></div>
+        <div class="sm-card ds-sample"><h3>입력창</h3><div class="sm-field"><label class="sm-label" for="ds-email">학교 이메일</label><input class="sm-input" id="ds-email" type="email" placeholder="student@mju.ac.kr" aria-describedby="ds-email-help"><p id="ds-email-help" class="sm-help">학교 메일 주소를 입력해주세요.</p></div></div>
+        <div class="sm-card ds-sample"><h3>입력 오류</h3><div class="sm-field"><label class="sm-label" for="ds-error-input">인증 코드</label><input class="sm-input" id="ds-error-input" value="123" aria-invalid="true" aria-describedby="ds-code-error"><p id="ds-code-error" class="sm-error">6자리 인증 코드를 입력해주세요.</p></div></div>
+        <div class="sm-card ds-sample"><h3>아이콘 버튼</h3><div class="ds-row"><button class="sm-button sm-button--icon sm-button--ghost" aria-label="찜하기" aria-pressed="false"><span data-icon="heart"></span></button><button class="sm-button sm-button--icon" aria-label="닫기"><span data-icon="close"></span></button></div><p class="sm-help">보이는 라벨이 없으면 aria-label을 지정합니다. 장식 아이콘은 읽지 않습니다.</p></div>
+        <div class="sm-card ds-sample"><h3>피드백</h3><div class="sm-notice sm-notice--warning">내용을 확인한 후 다시 시도해주세요.</div><label class="sm-label" for="ds-progress">다음 레벨까지 40%</label><progress id="ds-progress" class="sm-progress" max="100" value="40"></progress></div>
+      </div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="ds-card"><h2 id="ds-card">04. 반복 컴포넌트</h2><p>카드·레벨 배지·태그·메타 정보·액션은 동일한 조합으로 반복합니다. 아래는 디자인 확인용 예시입니다.</p>
+      <div class="ds-grid"><article class="place-card-item sm-card"><div class="card-header-row"><div class="card-icon-badge" data-icon="utensils"></div><div class="card-title-group"><div class="card-cat-line"><span class="place-category">한식 · 예시</span><span class="distance-pill sm-badge">도보 5분</span></div><h3 class="place-title">혼자서도 편안한 밥집</h3></div><button class="sm-button sm-button--icon sm-button--ghost" aria-label="예시 식당 찜하기"><span data-icon="heart"></span></button></div><div class="card-solo-banner lv-2"><strong class="solo-badge-chip">Lv.2 혼밥 성지</strong><p class="solo-psychology-text">혼밥에 편안한 분위기를 확인해보세요.</p></div><div class="solo-tags"><span class="solo-tag sm-badge">#1인석</span><span class="solo-tag sm-badge">#편안한한끼</span></div><div class="account-card-actions"><button class="sm-button"><span data-icon="chat"></span>리뷰 보기</button><button class="sm-button"><span data-icon="check"></span>다녀왔어요</button></div></article>
+      <div class="sm-card ds-sample"><h3>간격 체계</h3><p class="sm-help">4px 단위를 기준으로 요소·컴포넌트·섹션의 간격을 구분합니다.</p><div class="ds-space-row"><span>8</span><div class="ds-space-bar" style="width:var(--sm-space-2)"></div></div><div class="ds-space-row"><span>16</span><div class="ds-space-bar" style="width:var(--sm-space-4)"></div></div><div class="ds-space-row"><span>24</span><div class="ds-space-bar" style="width:var(--sm-space-6)"></div></div><div class="ds-space-row"><span>32</span><div class="ds-space-bar" style="width:var(--sm-space-8)"></div></div><div class="ds-space-row"><span>48</span><div class="ds-space-bar" style="width:var(--sm-space-12)"></div></div></div>
+      <div class="sm-card ds-sample"><h3>반응형 규칙</h3><p class="sm-help">모바일: 식당 카드 1열<br>태블릿: 2열<br>PC: 3열</p><p class="sm-help" style="margin-top:var(--sm-space-4)">모달은 화면 높이 안에서 스크롤되고, 키보드 포커스는 모달 안에 머뭅니다. 모션 감소 설정을 존중합니다.</p></div></div>
+    </section>
+  </main>
+  <script src="/ui.js"></script>
+  <script>document.querySelectorAll('[data-token]').forEach(e => e.textContent = e.dataset.token + ' · ' + getComputedStyle(document.documentElement).getPropertyValue(e.dataset.token).trim());</script>
+</body>
+</html>
