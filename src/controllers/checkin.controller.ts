@@ -18,7 +18,7 @@ function getParam(val: string | string[] | undefined): string {
 export async function createCheckIn(req: Request, res: Response, next: NextFunction) {
   try {
     const placeId = getParam(req.params.id);
-    const result = await levelService.checkInPlace(req.user!.id, placeId);
+    const result = await levelService.checkInPlace(req.user!.id, placeId, req.body?.placeName);
 
     res.status(201).json({
       message: '체크인이 완료되었습니다! 혼밥 경험치를 획득했습니다.',

@@ -7,6 +7,7 @@
 import prisma from '../lib/prisma.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { HttpError } from './auth.service.js';
+import { searchPlacesByKeyword, MYONGJI_SEOUL_COORDS, type KakaoPlaceDocument } from '../lib/kakao.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -56,34 +57,48 @@ export function calculateDisplaySoloLevel(
 }
 
 // 필요 시 식당이 DB에 없으면 daedongPlaces.json에서 찾아 자동 생성하는 헬퍼
-async function ensurePlaceExists(placeId: string) {
+// placeName이 오면 카카오 검색 결과에서 같은 ID를 확인한 뒤에만 등록한다 (클라이언트 값을 그대로 믿지 않음).
+export async function ensurePlaceExists(placeId: string, placeName?: unknown) {
   const existing = await prisma.place.findUnique({ where: { id: placeId } });
   if (existing) return existing;
 
-  // DB에 없으면 JSON 파일에서 검색
+  const createFrom = (found: KakaoPlaceDocument) => prisma.place.create({
+    data: {
+      id: String(found.id),
+      name: found.place_name,
+      category: found.category_name,
+      roadAddress: found.road_address_name || found.address_name || '주소 정보 없음',
+      lat: parseFloat(found.y) || 37.5802,
+      lng: parseFloat(found.x) || 126.9234,
+      area: '명지대',
+      baseSoloLevel: 3,
+      reviewCount: 0,
+    },
+  });
+
+  // 1) DB에 없으면 대동명지도 JSON에서 검색
   try {
     const daedongPath = path.resolve(__dirname, '../data/daedongPlaces.json');
     if (fs.existsSync(daedongPath)) {
-      const places = JSON.parse(fs.readFileSync(daedongPath, 'utf-8'));
-      const found = places.find((p: any) => String(p.id) === placeId);
-      if (found) {
-        return await prisma.place.create({
-          data: {
-            id: String(found.id),
-            name: found.place_name,
-            category: found.category_name,
-            roadAddress: found.road_address_name || found.address_name || '주소 정보 없음',
-            lat: parseFloat(found.y) || 37.5802,
-            lng: parseFloat(found.x) || 126.9234,
-            area: '명지대',
-            baseSoloLevel: 3,
-            reviewCount: 0,
-          },
-        });
-      }
+      const places: KakaoPlaceDocument[] = JSON.parse(fs.readFileSync(daedongPath, 'utf-8'));
+      const found = places.find((p) => String(p.id) === placeId);
+      if (found) return await createFrom(found);
     }
   } catch (err) {
     console.warn('⚠️ [ensurePlaceExists] JSON 탐색 실패:', err);
+  }
+
+  // 2) 카카오 실시간 검색으로만 노출된 식당: 이름으로 다시 검색해 ID가 일치할 때만 등록
+  if (typeof placeName === 'string' && placeName.trim() && placeName.length <= 100) {
+    try {
+      const { documents } = await searchPlacesByKeyword(placeName, {
+        x: MYONGJI_SEOUL_COORDS.x, y: MYONGJI_SEOUL_COORDS.y, size: 15,
+      });
+      const found = documents.find((p) => String(p.id) === placeId);
+      if (found) return await createFrom(found);
+    } catch (err) {
+      console.warn('⚠️ [ensurePlaceExists] 카카오 재검색 실패:', err);
+    }
   }
 
   throw new HttpError(404, '존재하지 않는 식당입니다.');
@@ -126,9 +141,9 @@ export async function getReviewsByPlace(placeId: string) {
  */
 export async function createReview(
   userId: string,
-  input: { placeId?: string; soloLevel?: number; content?: string }
+  input: { placeId?: string; placeName?: string; soloLevel?: number; content?: string }
 ) {
-  const { placeId, soloLevel, content } = input;
+  const { placeId, placeName, soloLevel, content } = input;
 
   if (!placeId) {
     throw new HttpError(400, '식당 ID(placeId)가 필요합니다.');
@@ -145,7 +160,7 @@ export async function createReview(
   }
 
   // 대상 식당 존재 확인 또는 자동 연동
-  await ensurePlaceExists(placeId);
+  await ensurePlaceExists(placeId, placeName);
 
   // 1인 1리뷰 제약 검사: 이미 작성한 리뷰가 있는지 확인
   const existingReview = await prisma.review.findUnique({

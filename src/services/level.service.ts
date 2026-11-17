@@ -9,7 +9,7 @@
 
 import prisma from '../lib/prisma.js';
 import { HttpError } from './auth.service.js';
-import { calculateDisplaySoloLevel } from './review.service.js';
+import { calculateDisplaySoloLevel, ensurePlaceExists } from './review.service.js';
 import { getPlaceCuration } from '../lib/gemini.js';
 import { MYONGJI_SEOUL_COORDS } from '../lib/kakao.js';
 
@@ -86,14 +86,9 @@ export function calculateLevelFromCheckIns(checkIns: { levelAtVisit: number; pla
  * - 당일 동일 식당 중복 체크인 방지 (409)
  * - 당시 식당 난이도를 levelAtVisit로 저장
  */
-export async function checkInPlace(userId: string, placeId: string) {
-  const place = await prisma.place.findUnique({
-    where: { id: placeId },
-  });
-
-  if (!place) {
-    throw new HttpError(404, '존재하지 않는 식당입니다.');
-  }
+export async function checkInPlace(userId: string, placeId: string, placeName?: unknown) {
+  // 리뷰와 같은 규칙: DB에 아직 없는 식당은 JSON·카카오 재검색으로 확인해 등록한다. 없으면 404.
+  const place = await ensurePlaceExists(placeId, placeName);
 
   const visitDate = getKSTDateString();
 

@@ -254,7 +254,7 @@ btnSubmitReview.addEventListener('click', () => busy(btnSubmitReview, async () =
   const place = targetReviewPlace;
   try {
     await apiRequest(editingReviewId ? `/api/reviews/${encodeURIComponent(editingReviewId)}` : '/api/reviews', {
-      method: editingReviewId ? 'PATCH' : 'POST', body: { placeId: place.id, soloLevel: selectedReviewLevel, content },
+      method: editingReviewId ? 'PATCH' : 'POST', body: { placeId: place.id, placeName: place.place_name, soloLevel: selectedReviewLevel, content },
     });
   } catch (error) {
     if (error.status === 409 && error.reviewId) {
@@ -313,7 +313,8 @@ async function checkInById(placeId, button) {
   await busy(button, async () => {
     const userId = currentUser.id;
     const previousLevel = currentUser.level || 1;
-    const data = await apiRequest(`/api/places/${encodeURIComponent(placeId)}/checkins`, { method: 'POST' });
+    const placeName = (currentPlaces.find(p => p.id === placeId) || knownPlaces.get(placeId))?.place_name;
+    const data = await apiRequest(`/api/places/${encodeURIComponent(placeId)}/checkins`, { method: 'POST', body: { placeName } });
     if (currentUser?.id !== userId) return;
     Object.assign(currentUser, data.levelInfo); renderAccountMenu();
     showToast(data.levelInfo.level > previousLevel ? `체크인 완료! ${data.levelInfo.title} 레벨업 🎉` : '체크인 완료! 혼밥 경험치를 얻었어요.');
