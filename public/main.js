@@ -432,10 +432,15 @@ function createCardHtml(place) {
       <div class="card-level-row">
         <span class="solo-badge-chip sm-level-badge">${soloInfo.label}</span>
         <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="level-score">${soloInfo.lv}/5</span>
       </div>
       <p class="solo-psychology-text">${escapeHtml(soloInfo.psychology)}</p>
+      <div class="card-footer-actions">
+        <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
+        <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
+      </div>
       <details class="card-more">
-        <summary>위치 · 전화번호 · 리뷰 보기</summary>
+        <summary>자세히 보기</summary>
         <div class="solo-tags" aria-label="혼밥 특징">${soloInfo.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
         <ul class="place-meta-list">
           <li><span class="meta-icon">${soloIcon('pin')}</span><span>${escapeHtml(cleanAddr)}</span></li>
@@ -448,10 +453,6 @@ function createCardHtml(place) {
           <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
         </div>
       </details>
-      <div class="card-footer-actions">
-        <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
-        <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
-      </div>
     </article>`;
 }
 

@@ -136,13 +136,17 @@
   display:inline-flex;
   align-items:center;
   gap:var(--sm-space-2);
-  padding:var(--sm-space-1) var(--sm-space-3);
-  border-radius:var(--sm-radius-pill);
-  background:var(--sm-color-surface);
-  color:var(--sm-color-text-secondary);
+  color:var(--sm-color-text);
   font-size:var(--sm-text-sm);
-  font-weight:var(--sm-weight-semibold);
+  font-weight:var(--sm-weight-bold);
   margin-bottom:var(--sm-space-4);
+}
+.hero-badge::before {
+  content:"";
+  width:.5rem;
+  height:.5rem;
+  border-radius:50%;
+  background:var(--sm-color-brand);
 }
 .hero-headline {
   max-width:22ch;
@@ -234,11 +238,11 @@
 .kw-chip.active, .kw-chip[aria-pressed="true"] { border-color:transparent; background:var(--sm-color-text); color:var(--sm-color-surface); }
 /* 주황 소개 영역 안의 추천 칩: 흰 테두리, 선택 시 흰 바탕 */
 /* 추천 메뉴: 흰 타일 + 작은 음식 아이콘. 선택은 굵은 테두리로만 표시 */
-.hero-card .search-input-wrap .sm-input { border-color:transparent; border-radius:var(--sm-radius-card); min-height:3.75rem; font-size:var(--sm-text-lg); }
-.hero-card .search-submit-btn, .hero-card .btn-roulette { min-height:3.75rem; border-radius:var(--sm-radius-card); padding-inline:var(--sm-space-6); }
-.hero-card .btn-roulette { background:var(--sm-color-surface); color:var(--sm-color-text); }
+.hero-card .search-input-wrap .sm-input { border-color:transparent; font-size:var(--sm-text-lg); }
+.hero-card .search-submit-btn, .hero-card .btn-roulette { border-radius:var(--sm-radius-card); padding-inline:var(--sm-space-6); }
+
 .hero-card .quick-keywords { align-items:stretch; display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,7.5rem),1fr)); gap:var(--sm-space-3); margin-top:var(--sm-space-6); }
-.hero-card .kw-label { grid-column:1 / -1; color:var(--sm-color-text); font-size:var(--sm-text-lg); font-weight:var(--sm-weight-bold); }
+.hero-card .kw-label { grid-column:1 / -1; margin:var(--sm-space-10) 0 var(--sm-space-2); }
 .hero-card .kw-chip { display:grid; justify-items:start; align-content:space-between; gap:var(--sm-space-3); min-height:5.5rem; padding:var(--sm-space-4); border:0; border-radius:var(--sm-radius-card); background:var(--sm-color-surface); color:var(--sm-color-text); font-weight:var(--sm-weight-bold); text-align:left; }
 .hero-card .kw-chip:hover { background:var(--sm-color-surface); box-shadow:var(--sm-shadow-raised); }
 .hero-card .kw-chip.active, .hero-card .kw-chip[aria-pressed="true"] { background:var(--sm-color-surface); color:var(--sm-color-text); box-shadow:inset 0 0 0 2px var(--sm-color-text); }
@@ -247,9 +251,28 @@
 .hero-card .kw-chip { transition:box-shadow var(--sm-duration-normal) var(--sm-ease), transform var(--sm-duration-normal) var(--sm-ease); }
 .hero-card .kw-chip:hover { transform:translateY(-2px); }
 /* 섹션 제목: 굵은 제목 + 한 줄 설명 */
-.section-head { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sm-space-3); flex-wrap:wrap; margin:var(--sm-space-10) 0 var(--sm-space-4); }
-.section-title, .hero-card .kw-label, .catalog-title { font-size:var(--sm-text-xl); font-weight:800; letter-spacing:-.03em; }
-.section-sub { color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+/* 섹션 머리: 영어 소제목 + 질문형 제목 + 한 줄 설명 (Manus 레퍼런스) */
+.section-head { margin:var(--sm-space-16) 0 var(--sm-space-5); }
+.section-eyebrow { margin-bottom:var(--sm-space-2); color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); font-weight:800; letter-spacing:.08em; }
+.section-title, .catalog-title { font-size:clamp(1.375rem, 2.2vw, 1.75rem); font-weight:800; letter-spacing:-.03em; }
+.section-sub { margin-top:var(--sm-space-2); color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+/* 흰 바탕에서 카드·타일을 얇은 테두리와 옅은 그림자로 구분 */
+.place-card-item, .index-card, .solo-journey, .hero-card .kw-chip { border:1px solid var(--sm-color-border) !important; box-shadow:0 1px 3px #2121240d; }
+/* 검색: 흰 상자 안에 입력과 버튼 */
+.hero-card .main-search-bar { padding:var(--sm-space-2); border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-card); background:var(--sm-color-surface); box-shadow:0 4px 16px #2121240f; }
+.hero-card .main-search-bar .sm-input { border:0; min-height:3rem; }
+.hero-card .main-search-bar .search-submit-btn { min-height:3rem; border-radius:var(--sm-radius-control); }
+.hero-card .btn-roulette { min-height:4.125rem; background:var(--sm-color-surface-subtle); }
+.search-tip { margin-top:var(--sm-space-2); color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); }
+.search-tip b { margin-right:var(--sm-space-1); color:var(--sm-color-text); }
+/* 레벨 카드: 배지 + 이모지, 아래에 한 줄 성격 */
+.index-emoji { grid-area:meter; justify-self:end; font-size:1.5rem; line-height:1; }
+.index-card .index-mindset { display:block; margin-top:var(--sm-space-4); color:var(--sm-color-text); font-weight:var(--sm-weight-bold); }
+/* 식당 카드 */
+.level-score { color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-bold); }
+.btn-checkin { background:var(--sm-color-surface) !important; border-color:var(--sm-color-border) !important; }
+.btn-checkin:hover { border-color:var(--sm-color-control-border) !important; }
+.card-more summary { display:flex; justify-content:center; width:100%; }
 .kw-icon svg { width:100%; height:100%; }
 .tab-btn.active, .tab-btn[aria-pressed="true"] { background:var(--sm-color-text); color:var(--sm-color-surface); border-color:transparent; }
 .view-tab-btn.active, .view-tab-btn[aria-pressed="true"] { border-color:transparent; background:var(--sm-color-surface); color:var(--sm-color-text); box-shadow:inset 0 -2px 0 var(--sm-color-text); font-weight:var(--sm-weight-bold); }
@@ -1075,12 +1098,12 @@ body.sm-dialog-open {
     grid-template-columns:1fr;
     gap:var(--sm-space-2);
   }
-  .index-card .sm-level-meter {
+  .index-card .index-mindset {
     display:none;
   }
   .index-card {
-    grid-template-columns:auto minmax(0,1fr);
-    grid-template-areas:"lv info";
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:"lv info meter";
     padding:var(--sm-space-3);
     gap:var(--sm-space-3);
   }
