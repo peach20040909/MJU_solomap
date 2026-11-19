@@ -29,8 +29,8 @@
     <ellipse cx="64" cy="56" rx="36" ry="16" fill="url(#riceGradTrans)"/>
 
     <!-- 밥그릇 중앙 지도 핀 마커 -->
-    <path d="M64 26C56.8 26 51 31.8 51 39C51 48.2 64 61 64 61C64 61 77 48.2 77 39C77 31.8 71.2 26 64 26Z" fill="url(#pinGradTrans)"/>
-    <circle cx="64" cy="37.5" r="4.2" fill="#FFFFFF"/>
+    <path d="M64 26C56.8 26 51 31.8 51 39C51 48.2 64 61 64 61C64 61 77 48.2 77 39C77 31.8 71.2 26 64 26Z" fill="#FFFFFF" stroke="#B03508" stroke-width="2.4"/>
+    <circle cx="64" cy="37.5" r="4.6" fill="#FF5A1F"/>
 
     <!-- 따스하게 피어오르는 김 (오렌지 톤으로 흰 배경에서도 잘 보이게) -->
     <path d="M41 42C39 37 42.5 33 40.5 28" stroke="#FF6B35" stroke-width="2.6" stroke-linecap="round"/>

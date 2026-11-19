@@ -28,8 +28,8 @@
   <ellipse cx="64" cy="56" rx="36" ry="16" fill="url(#riceFavGradB)"/>
 
   <!-- 밥그릇 중앙 지도 핀 마커 (16/32px 가독성 최적화) -->
-  <path d="M64 25C56 25 50 31.2 50 39C50 48.5 64 61.5 64 61.5C64 61.5 78 48.5 78 39C78 31.2 72 25 64 25Z" fill="#FF451A"/>
-  <circle cx="64" cy="37" r="4.5" fill="#FFFFFF"/>
+  <path d="M64 25C56 25 50 31.2 50 39C50 48.5 64 61.5 64 61.5C64 61.5 78 48.5 78 39C78 31.2 72 25 64 25Z" fill="#FFFFFF" stroke="#B03508" stroke-width="2.6"/>
+  <circle cx="64" cy="37" r="4.8" fill="#FF5A1F"/>
 
   <!-- 따스한 김 (좌우) -->
   <path d="M40 42C38 36.5 42 32 40 27" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
