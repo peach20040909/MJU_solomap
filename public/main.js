@@ -266,8 +266,7 @@ const mapViewContainer = document.getElementById('map-view-container');
 const catalogTitle = document.getElementById('catalog-title');
 const catalogCount = document.getElementById('catalog-count');
 const sortSelect = document.getElementById('sort-select');
-// 검색어가 있는 메뉴 칩만. 마지막 "추천" 칸은 검색 대신 랜덤 추천을 연다.
-const kwChips = document.querySelectorAll('.kw-chip[data-query]');
+const kwChips = document.querySelectorAll('.kw-chip');
 const filterTabs = document.querySelectorAll('.tab-btn');
 const btnViewList = document.getElementById('btn-view-list');
 const btnViewMap = document.getElementById('btn-view-map');
@@ -518,7 +517,6 @@ window.handleToggleFav = function (placeId, event) {
 btnRandomRoulette.addEventListener('click', () => {
   openRouletteModal();
 });
-document.getElementById('btn-menu-pick')?.addEventListener('click', openRouletteModal);
 
 rouletteClose.addEventListener('click', () => {
   closeRouletteModal();

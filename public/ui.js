@@ -26,8 +26,8 @@ function soloIcon(name) {
 const soloFoodArtPaths = (() => {
   const E5 = '#FF5A1F', E3 = '#FF9E75', E2 = '#FFCDB5', E7 = '#B03508', W = '#FFFFFF', Y = '#FFD25A', G = '#8BC27A', R = '#D9381E', N = '#2F3A2C';
   return {
-    // 추천: 반짝이는 별(랜덤 추천 칸)
-    pick: `<path d="M60 18c4 22 12 30 34 34-22 4-30 12-34 34-4-22-12-30-34-34 22-4 30-12 34-34Z" fill="${E5}"/><path d="M60 38c2 9 5 12 14 14-9 2-12 5-14 14-2-9-5-12-14-14 9-2 12-5 14-14Z" fill="${Y}"/><path d="M92 74c1.5 8 4 10.5 12 12-8 1.5-10.5 4-12 12-1.5-8-4-10.5-12-12 8-1.5 10.5-4 12-12Z" fill="${E3}"/><circle cx="28" cy="88" r="5" fill="${E2}"/><circle cx="90" cy="26" r="4" fill="${E2}"/>`,
+    // 아시안: 쌀국수 그릇(맑은 국물 · 소고기 · 고수 · 라임)
+    pho: `<path d="M86 10 66 50M98 14 76 52" stroke="${E7}" stroke-width="4" stroke-linecap="round"/><path d="M18 58h84c0 24-19 42-42 42S18 82 18 58Z" fill="${W}" stroke="${E3}" stroke-width="3"/><path d="M24 70h72" stroke="${E5}" stroke-width="4" stroke-linecap="round"/><ellipse cx="60" cy="58" rx="42" ry="10" fill="#F6D9A8"/><path d="M30 58c5-4 9 3 14 0s9 3 14 0 9 3 14 0 9 3 14 0" stroke="${W}" stroke-width="3" stroke-linecap="round" fill="none"/><ellipse cx="46" cy="54" rx="9" ry="4" fill="#9C4A2E"/><ellipse cx="60" cy="56" rx="8" ry="3.5" fill="#B5603D"/><path d="M70 52c4-6 10-6 12-2-4 4-8 4-12 2Z" fill="${G}"/><path d="M36 60c2-5 7-6 10-3-3 3-7 4-10 3Z" fill="${G}"/><path d="M84 54a8 8 0 0 1 12 6H84Z" fill="#B9D86A"/><rect x="48" y="96" width="24" height="7" rx="3.5" fill="${E3}"/>`,
     // 중식: 짜장면 그릇(면 위 짜장 소스 · 오이채)
     jjajang: `<path d="M86 10 66 50M98 14 76 52" stroke="${E7}" stroke-width="4" stroke-linecap="round"/><path d="M18 58h84c0 24-19 42-42 42S18 82 18 58Z" fill="${E5}"/><ellipse cx="60" cy="58" rx="42" ry="10" fill="${Y}"/><path d="M28 58c4-5 8 3 12 0s8 3 12 0 8 3 12 0 8 3 12 0 8 3 12 0" stroke="#F2B53A" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M40 56c0-8 9-12 20-12s20 4 20 12c-6 4-34 4-40 0Z" fill="#4A2A12"/><path d="M50 46l8 4M62 44l6 5M56 52l8 0" stroke="${G}" stroke-width="3" stroke-linecap="round"/><rect x="48" y="96" width="24" height="7" rx="3.5" fill="${E7}"/>`,
     // 마라탕: 빨간 국물 그릇 + 두부·청경채·고추
