@@ -1376,3 +1376,8 @@ body.sm-dialog-open {
     font-size:var(--sm-text-xs);
   }
 }
+
+/* "추천" 칸은 휴대폰 5×2 격자를 채우는 용도. PC 타일 줄에서는 혼자 다음 줄로 떨어지므로 숨긴다 */
+@media (min-width:680px) {
+  .hero-card .kw-chip--pick { display:none; }
+}
