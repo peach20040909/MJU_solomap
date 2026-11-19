@@ -388,7 +388,13 @@ function getFilteredList() {
   return sortPlacesList(list, currentSort);
 }
 
-function renderFilteredPlaces() {
+// 휴대폰에서는 20곳씩 끊어 보여 준다. 필터·검색이 바뀌면 처음 20곳으로 돌아간다.
+const MOBILE_PAGE_SIZE = 20;
+const mobileQuery = window.matchMedia('(max-width: 679px)');
+let visiblePlaceCount = MOBILE_PAGE_SIZE;
+
+function renderFilteredPlaces(keepCount = false) {
+  if (!keepCount) visiblePlaceCount = MOBILE_PAGE_SIZE;
   const filtered = getFilteredList();
   catalogCount.textContent = `${filtered.length}곳`;
 
@@ -401,11 +407,20 @@ function renderFilteredPlaces() {
     return;
   }
 
-  placesContainer.innerHTML = filtered.map((place) => createCardHtml(place)).join('');
+  const shown = mobileQuery.matches ? filtered.slice(0, visiblePlaceCount) : filtered;
+  const moreButton = shown.length < filtered.length
+    ? `<button type="button" class="btn-load-more sm-button">식당 더 보기 <span>${shown.length} / ${filtered.length}</span></button>`
+    : '';
+  placesContainer.innerHTML = shown.map((place) => createCardHtml(place)).join('') + moreButton;
 }
 
 // 카드 빈 곳을 누르면 상세(위치·전화·지도·리뷰 작성)를 펼친다. 버튼·링크·펼친 내용 클릭은 그대로 둔다.
 placesContainer.addEventListener('click', (e) => {
+  if (e.target.closest('.btn-load-more')) {
+    visiblePlaceCount += MOBILE_PAGE_SIZE;
+    renderFilteredPlaces(true);
+    return;
+  }
   if (e.target.closest('a, button, summary, .card-more')) return;
   const more = e.target.closest('.place-card-item')?.querySelector('.card-more');
   if (more) more.open = !more.open;
@@ -451,6 +466,10 @@ function createCardHtml(place) {
           <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="카카오맵에서 위치 및 길찾기 보기">카카오맵 ${soloIcon('external')}</a>
           <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="네이버 지도에서 메뉴와 길찾기 보기">네이버 지도 ${soloIcon('external')}</a>
           <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
+        </div>
+        <div class="card-more-actions">
+          <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
+          <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
         </div>
       </details>
     </article>`;
