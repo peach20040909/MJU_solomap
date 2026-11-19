@@ -534,8 +534,13 @@ btnRouletteGo.addEventListener('click', () => {
   if (!currentWinningPlace) return;
   closeRouletteModal();
 
-  // 목록 뷰로 전환 후 해당 카드로 부드럽게 스크롤
+  // 결과 화면의 목록 뷰로 전환 후 해당 카드로 부드럽게 스크롤 (휴대폰 20곳 끊기에 가려졌으면 전부 펼친다)
+  showResults(searchInput.value.trim() || '혼밥');
   switchViewMode('list');
+  if (!document.getElementById(`place-card-${currentWinningPlace.id}`)) {
+    visiblePlaceCount = Infinity;
+    renderFilteredPlaces(true);
+  }
 
   setTimeout(() => {
     const card = document.getElementById(`place-card-${currentWinningPlace.id}`);
@@ -1322,23 +1327,53 @@ btnViewMap.addEventListener('click', () => switchViewMode('map'));
 /* ===================================================
    검색 & 필터 이벤트 리스너
    =================================================== */
+/* 검색 결과는 홈 아래로 이어 붙이지 않고 별도 화면(body.results-open)으로 연다.
+   주소에 ?q=검색어를 남겨서 휴대폰 뒤로 가기로 홈에 돌아오고, 그 주소로 바로 들어와도 결과가 열린다. */
+function showResults(q, push = true) {
+  document.body.classList.add('results-open');
+  const url = `?q=${encodeURIComponent(q)}`;
+  if (push && location.search !== url) history.pushState({ q }, '', url);
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.body.classList.remove('results-open');
+  window.scrollTo(0, 0);
+}
+
+function openSearch(q, push = true) {
+  searchInput.value = q;
+  // 같은 검색어의 메뉴 칸이 있으면 그 칸만, 없으면 아무 칸도 선택하지 않는다.
+  kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === q));
+  loadPlaces(q);
+  // 메뉴 칸으로 연 검색은 실제 검색어(아시아음식) 대신 칸 이름(아시안)으로 제목을 보여 준다
+  const chip = [...kwChips].find((c) => c.dataset.query === q);
+  if (chip && q !== '혼밥') catalogTitle.textContent = `"${chip.textContent.trim()}" 검색 결과`;
+  showResults(q, push);
+}
+
+window.addEventListener('popstate', () => {
+  const q = new URLSearchParams(location.search).get('q');
+  if (q) openSearch(q, false);
+  else showHome();
+});
+
+document.getElementById('btn-results-back')?.addEventListener('click', () => {
+  if (history.state?.q) history.back();
+  else {
+    history.replaceState(null, '', location.pathname);
+    showHome();
+  }
+});
+
 searchForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const q = searchInput.value.trim();
-  if (!q) return;
-  // 직접 입력한 검색어와 같은 추천 메뉴가 있으면 그 타일만, 없으면 아무 타일도 선택하지 않는다.
-  kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === q));
-  loadPlaces(q);
+  if (q) openSearch(q);
 });
 
 kwChips.forEach((chip) => {
-  chip.addEventListener('click', () => {
-    kwChips.forEach((c) => c.classList.remove('active'));
-    chip.classList.add('active');
-    const q = chip.dataset.query;
-    searchInput.value = q;
-    loadPlaces(q);
-  });
+  chip.addEventListener('click', () => openSearch(chip.dataset.query));
 });
 
 filterTabs.forEach((tab) => {
@@ -1570,7 +1605,8 @@ function resetToHome(e) {
   if (sortSelect) sortSelect.value = 'distance';
   switchViewMode('list');
   loadPlaces('혼밥');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  history.replaceState(null, '', location.pathname);
+  showHome();
 }
 
 const logoHome = document.getElementById('logo-home');
@@ -1600,7 +1636,8 @@ document.querySelectorAll('.difficulty-index .index-card').forEach((card) => {
     updateMapMarkers();
     smoothFitNaverMapBounds(finalFilter);
 
-    document.querySelector('.catalog-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 홈의 레벨 카드는 "전체 식당 중 이 레벨"을 결과 화면으로 연다
+    openSearch('혼밥');
   });
 });
 
@@ -1608,4 +1645,7 @@ document.querySelectorAll('.difficulty-index .index-card').forEach((card) => {
    초기화 실행
    =================================================== */
 updateFavBadge();
-loadPlaces('혼밥');
+// ?q=검색어로 들어오면 결과 화면부터, 아니면 홈에서 시작(목록 데이터는 미리 받아 둔다)
+const initialQuery = new URLSearchParams(location.search).get('q');
+if (initialQuery) openSearch(initialQuery, false);
+else loadPlaces('혼밥');
