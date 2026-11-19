@@ -485,6 +485,14 @@
 .card-more[open] summary {
   margin-bottom:var(--sm-space-1);
 }
+/* Chrome은 summary 뒤 내용을 따로 감싸서 grid gap이 내용 사이에 안 먹는다. 간격을 각 줄에 직접 준다:
+   정보 묶음(태그 · 주소 · 리뷰)은 12px, 행동 묶음(지도 링크 · 버튼)은 구분선과 함께 16px */
+.card-more > :not(summary) + :not(summary) { margin-top:var(--sm-space-3); }
+.card-more > .map-links-group {
+  margin-top:var(--sm-space-4);
+  padding-top:var(--sm-space-3);
+  border-top:1px solid var(--sm-color-border);
+}
 .card-icon-badge {
   display:flex;
   align-items:center;
@@ -1198,7 +1206,15 @@ body.sm-dialog-open {
   .hero-badge { color:#ffffffe6; margin-bottom:var(--sm-space-3); }
   .hero-badge::before { background:var(--sm-color-on-action); }
   .hero-headline { color:var(--sm-color-on-action); font-size:1.75rem; }
-  .hero-headline .text-gradient { color:var(--sm-color-on-action); text-decoration:underline; text-decoration-thickness:.12em; text-underline-offset:.18em; text-decoration-color:#ffffff99; }
+  /* 핵심 문구 "혼밥 난이도"는 흰 칩 위 주황 글씨로 가장 먼저 읽히게 한다 */
+  .hero-headline .text-gradient {
+    padding:0 .22em;
+    border-radius:.28em;
+    background:var(--sm-color-surface);
+    color:var(--sm-color-brand);
+    -webkit-box-decoration-break:clone;
+    box-decoration-break:clone;
+  }
   .hero-subtext, .search-tip { display:none; }
   .search-actions-row { margin-top:var(--sm-space-5); gap:var(--sm-space-2); }
   .hero-card .main-search-bar {
@@ -1219,8 +1235,11 @@ body.sm-dialog-open {
     color:var(--sm-color-on-action);
   }
   /* 흰 메뉴 시트가 주황 카드 아래쪽을 덮으며 올라온다 */
+  /* 메뉴: 배민 홈처럼 5열 아이콘 격자. 연한 둥근 사각형 안에 큰 아이콘, 이름은 그 아래 */
   .hero-card .quick-keywords {
-    display:block;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:var(--sm-space-4) var(--sm-space-2);
     margin:var(--sm-space-6) calc(-1 * var(--sm-space-5)) 0;
     padding:var(--sm-space-6) var(--sm-space-5) var(--sm-space-2);
     border-radius:var(--sm-radius-panel) var(--sm-radius-panel) 0 0;
@@ -1229,34 +1248,43 @@ body.sm-dialog-open {
   }
   .hero-card .kw-label { margin:0 0 var(--sm-space-3); }
   .hero-card .kw-label .section-sub { display:none; }
-  .kw-row {
-    display:flex;
-    gap:var(--sm-space-2);
-    margin:0 calc(-1 * var(--sm-space-5));
-    padding:0 var(--sm-space-5) var(--sm-space-2);
-    overflow-x:auto;
-    scroll-snap-type:x proximity;
-    scroll-padding-inline:var(--sm-space-4);
-    scrollbar-width:none;
-  }
-  .kw-row::-webkit-scrollbar { display:none; }
+  .hero-card .kw-label { grid-column:1 / -1; }
   .hero-card .kw-chip {
-    display:inline-flex;
-    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
     align-items:center;
     gap:var(--sm-space-2);
-    min-height:2.5rem;
-    padding:0 var(--sm-space-4) 0 var(--sm-space-3);
-    border-radius:var(--sm-radius-pill);
-    font-size:var(--sm-text-sm);
-    scroll-snap-align:start;
-  }
-  .hero-card .kw-chip .kw-icon { width:1.375rem; height:1.375rem; }
-  .hero-card .kw-chip:hover { transform:none; box-shadow:none; }
-  .hero-card .kw-chip.active, .hero-card .kw-chip[aria-pressed="true"] {
-    background:var(--sm-color-text);
-    color:var(--sm-color-surface);
+    min-height:0;
+    padding:0;
+    border:0 !important;
+    background:transparent;
     box-shadow:none;
+    font-size:.8125rem;
+    font-weight:var(--sm-weight-medium);
+    letter-spacing:-.03em;
+    white-space:nowrap;
+  }
+  .hero-card .kw-chip .kw-icon {
+    width:100%;
+    max-width:3.75rem;
+    height:auto;
+    aspect-ratio:1;
+    padding:var(--sm-space-2);
+    border-radius:var(--sm-radius-panel);
+    background:var(--sm-color-surface-subtle);
+    transition:background var(--sm-duration-fast) var(--sm-ease), box-shadow var(--sm-duration-fast) var(--sm-ease);
+  }
+  .hero-card .kw-chip:hover, .hero-card .kw-chip:active { background:transparent; box-shadow:none; transform:none; }
+  .hero-card .kw-chip:active .kw-icon { transform:scale(.96); }
+  .hero-card .kw-chip.active, .hero-card .kw-chip[aria-pressed="true"] {
+    background:transparent;
+    color:var(--sm-color-text);
+    box-shadow:none;
+    font-weight:var(--sm-weight-bold);
+  }
+  .hero-card .kw-chip.active .kw-icon, .hero-card .kw-chip[aria-pressed="true"] .kw-icon {
+    background:var(--sm-color-brand-subtle);
+    box-shadow:inset 0 0 0 2px var(--sm-color-brand);
   }
   /* 혼밥 레벨 5단계: 세로로 쌓지 않고 작은 카드를 옆으로 넘겨 본다 */
   .difficulty-index {
@@ -1311,4 +1339,40 @@ body.sm-dialog-open {
     font-weight:var(--sm-weight-bold);
   }
   .btn-load-more span { color:var(--sm-color-text-muted); font-weight:var(--sm-weight-regular); }
+}
+
+.journey-title { color:var(--sm-color-text); font-weight:var(--sm-weight-bold); }
+
+/* 휴대폰 계정 안내: 연한 주황 배너 + 굵은 제목 + 꽉 찬 시작 버튼, 레벨 안내는 오른쪽 위 작은 링크 */
+@media (max-width:679px) {
+  .solo-journey {
+    position:relative;
+    display:block;
+    padding:var(--sm-space-5) var(--sm-space-4) var(--sm-space-4);
+    background:var(--sm-color-brand-subtle);
+    border-color:#ffd9c7 !important;
+    box-shadow:none;
+  }
+  #journey-status { display:grid; gap:var(--sm-space-3); }
+  .journey-description, .journey-level-title { padding-right:5.5rem; }
+  .journey-description { font-size:var(--sm-text-sm); line-height:1.55; }
+  .journey-title { display:block; margin-bottom:var(--sm-space-1); font-size:var(--sm-text-md); }
+  .solo-journey .journey-start-button {
+    width:100%;
+    min-height:2.75rem;
+    padding-inline:var(--sm-space-4);
+    justify-content:center;
+    border-radius:var(--sm-radius-control);
+    background:var(--sm-color-text);
+    color:var(--sm-color-surface);
+    font-weight:var(--sm-weight-bold);
+  }
+  .solo-journey .journey-guide-link {
+    position:absolute;
+    top:var(--sm-space-3);
+    right:var(--sm-space-2);
+    min-height:2.75rem;
+    padding-inline:var(--sm-space-2);
+    font-size:var(--sm-text-xs);
+  }
 }

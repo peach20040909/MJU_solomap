@@ -78,7 +78,7 @@ document.addEventListener('keydown', event => {
 function renderJourney() {
   const status = document.getElementById('journey-status');
   if (!currentUser) {
-    status.innerHTML = `<p class="journey-description">학교 인증 리뷰를 나누고, 체크인으로 혼밥 기록을 쌓아보세요.</p>
+    status.innerHTML = `<p class="journey-description"><strong class="journey-title">학교 인증하고 혼밥 기록 쌓기</strong> 리뷰를 나누고 체크인하면 내 혼밥 레벨이 올라가요.</p>
       <button type="button" class="journey-start-button sm-button sm-button--ghost" data-journey-action="start">학교 계정으로 시작하기 <span aria-hidden="true">→</span></button>`;
     return;
   }
