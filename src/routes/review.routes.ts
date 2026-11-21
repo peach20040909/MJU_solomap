@@ -10,6 +10,7 @@ import {
   updateReview,
   deleteReview,
   getMyReviews,
+  getReviewDetail,
 } from '../controllers/review.controller.js';
 import { requireAuth, requireVerified } from '../middlewares/auth.middleware.js';
 
@@ -23,6 +24,9 @@ reviewRouter.get('/me', requireAuth, getMyReviews);
 
 // 3. 특정 식당의 리뷰 목록 조회: GET /api/reviews/place/:placeId (누구나 가능)
 reviewRouter.get('/place/:placeId', getPlaceReviews);
+
+// 3-1. 리뷰 상세 조회: GET /api/reviews/:id (누구나 가능, 없으면 404). '/me'·'/place' 뒤에 둬야 경로가 겹치지 않는다.
+reviewRouter.get('/:id', getReviewDetail);
 
 // 4. 리뷰 수정: PATCH /api/reviews/:id (본인 작성 리뷰만 가능)
 reviewRouter.patch('/:id', requireAuth, requireVerified, updateReview);

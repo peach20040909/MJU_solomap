@@ -8,6 +8,7 @@ import 'dotenv/config';
  */
 
 import prisma from '../src/lib/prisma.js';
+import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -185,7 +186,26 @@ async function main() {
   }
 
   console.log(`✅ [Prisma Seed] 총 ${count}곳의 식당 데이터 upsert 동기화 완료!`);
+
+  // 평가용 테스트 사용자 2명 (실제 계정 아님). 비밀번호는 가입과 같은 bcrypt(10)로 저장하고,
+  // 리뷰·체크인을 바로 시험할 수 있도록 학교 메일 인증 완료(isVerified) 상태로 넣는다.
+  const seedPasswordHash = await bcrypt.hash(SEED_PASSWORD, 10);
+  for (const user of SEED_USERS) {
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: { nickname: user.nickname, passwordHash: seedPasswordHash, isVerified: true },
+      create: { ...user, passwordHash: seedPasswordHash, isVerified: true },
+    });
+  }
+  console.log(`✅ [Prisma Seed] 테스트 사용자 ${SEED_USERS.length}명 등록 (${SEED_USERS.map(u => u.email).join(', ')})`);
 }
+
+// requests.http와 설명 문서에 적는 시드 계정. 테스트 전용 주소와 비밀번호다.
+const SEED_PASSWORD = 'seedpass1234';
+const SEED_USERS = [
+  { email: 'seed-a@mju.ac.kr', nickname: '시드학우A' },
+  { email: 'seed-b@mju.ac.kr', nickname: '시드학우B' },
+];
 
 main()
   .catch((e) => {

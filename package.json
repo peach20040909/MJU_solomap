@@ -11,6 +11,7 @@
     "start": "node dist/app.js",
     "postinstall": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
+    "reset": "prisma migrate reset --force && prisma db seed",
     "test": "tsx --test scripts/test_db_errors.ts scripts/test_production.ts",
     "test:ui": "node scripts/test_account_ui.cjs",
     "test:api": "tsx scripts/verify_api.ts"

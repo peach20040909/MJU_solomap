@@ -137,6 +137,23 @@ export async function getReviewsByPlace(placeId: string) {
 }
 
 /**
+ * 1-1. 리뷰 상세 조회 (누구나 조회 가능). 없는 id면 404.
+ */
+export async function getReviewById(reviewId: string) {
+  const review = await prisma.review.findUnique({
+    where: { id: reviewId },
+    include: {
+      user: { select: { id: true, nickname: true } },
+      place: { select: { id: true, name: true, category: true } },
+    },
+  });
+  if (!review) {
+    throw new HttpError(404, '존재하지 않는 리뷰입니다.');
+  }
+  return review;
+}
+
+/**
  * 2. 혼밥 리뷰 작성 (1인 1식당 1리뷰 제약 + 난이도 자동 갱신 트랜잭션)
  */
 export async function createReview(

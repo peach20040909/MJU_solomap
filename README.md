@@ -60,13 +60,20 @@ npm start
 
 개발 주소는 `http://localhost:3000`이며, 서버 상태는 `GET /api/health`에서 확인합니다. 식당 검색은 `GET /api/places/search`입니다.
 
-DB를 처음 연결할 때는 비어 있는 개발용 DB에서 다음을 실행합니다. 이미 데이터가 있는 DB는 현재 테이블과 마이그레이션 이력을 먼저 확인합니다. `reset`이나 데이터 손실 허용 옵션은 사용하지 않습니다.
+평가·자가 점검은 비어 있어도 되는 **개발용 DB**에서 다음 순서로 실행합니다. `npm run reset`은 연결된 DB의 모든 데이터를 지운 뒤 마이그레이션과 시드를 다시 적용하므로, 운영 DB(배포 사이트용 Supabase)에서는 실행하지 않습니다.
 
 ```bash
-npx prisma generate
-npx prisma migrate deploy
-npm run db:seed
+npm install        # postinstall에서 prisma generate 실행
+npm run reset      # prisma migrate reset --force && prisma db seed
+npm run dev
 ```
+
+시드는 식당 125곳과 테스트 사용자 2명을 넣습니다. 테스트 계정은 학교 메일 인증 완료 상태입니다.
+
+| 사용자 | 이메일 | 비밀번호 |
+|---|---|---|
+| A | seed-a@mju.ac.kr | seedpass1234 |
+| B | seed-b@mju.ac.kr | seedpass1234 |
 
 `prisma/migrations/20261106000000_init/migration.sql`의 초기 테이블·인덱스·FK·RLS 설정은 SoloMap 전용 DB에 적용했습니다. 기존 테이블이 있는 다른 DB에는 위 초기 적용을 반복하지 말고 이력을 먼저 확인합니다. 시드는 식당 ID로 upsert하므로 재실행할 수 있습니다.
 
@@ -180,7 +187,7 @@ npx tsx scripts/test_production.ts
 
 `verify_api.ts`는 실제 Express 앱을 임시 포트에 띄워 DB 쓰기 없이 16개 요청을 확인합니다. 화면 테스트는 Chrome과 기존 puppeteer-core를 사용하며 외부 API/지도 SDK 경계는 테스트 응답으로 대체합니다. Chrome 경로는 스크립트의 `executablePath`를 설치 위치에 맞춥니다. `test_production.ts`는 로컬 SMTP 서버로 성공/거절·코드 로그·설정 누락·실패 복구를 확인합니다. 실제 DB·외부 메일 전달 검증은 별도로 필요합니다.
 
-DB 통합 확인은 [requests.http](requests.http)의 A→R→C→B→Z 순서로 진행합니다. A와 B는 각각 소유한 학교 테스트 계정이며, 로그인 전후 쿠키 상태와 코드 재발송 대기 시간을 지켜야 401·403·409·429가 구분됩니다. [실행 결과 표](docs/VERIFICATION.md)에 실제 통과와 미실행 항목을 나눠 기록했습니다.
+DB 통합 확인은 `npm run reset` 직후 [requests.http](requests.http)를 01번부터 31번까지 순서대로 실행합니다. 01~15는 과제 필수 시나리오(가입·로그인·리뷰 CRUD·400/401/403/404), 16~31은 고유 기능(체크인과 레벨 성장, 학우 리뷰로 난이도 재계산, 학교 메일 인증)의 정상·거부 요청입니다. 모든 응답이 제목의 상태 코드와 같아야 합니다.
 
 ## 환경변수
 

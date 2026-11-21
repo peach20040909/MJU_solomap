@@ -91,6 +91,18 @@ export async function deleteReview(req: Request, res: Response, next: NextFuncti
 }
 
 /**
+ * 리뷰 상세 조회 컨트롤러: GET /api/reviews/:id (200, 없으면 404)
+ */
+export async function getReviewDetail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const review = await reviewService.getReviewById(getParam(req.params.id));
+    res.status(200).json({ review });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * 5. 내가 작성한 리뷰 목록 조회 컨트롤러: GET /api/users/me/reviews
  */
 export async function getMyReviews(req: Request, res: Response, next: NextFunction) {
