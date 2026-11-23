@@ -1439,9 +1439,6 @@ body {
 .solo-journey .journey-level-title, .solo-journey .journey-title { font-size:1.375rem; font-weight:800; letter-spacing:-.03em; }
 .solo-journey .journey-lv, .solo-journey .journey-description, .solo-journey .journey-level-title, .solo-journey .journey-progress, .solo-journey .journey-caption { padding-right:7rem; }
 .solo-journey .journey-start-button { margin-top:var(--sm-space-2); }
-.solo-journey .sm-progress { accent-color:var(--sm-color-brand); }
-.solo-journey .sm-progress::-webkit-progress-value { background:#ff2929; }
-.solo-journey .sm-progress::-moz-progress-bar { background:#ff2929; }
 /* 메뉴: 타일 없이 레트로 음식 아이콘만 */
 .hero-card .kw-chip .kw-icon { padding:0; background:transparent; border-radius:var(--sm-radius-card); }
 .kw-icon img { display:block; width:100%; height:100%; object-fit:contain; }

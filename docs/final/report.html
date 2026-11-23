@@ -217,8 +217,8 @@
 <section class="section">
 <h2>5. 화면과 동작 흐름도</h2>
 <h3>화면별 캡처</h3>
-<figure><img src="shots/01-home.png"><figcaption>① 메인 — 검색, 오늘 뭐 먹지(랜덤 뽑기), 추천 메뉴, 혼밥 레벨 5단계</figcaption></figure>
-<div class="grid2">
+<div class="grid3">
+  <figure><img src="shots/01-home.png"><figcaption>① 메인 — 검색, 내 혼밥 레벨 카드, 추천 메뉴</figcaption></figure>
   <figure><img src="shots/02-results.png"><figcaption>② 검색 결과(목록) — 난이도 배지·점수, 정렬, 레벨 필터</figcaption></figure>
   <figure><img src="shots/04-map.png"><figcaption>③ 지도로 보기 — 난이도 숫자 마커(네이버 지도)</figcaption></figure>
 </div>
@@ -232,15 +232,15 @@
   <figure><img src="shots/09-review-write.png"><figcaption>⑧ 리뷰 등록·수정</figcaption></figure>
   <figure><img src="shots/10-review-list.png"><figcaption>⑨ 리뷰 목록 — 본인 리뷰만 수정·삭제 버튼</figcaption></figure>
 </div>
-<div class="grid2">
+<div class="grid3">
   <figure><img src="shots/11-checkin.png"><figcaption>⑩ 다녀왔어요(체크인) 후 알림</figcaption></figure>
-  <figure><img src="shots/08-logged-in.png"><figcaption>⑪ 로그인 후 메인 — 내 혼밥 기록(레벨·경험치)</figcaption></figure>
+  <figure><img src="shots/08-logged-in.png"><figcaption>⑪ 로그인 후 메인 — 내 레벨·경험치</figcaption></figure>
+  <figure><img src="shots/12-mypage.png"><figcaption>⑫ 나의 혼밥 성장 기록 — 레벨, 정복 식당, 다음 도전 추천</figcaption></figure>
 </div>
 <div class="grid3">
-  <figure><img src="shots/12-mypage.png"><figcaption>⑫ 나의 혼밥 성장 기록 — 레벨, 정복 식당, 다음 도전 추천</figcaption></figure>
   <figure><img src="shots/13-level-guide.png"><figcaption>⑬ 레벨 안내</figcaption></figure>
-  <figure><img src="shots/14-mobile.png"><figcaption>⑭ 모바일 메인</figcaption></figure>
 </div>
+<figure><img src="shots/14-mobile.png"><figcaption>⑭ PC에서 연 화면 — 모바일 전용이라 가운데 휴대폰 폭 화면 하나로 보임</figcaption></figure>
 
 <h3 class="section">사용자 동작별 흐름도</h3>
 <p class="muted">사용자 동작 → fetch 요청 → Router · Controller → (Service · DB) → 응답 → 화면 표시. 화면 쪽 fetch는 모두 <code>public/account.js</code>의 <code>apiRequest()</code> 또는 <code>public/main.js</code>의 <code>fetch()</code>로 보냅니다.</p>
