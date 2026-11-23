@@ -473,17 +473,14 @@ function createCardHtml(place) {
 
 // 두 지도 엔진에서 같은 정보 위계와 버튼을 사용한다.
 function createMapPopupHtml(place, soloInfo, walk) {
-  return `<div class="map-popup-card clean-popup">
+  // 지도 위 창은 작게: 이름·레벨·거리 + 상세 보기/리뷰 보기. 설명·주소·지도 링크·다녀왔어요는 상세 화면에 있다
+  return `<div class="map-popup-card clean-popup compact-popup ${soloInfo.pillClass}">
     <button type="button" class="popup-close-btn sm-button sm-button--icon sm-button--ghost" aria-label="식당 정보 닫기" title="닫기" onclick="closeCurrentInfoWindow()">${soloIcon('close')}</button>
-    <div class="popup-title-box"><h3 class="popup-title">${escapeHtml(place.place_name)}</h3></div>
-    <div class="popup-badges-row"><span class="difficulty-pill index-level ${soloInfo.pillClass}">${escapeHtml(soloInfo.label)}</span><span class="distance-pill">${walk}</span></div>
-    <p class="popup-psychology">${escapeHtml(soloInfo.psychology)}</p>
-    <p class="popup-meta">${soloIcon('pin')} <span>${escapeHtml(place.road_address_name || place.address_name || '주소 정보 없음')}</span></p>
+    <h3 class="popup-title">${escapeHtml(place.place_name)}</h3>
+    <div class="popup-badges-row"><span class="sm-level-badge">${escapeHtml(soloInfo.label)}</span><span class="popup-walk">${walk}</span></div>
     <div class="popup-footer-actions">
-      <button type="button" class="popup-btn secondary sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 보기</button>
-      <button type="button" class="popup-btn secondary sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
-      <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="popup-btn map-link sm-button sm-button--ghost">카카오맵 ${soloIcon('external')}</a>
-      <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="popup-btn map-link sm-button sm-button--ghost">네이버 지도 ${soloIcon('external')}</a>
+      <button type="button" class="popup-btn primary sm-button" onclick="closeCurrentInfoWindow(); openPlaceDetail('${place.id}')">상세 보기</button>
+      <button type="button" class="popup-btn secondary sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">리뷰 보기</button>
     </div>
   </div>`;
 }
