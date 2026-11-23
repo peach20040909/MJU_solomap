@@ -825,3 +825,6 @@
 .compact-popup .popup-btn.primary { background:var(--sm-color-text); color:var(--sm-color-surface); border:0; }
 .compact-popup .popup-btn.secondary { border:1px solid var(--sm-color-border); }
 .compact-popup .popup-close-btn { position:absolute; top:var(--sm-space-1); right:var(--sm-space-1); }
+
+/* 핀이 모두 빨간 숫자로 바뀌어 색 범례가 의미 없고, 떠 있는 목록 보기 버튼과 겹쳐서 숨김 */
+.map-legend { display:none; }
