@@ -85,7 +85,7 @@ const server = createServer(async (req, res) => {
     await page.waitForSelector('.place-card-item');
     await require('./design_system_checks.cjs')(page);
     await page.waitForSelector('#btn-login');
-    assert(await page.$eval('#solo-journey', e => e.textContent.includes('학교 인증하고 혼밥 기록')));
+    assert(await page.$eval('#solo-journey', e => e.textContent.includes('학생 인증하고')));
     await page.click('#btn-growth-guide');
     await page.waitForSelector('#growth-guide-modal:not(.hidden)');
     await page.click('[data-close="growth-guide-modal"]');
