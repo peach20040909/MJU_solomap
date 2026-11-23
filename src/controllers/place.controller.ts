@@ -14,6 +14,7 @@ import prisma from '../lib/prisma.js';
 import { getPlaceCuration } from '../lib/gemini.js';
 import { calculateDisplaySoloLevel } from '../services/review.service.js';
 import { createRequire } from 'module';
+import { searchTerms, matchesTerms, filterKakaoResults } from '../lib/searchRelevance.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,11 +41,6 @@ try {
   }
 }
 
-// 메뉴 칸 검색어 → 대동명지도 식당 이름·분류에서 찾을 단어들
-const MENU_SYNONYMS: Record<string, string[]> = {
-  국밥: ['국밥', '해장', '곰탕', '순대', '설렁', '설농', '감자탕'],
-  라멘: ['라멘', '라면', '우동'],
-};
 
 /**
  * 1. 식당 키워드 검색 컨트롤러: GET /api/places/search?query=...
@@ -63,12 +59,9 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
     if (isGeneralQuery) {
       matchedDaedong = [...daedongPlaces];
     } else {
-      // 메뉴 칸 검색어는 카카오 분류명과 단어가 달라(국밥 ↔ 해장국·곰탕) 같은 뜻의 단어로 넓혀 찾는다.
-      const terms = MENU_SYNONYMS[qLower] ?? [qLower];
-      matchedDaedong = daedongPlaces.filter((p) => {
-        const text = `${p.place_name} ${p.category_name} ${p.road_address_name || ''}`.toLowerCase();
-        return terms.some((t) => text.includes(t));
-      });
+      // 메뉴 칸 검색어는 카카오 분류명과 단어가 달라(국밥 ↔ 해장국·곰탕) 같은 뜻의 단어로 넓혀 찾는다 (src/lib/searchRelevance.ts).
+      const terms = searchTerms(query);
+      matchedDaedong = daedongPlaces.filter((p) => matchesTerms(p, terms));
     }
 
     // 1-2. 카카오 로컬 API 3대 거점 실시간 검색 병렬 수행
@@ -106,7 +99,8 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
 
     for (const result of hubResults) {
       if (!result || !result.documents) continue;
-      for (const place of result.documents) {
+      // 메뉴판에 한 줄만 있어도 나오는 엉뚱한 식당(국밥 검색의 곱창집 등)과 술집·제과점을 거른다
+      for (const place of filterKakaoResults(result.documents, query, isGeneralQuery)) {
         const normName = place.place_name.replace(/\s+/g, '');
         if (!existingIds.has(place.id) && !existingNames.has(normName)) {
           existingIds.add(place.id);
