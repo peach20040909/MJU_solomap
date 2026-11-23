@@ -1,26 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
-    <!-- 배경 그라데이션: 식욕을 돋우는 웜 탠저린 코랄 -->
+    <!-- 배경 그라데이션: 식욕을 돋우는 빨강(#FF2929 계열) -->
     <linearGradient id="soloMapBgB" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FF6B35"/>
-      <stop offset="100%" stop-color="#FF3815"/>
+      <stop offset="0%" stop-color="#FF4A4A"/>
+      <stop offset="100%" stop-color="#E3191F"/>
     </linearGradient>
 
     <!-- 소복한 쌀밥 그라데이션 -->
     <linearGradient id="riceGradB" x1="64" y1="40" x2="64" y2="58" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#FFF0E6"/>
+      <stop offset="100%" stop-color="#FFF1F1"/>
     </linearGradient>
 
     <!-- 지도 핀 그라데이션 -->
     <linearGradient id="pinGradB" x1="64" y1="26" x2="64" y2="61" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FF5226"/>
-      <stop offset="100%" stop-color="#E52D05"/>
+      <stop offset="0%" stop-color="#FF2929"/>
+      <stop offset="100%" stop-color="#C8141A"/>
     </linearGradient>
 
     <!-- 밥그릇 & 핀 입체 그림자 -->
     <filter id="shadowB" x="14" y="16" width="100" height="99" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="4" stdDeviation="4.5" flood-opacity="0.26" flood-color="#601000"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="4.5" flood-opacity="0.26" flood-color="#5A0A0E"/>
     </filter>
   </defs>
 
@@ -40,17 +40,17 @@
     <ellipse cx="64" cy="56" rx="36" ry="16" fill="url(#riceGradB)"/>
 
     <!-- 밥그릇 중앙 지도 핀 마커 -->
-    <path d="M64 26C56.8 26 51 31.8 51 39C51 48.2 64 61 64 61C64 61 77 48.2 77 39C77 31.8 71.2 26 64 26Z" fill="#FFFFFF" stroke="#B03508" stroke-width="2.4"/>
-    <circle cx="64" cy="37.5" r="4.6" fill="#FF5A1F"/>
+    <path d="M64 26C56.8 26 51 31.8 51 39C51 48.2 64 61 64 61C64 61 77 48.2 77 39C77 31.8 71.2 26 64 26Z" fill="#FFFFFF" stroke="#A0121A" stroke-width="2.4"/>
+    <circle cx="64" cy="37.5" r="4.6" fill="#FF2929"/>
 
     <!-- 따스하게 피어오르는 김 (좌우) -->
     <path d="M41 42C39 37 42.5 33 40.5 28" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
     <path d="M87 42C89 37 85.5 33 87.5 28" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
 
     <!-- 편안하고 기분 좋은 1인 혼밥 스마일 미소 -->
-    <path d="M53 72C57 77.5 71 77.5 75 72" stroke="#FF481C" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M53 72C57 77.5 71 77.5 75 72" stroke="#E3191F" stroke-width="3.2" stroke-linecap="round"/>
     <!-- 사랑스러운 볼터치 -->
-    <circle cx="47" cy="69" r="2.8" fill="#FFA38A"/>
-    <circle cx="81" cy="69" r="2.8" fill="#FFA38A"/>
+    <circle cx="47" cy="69" r="2.8" fill="#FF9C9C"/>
+    <circle cx="81" cy="69" r="2.8" fill="#FF9C9C"/>
   </g>
 </svg>
