@@ -1443,3 +1443,7 @@ body {
 .hero-card .kw-chip .kw-icon { padding:0; background:transparent; border-radius:var(--sm-radius-card); }
 .kw-icon img { display:block; width:100%; height:100%; object-fit:contain; }
 .hero-card .kw-chip.active .kw-icon, .hero-card .kw-chip[aria-pressed="true"] .kw-icon { background:var(--sm-color-brand-subtle); }
+/* QA: 선택한 메뉴는 아이콘 바깥에 빨간 링(그림에 가려 모서리만 보이던 문제), 레벨 카드 캐릭터는 크게 */
+.hero-card .kw-chip.active .kw-icon, .hero-card .kw-chip[aria-pressed="true"] .kw-icon { background:transparent; box-shadow:none; outline:2px solid var(--sm-color-brand); outline-offset:3px; border-radius:var(--sm-radius-card); }
+.hero-card .kw-chip.active { color:var(--sm-color-brand-text); }
+.index-card .index-char { width:5.75rem; height:5.75rem; margin-top:0; }
