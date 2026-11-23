@@ -228,7 +228,7 @@ DB 통합 확인은 `npm run reset` 직후 [requests.http](requests.http)를 01�
 
 ## 주요 코드
 
-디자인 시스템은 [컴포넌트 미리보기](public/design-system.html), [사용 규칙](design-system/solomap/MASTER.md), [UI/UX 검수 기록](docs/DESIGN_SYSTEM_AUDIT.md)에서 확인합니다. 서버 실행 후 `/design-system.html`을 열면 실제 서비스와 같은 토큰·컴포넌트를 볼 수 있습니다. 기존 오렌지 포인트, 자체 호스팅 Pretendard, 4px 간격, PC/태블릿/모바일 카드 그리드와 키보드 포커스를 공통 관리합니다.
+디자인 시스템은 [컴포넌트 미리보기](public/design-system.html), [사용 규칙](design-system/solomap/MASTER.md), [UI/UX 검수 기록](docs/DESIGN_SYSTEM_AUDIT.md)에서 확인합니다. 서버 실행 후 `/design-system.html`을 열면 실제 서비스와 같은 토큰·컴포넌트를 볼 수 있습니다. 빨강 포인트, 레벨별 파스텔 배지와 혼밥 레벨 캐릭터, 자체 호스팅 Pretendard, 4px 간격, 키보드 포커스를 공통 관리합니다. 화면은 모바일 전용으로 설계해 PC에서 열어도 가운데 430px 폭의 휴대폰 화면 하나로 보입니다.
 
 - `src/app.ts`: 정적 화면 및 API 라우터 등록
 - `src/controllers/place.controller.ts`: 식당 검색과 데이터 통합
