@@ -306,7 +306,7 @@ function renderPlaceDetail(place, reviews) {
     <section class="detail-section" aria-labelledby="detail-review-title">
       <div class="detail-section-head">
         <div><p class="section-eyebrow">REVIEWS</p><h2 id="detail-review-title">학우 리뷰 ${count}</h2></div>
-        <button type="button" class="detail-more sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">전체 보기 <span aria-hidden="true">›</span></button>
+        ${count ? `<button type="button" class="detail-more sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">전체 보기 <span aria-hidden="true">›</span></button>` : ''}
       </div>
       ${reviewHtml}
     </section>
@@ -327,7 +327,8 @@ async function openPlaceDetail(placeId, push = true) {
   box.innerHTML = '<p class="detail-empty">식당 정보를 불러오는 중...</p>';
   document.body.classList.add('detail-open');
   if (push) {
-    const q = searchInput.value;
+    // 홈에서 연 상세(랜덤 뽑기 등)는 검색어를 주소에 남기지 않는다
+    const q = document.body.classList.contains('results-open') ? searchInput.value : '';
     history.pushState({ place: placeId, q }, '', `?${q ? `q=${encodeURIComponent(q)}&` : ''}place=${encodeURIComponent(placeId)}`);
   }
   window.scrollTo(0, 0);
