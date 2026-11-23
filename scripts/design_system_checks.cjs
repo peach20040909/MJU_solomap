@@ -12,14 +12,13 @@ module.exports = async function auditDesignSystem(page) {
     await page.evaluate(() => scrollTo(0, 0));
     const metrics = await page.evaluate(() => {
       // 지도 링크는 카드 상세(접힘) 안에 있으므로 펼친 뒤 터치 크기를 잰다.
-      document.querySelector('.card-more')?.setAttribute('open', '');
       const root = getComputedStyle(document.documentElement);
-      const controls = ['#btn-login', '#btn-signup', '.search-submit-btn', '.kw-chip', '.tab-btn', '.btn-heart-fav', '.btn-map-link'];
+      const controls = ['#btn-login', '.search-submit-btn', '.kw-chip', '.tab-btn', '.btn-heart-fav', '.btn-map-link'];
       return {
         bodyFont: parseFloat(getComputedStyle(document.body).fontSize),
         overflow: document.documentElement.scrollWidth > innerWidth,
-        controls: controls.map(selector => { document.body.classList.toggle('results-open', ['.tab-btn', '.btn-heart-fav', '.btn-map-link'].includes(selector)); /* 홈·검색 결과는 별도 화면 */ const e = document.querySelector(selector); const r = e.getBoundingClientRect(); return { selector, height: r.height, width: r.width, component: e.classList.contains('sm-button') }; }),
-        token: (document.body.classList.remove('results-open'), root.getPropertyValue('--sm-color-action').trim()),
+        controls: controls.map(selector => { document.body.classList.toggle('results-open', ['.tab-btn', '.btn-heart-fav'].includes(selector)); /* 홈·검색 결과·상세는 별도 화면 */ if (selector === '.btn-map-link') renderPlaceDetail(currentPlaces[0], []); document.body.classList.toggle('detail-open', selector === '.btn-map-link'); const e = document.querySelector(selector); const r = e.getBoundingClientRect(); return { selector, height: r.height, width: r.width, component: e.classList.contains('sm-button') }; }),
+        token: (document.body.classList.remove('results-open', 'detail-open'), root.getPropertyValue('--sm-color-action').trim()),
         columns: getComputedStyle(document.querySelector('.places-container')).gridTemplateColumns.split(' ').length,
       };
     });

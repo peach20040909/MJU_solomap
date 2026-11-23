@@ -414,16 +414,16 @@ function renderFilteredPlaces(keepCount = false) {
   placesContainer.innerHTML = shown.map((place) => createCardHtml(place)).join('') + moreButton;
 }
 
-// 카드 빈 곳을 누르면 상세(위치·전화·지도·리뷰 작성)를 펼친다. 버튼·링크·펼친 내용 클릭은 그대로 둔다.
+// 카드 빈 곳을 누르면 식당 상세 화면(위치·전화·지도·리뷰)으로 간다. 버튼·링크 클릭은 그대로 둔다.
 placesContainer.addEventListener('click', (e) => {
   if (e.target.closest('.btn-load-more')) {
     visiblePlaceCount += MOBILE_PAGE_SIZE;
     renderFilteredPlaces(true);
     return;
   }
-  if (e.target.closest('a, button, summary, .card-more')) return;
-  const more = e.target.closest('.place-card-item')?.querySelector('.card-more');
-  if (more) more.open = !more.open;
+  if (e.target.closest('a, button')) return;
+  const card = e.target.closest('.place-card-item');
+  if (card) openPlaceDetail(card.id.replace('place-card-', ''));
 });
 
 // 식당명과 혼밥 정보를 먼저 읽고 필요한 작업을 선택하는 공통 카드.
@@ -454,24 +454,7 @@ function createCardHtml(place) {
         <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
         <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
       </div>
-      <details class="card-more">
-        <summary>자세히 보기</summary>
-        <div class="solo-tags" aria-label="혼밥 특징">${soloInfo.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
-        <ul class="place-meta-list">
-          <li><span class="meta-icon">${soloIcon('pin')}</span><span>${escapeHtml(cleanAddr)}</span></li>
-          ${place.phone ? `<li><span class="meta-icon">${soloIcon('phone')}</span><a href="tel:${escapeHtml(place.phone)}">${escapeHtml(place.phone)}</a></li>` : ''}
-        </ul>
-        ${reviews.length ? `<p class="review-box-text">${escapeHtml(reviews[0].content)}</p>` : ''}
-        <div class="map-links-group">
-          <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="카카오맵에서 위치 및 길찾기 보기">카카오맵 ${soloIcon('external')}</a>
-          <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button sm-button--ghost" title="네이버 지도에서 메뉴와 길찾기 보기">네이버 지도 ${soloIcon('external')}</a>
-          <button type="button" class="btn-open-review sm-button sm-button--ghost" onclick="openReviewModalById('${place.id}')">리뷰 작성 ${soloIcon('edit')}</button>
-        </div>
-        <div class="card-more-actions">
-          <button type="button" class="btn-review-list sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">${soloIcon('chat')} 리뷰 ${reviewCount}개</button>
-          <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
-        </div>
-      </details>
+      <button type="button" class="card-detail-link sm-button sm-button--ghost" onclick="openPlaceDetail('${place.id}')">자세히 보기 <span aria-hidden="true">›</span></button>
     </article>`;
 }
 
@@ -533,28 +516,8 @@ btnRouletteAgain.addEventListener('click', () => {
 btnRouletteGo.addEventListener('click', () => {
   if (!currentWinningPlace) return;
   closeRouletteModal();
-
-  // 결과 화면의 목록 뷰로 전환 후 해당 카드로 부드럽게 스크롤 (휴대폰 20곳 끊기에 가려졌으면 전부 펼친다)
-  showResults(searchInput.value.trim() || '혼밥');
-  switchViewMode('list');
-  if (!document.getElementById(`place-card-${currentWinningPlace.id}`)) {
-    visiblePlaceCount = Infinity;
-    renderFilteredPlaces(true);
-  }
-
-  setTimeout(() => {
-    const card = document.getElementById(`place-card-${currentWinningPlace.id}`);
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      card.style.transition = 'box-shadow 0.4s ease, transform 0.4s ease';
-      card.style.boxShadow = '0 0 0 3px var(--sm-color-brand), var(--sm-shadow-raised)';
-      card.style.transform = 'scale(1.02)';
-      setTimeout(() => {
-        card.style.boxShadow = '';
-        card.style.transform = '';
-      }, 2500);
-    }
-  }, 300);
+  // 당첨 식당의 상세 화면으로 바로 간다
+  openPlaceDetail(currentWinningPlace.id);
 });
 
 function openRouletteModal() {
@@ -581,6 +544,7 @@ function spinRoulette() {
   btnRouletteAgain.disabled = true;
   btnRouletteGo.disabled = true;
 
+  const ROULETTE_FOODS = ['rice', 'stew', 'noodle', 'japanese', 'burger', 'jjajang', 'kimbap', 'snack', 'pho', 'grill'];
   const funnyPhrases = [
     '🍜 든든한 국밥과 라멘 사이 고민 중...',
     '🍛 바삭한 돈까스냐 매콤한 마라탕이냐...',
@@ -596,10 +560,11 @@ function spinRoulette() {
     const randomTemp = places[Math.floor(Math.random() * places.length)];
     const phrase = funnyPhrases[step % funnyPhrases.length];
 
+    const food = ROULETTE_FOODS[step % ROULETTE_FOODS.length];
     rouletteCardSlot.innerHTML = `
       <div class="slot-rolling-anim">
-        <span class="slot-icon-dice">🎲</span>
-        <p style="font-size: 18px; font-weight: 800; color: var(--sm-color-brand-text);">${escapeHtml(randomTemp.place_name)}</p>
+        <img class="slot-food" src="/food/${food}.webp" alt="" width="88" height="88">
+        <p class="slot-name">${escapeHtml(randomTemp.place_name)}</p>
         <p class="slot-text-sub">${phrase}</p>
       </div>
     `;
@@ -619,17 +584,17 @@ function spinRoulette() {
     rouletteCardSlot.classList.add('is-winner');
     rouletteCardSlot.innerHTML = `
       <div class="roulette-winner-card clean-winner">
-        <div class="winner-icon-wrap">
-          <span class="winner-emoji">${soloIcon('utensils')}</span>
+        <div class="winner-icon-wrap ${soloInfo.pillClass}">
+          <img class="winner-char" src="/levels/level-${soloInfo.lv}.webp" alt="" width="96" height="96">
         </div>
-        <div class="winner-badges">
-          <span class="difficulty-pill index-level ${soloInfo.pillClass}">${soloInfo.label}</span>
+        <div class="winner-badges ${soloInfo.pillClass}">
+          <span class="sm-level-badge">${escapeHtml(soloInfo.label)}</span>
           <span class="distance-pill sm-badge">${walk}</span>
         </div>
         <h4 class="winner-title">${escapeHtml(winner.place_name)}</h4>
         <span class="winner-category">${escapeHtml(winner.category_name || '식당')}</span>
         <p class="winner-psychology">${soloInfo.psychology}</p>
-        <p class="winner-meta">📍 ${escapeHtml(winner.road_address_name || winner.address_name || '명지대 근처')}</p>
+        <p class="winner-meta">${soloIcon('pin')} ${escapeHtml(winner.road_address_name || winner.address_name || '명지대 근처')}</p>
       </div>
     `;
 
@@ -1353,7 +1318,11 @@ function openSearch(q, push = true) {
 }
 
 window.addEventListener('popstate', () => {
-  const q = new URLSearchParams(location.search).get('q');
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q'), place = params.get('place');
+  if (place) { openPlaceDetail(place, false); return; }
+  // 상세에서 뒤로 오면 목록을 다시 불러오지 않고 보던 자리로 돌아간다
+  if (document.body.classList.contains('detail-open')) { closePlaceDetail(); if (q && q === searchInput.value) return; }
   if (q) openSearch(q, false);
   else showHome();
 });
@@ -1649,3 +1618,6 @@ updateFavBadge();
 const initialQuery = new URLSearchParams(location.search).get('q');
 if (initialQuery) openSearch(initialQuery, false);
 else loadPlaces('혼밥');
+// ?place=식당ID로 들어오면 상세 화면부터 연다 (상세 화면 코드는 account.js에 있어 모든 스크립트가 읽힌 뒤 연다)
+const initialPlace = new URLSearchParams(location.search).get('place');
+if (initialPlace) document.addEventListener('DOMContentLoaded', () => openPlaceDetail(initialPlace, false));

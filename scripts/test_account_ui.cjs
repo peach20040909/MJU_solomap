@@ -84,7 +84,7 @@ const server = createServer(async (req, res) => {
     await page.goto(`http://127.0.0.1:${server.address().port}`, { waitUntil: 'networkidle0' });
     await page.waitForSelector('.place-card-item');
     await require('./design_system_checks.cjs')(page);
-    await page.waitForSelector('#btn-signup');
+    await page.waitForSelector('#btn-login');
     assert(await page.$eval('#solo-journey', e => e.textContent.includes('학교 인증하고 혼밥 기록')));
     await page.click('#btn-growth-guide');
     await page.waitForSelector('#growth-guide-modal:not(.hidden)');
@@ -103,6 +103,13 @@ const server = createServer(async (req, res) => {
     await page.click('.tab-btn[data-filter="fav"]');
     assert.equal(await page.$eval('.place-title', e => e.textContent), '테스트 국밥');
     await page.click('.tab-btn[data-filter="all"]');
+    // 카드 → 식당 상세 화면(?place=) → 뒤로 가기로 목록
+    await page.click('#place-card-123 .card-detail-link');
+    await page.waitForSelector('#place-detail .detail-name');
+    assert.equal(await page.$eval('#place-detail .detail-name', e => e.textContent), '테스트 국밥', '카드를 누르면 상세 화면');
+    assert.equal(new URL(page.url()).searchParams.get('place'), '123', '상세 화면 주소');
+    await page.goBack();
+    await page.waitForFunction(() => !document.body.classList.contains('detail-open'));
     await page.evaluate(() => showHome());
     await page.click('#btn-random-roulette');
     await page.waitForSelector('#roulette-card-slot.is-winner');
@@ -212,7 +219,7 @@ const server = createServer(async (req, res) => {
     assert.equal(await page.$eval('#journey-status', e => e.querySelector('progress')), null, '로그아웃 후 개인 진행률 제거');
     accountConfigured = false;
     await page.reload({ waitUntil: 'networkidle0' });
-    await page.click('#btn-signup');
+    await page.click('#btn-login'); // 회원가입은 로그인 창의 '처음 오셨나요?'로 들어간다
     await page.waitForSelector('#auth-form:not(.hidden)');
     assert(await page.$eval('#auth-submit', e => e.disabled), '미설정 계정 요청을 전송하지 않음');
     assert(await page.$eval('#account-service-notice', e => !e.classList.contains('hidden') && e.textContent.includes('준비')));

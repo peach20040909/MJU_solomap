@@ -58,7 +58,7 @@ function renderAccountMenu() {
           <button id="btn-mypage" type="button" class="sm-button sm-button--ghost">${soloIcon('grow')} 내 성장 기록</button><button id="btn-logout" type="button" class="sm-button sm-button--ghost">로그아웃</button>
         </div>
       </details>`
-    : '<button id="btn-login" type="button" class="sm-button sm-button--ghost">로그인</button><button id="btn-signup" class="account-primary sm-button" type="button">회원가입</button>';
+    : '<button id="btn-login" type="button" class="account-guest sm-button sm-button--icon sm-button--ghost" aria-label="로그인 · 회원가입"><span class="account-avatar account-avatar--guest" aria-hidden="true"></span></button>';
   renderJourney();
 }
 
@@ -250,7 +250,97 @@ async function refreshPlaceAfterReview(placeId) {
   knownPlaces.set(String(placeId), updated);
   currentPlaces = currentPlaces.map(p => String(p.id) === String(placeId) ? { ...p, displaySolo: data.displaySolo, curation: data.curation } : p);
   renderFilteredPlaces(); updateMapMarkers();
+  if (detailPlaceId === String(placeId)) renderPlaceDetail({ ...(currentPlaces.find(p => String(p.id) === String(placeId)) || {}), ...updated, distance: currentPlaces.find(p => String(p.id) === String(placeId))?.distance ?? updated.distance }, getPlaceReviews(placeId));
 }
+/* ── 식당 상세 화면 (피그마 '식당 상세 화면')
+   RESTAURANT 이름·메타·레벨 → 혼밥 난이도 상자(캐릭터) → 가게 정보·지도 링크 → 학우 리뷰 → 아래 고정 버튼 */
+let detailPlaceId = null;
+let detailScrollY = 0;
+function renderPlaceDetail(place, reviews) {
+  const box = document.getElementById('place-detail');
+  const info = getDynamicSoloIndex(place);
+  const category = (place.category_name || '음식점').split('>').map(t => t.trim()).filter(Boolean).slice(1, 3).join(' · ') || '음식점';
+  const count = info.userReviewCount || reviews.length;
+  const meter = '<span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
+  const reviewHtml = reviews.length
+    ? reviews.slice(0, 2).map(r => `<article class="detail-review lv-${r.soloLevel}"><div class="detail-review-head"><strong>${escapeHtml(r.user?.nickname || '학우')}</strong><span class="detail-review-lv">Lv.${r.soloLevel} ${meter}</span></div><p>${escapeHtml(r.content)}</p></article>`).join('')
+    : '<p class="detail-empty">아직 학우 리뷰가 없어요. 첫 리뷰를 남겨 주세요.</p>';
+  box.innerHTML = `
+    <div class="detail-top">
+      <button type="button" class="detail-back sm-button sm-button--icon sm-button--ghost" aria-label="뒤로 가기">←</button>
+      <button type="button" class="btn-heart-fav ${isPlaceFavorite(place.id) ? 'active' : ''} sm-button sm-button--icon sm-button--ghost" aria-label="찜하기" aria-pressed="${isPlaceFavorite(place.id)}" onclick="handleToggleFav('${place.id}', event)">${soloIcon('heart')}</button>
+    </div>
+    <header class="detail-head ${info.pillClass}">
+      <p class="section-eyebrow">RESTAURANT</p>
+      <h1 class="detail-name">${escapeHtml(place.place_name)}</h1>
+      <p class="detail-meta">${escapeHtml(category)} · ${formatDistanceWalking(place.distance)}</p>
+      <div class="card-level-row"><span class="solo-badge-chip sm-level-badge">${escapeHtml(info.label)}</span>${meter}<span class="level-score">${info.lv}/5</span></div>
+      <p class="detail-tip">${escapeHtml(info.psychology)}</p>
+    </header>
+    <section class="detail-level ${info.pillClass}" aria-label="혼밥 난이도">
+      <div class="detail-level-text">
+        <p class="section-eyebrow">SOLO DINING LEVEL</p>
+        <h2>${escapeHtml(info.label)}</h2>
+        <p>${count ? `학우 리뷰 ${count}개 평균 Lv.${info.lv}` : '아직 학우 리뷰가 없어 기본 난이도예요'}</p>
+        <div class="solo-tags">${info.tags.slice(0, 3).map(t => `<span class="solo-tag">${escapeHtml(t)}</span>`).join('')}</div>
+      </div>
+      <img class="detail-level-char" src="/levels/level-${info.lv}.webp" alt="" width="96" height="96">
+    </section>
+    <section class="detail-section" aria-labelledby="detail-info-title">
+      <p class="section-eyebrow">INFO</p>
+      <h2 id="detail-info-title">가게 정보</h2>
+      <dl class="detail-info">
+        <div><dt>주소</dt><dd>${escapeHtml(place.road_address_name || place.address_name || '주소 정보 없음')}</dd></div>
+        ${place.phone ? `<div><dt>전화</dt><dd>${escapeHtml(place.phone)}</dd><a class="detail-call" href="tel:${escapeHtml(place.phone)}">전화 걸기</a></div>` : ''}
+      </dl>
+      <div class="detail-map-links">
+        <a href="${escapeHtml(getKakaoMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button"><i class="map-dot kakao" aria-hidden="true"></i>카카오맵에서 보기</a>
+        <a href="${escapeHtml(getNaverMapUrl(place))}" target="_blank" rel="noopener noreferrer" class="btn-map-link sm-button"><i class="map-dot naver" aria-hidden="true"></i>네이버 지도에서 보기</a>
+      </div>
+    </section>
+    <section class="detail-section" aria-labelledby="detail-review-title">
+      <div class="detail-section-head">
+        <div><p class="section-eyebrow">REVIEWS</p><h2 id="detail-review-title">학우 리뷰 ${count}</h2></div>
+        <button type="button" class="detail-more sm-button sm-button--ghost" onclick="openReviewsList('${place.id}')">전체 보기 <span aria-hidden="true">›</span></button>
+      </div>
+      ${reviewHtml}
+    </section>
+    <div class="detail-actions">
+      <button type="button" class="btn-open-review sm-button" onclick="openReviewModalById('${place.id}')">${soloIcon('edit')} 리뷰 쓰기</button>
+      <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
+    </div>`;
+  box.querySelector('.detail-back').addEventListener('click', () => {
+    if (history.state?.place) history.back();
+    else { closePlaceDetail(); history.replaceState(null, '', searchInput.value ? `?q=${encodeURIComponent(searchInput.value)}` : location.pathname); }
+  });
+}
+async function openPlaceDetail(placeId, push = true) {
+  placeId = String(placeId);
+  if (!document.body.classList.contains('detail-open')) detailScrollY = window.scrollY;
+  detailPlaceId = placeId;
+  const box = document.getElementById('place-detail');
+  box.innerHTML = '<p class="detail-empty">식당 정보를 불러오는 중...</p>';
+  document.body.classList.add('detail-open');
+  if (push) {
+    const q = searchInput.value;
+    history.pushState({ place: placeId, q }, '', `?${q ? `q=${encodeURIComponent(q)}&` : ''}place=${encodeURIComponent(placeId)}`);
+  }
+  window.scrollTo(0, 0);
+  try {
+    const [place, reviews] = await Promise.all([findAccountPlace(placeId), fetchReviews(placeId).catch(() => [])]);
+    if (detailPlaceId === placeId) renderPlaceDetail(place, reviews);
+  } catch {
+    if (detailPlaceId === placeId) box.innerHTML = '<p class="detail-empty">식당 정보를 불러오지 못했어요.</p>';
+  }
+}
+function closePlaceDetail() {
+  detailPlaceId = null;
+  document.body.classList.remove('detail-open');
+  window.scrollTo(0, detailScrollY);
+}
+window.openPlaceDetail = openPlaceDetail;
+window.closePlaceDetail = closePlaceDetail;
+
 btnSubmitReview.addEventListener('click', () => busy(btnSubmitReview, async () => {
   if (!targetReviewPlace || !requireAccount()) return;
   const content = document.getElementById('review-textarea').value.trim();

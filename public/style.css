@@ -1447,3 +1447,106 @@ body {
 .hero-card .kw-chip.active .kw-icon, .hero-card .kw-chip[aria-pressed="true"] .kw-icon { background:transparent; box-shadow:none; outline:2px solid var(--sm-color-brand); outline-offset:3px; border-radius:var(--sm-radius-card); }
 .hero-card .kw-chip.active { color:var(--sm-color-brand-text); }
 .index-card .index-char { width:5.75rem; height:5.75rem; margin-top:0; }
+
+/* ── 식당 상세 화면 (피그마 '식당 상세 화면') ── */
+body:not(.detail-open) #place-detail { display:none; }
+body.detail-open .page-body > :not(#place-detail) { display:none !important; }
+body.detail-open .page-body { padding-top:var(--sm-space-2); }
+.place-detail { display:grid; gap:var(--sm-space-5); padding-bottom:var(--sm-space-4); }
+.detail-top { display:flex; justify-content:space-between; align-items:center; margin-inline:calc(-1 * var(--sm-space-2)); }
+.detail-back { font-size:1.5rem; line-height:1; }
+.detail-head .section-eyebrow, .detail-level .section-eyebrow, .detail-section .section-eyebrow { margin-bottom:var(--sm-space-1); }
+.detail-name { font-size:1.75rem; font-weight:800; letter-spacing:-.03em; line-height:1.25; }
+.detail-meta { margin:var(--sm-space-1) 0 var(--sm-space-3); color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.detail-tip { margin-top:var(--sm-space-3); color:var(--sm-color-text-secondary); }
+.detail-level { position:relative; display:flex; align-items:center; gap:var(--sm-space-3); padding:var(--sm-space-5); border-radius:var(--sm-radius-panel); background:var(--level-surface); }
+.detail-level-text { flex:1; min-width:0; }
+.detail-level h2 { font-size:var(--sm-text-lg); font-weight:800; }
+.detail-level p:not(.section-eyebrow) { margin-top:var(--sm-space-1); color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.detail-level .solo-tags { margin-top:var(--sm-space-3); }
+.detail-level .solo-tag { background:var(--sm-color-surface); }
+.detail-level-char { flex:0 0 auto; width:6rem; height:6rem; object-fit:contain; }
+.detail-section { padding-top:var(--sm-space-5); border-top:1px solid var(--sm-color-border); }
+.detail-section h2 { font-size:var(--sm-text-lg); font-weight:800; margin-bottom:var(--sm-space-3); }
+.detail-section-head { display:flex; justify-content:space-between; align-items:flex-end; gap:var(--sm-space-3); }
+.detail-more { color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.detail-info { display:grid; gap:var(--sm-space-2); margin:0 0 var(--sm-space-4); }
+.detail-info > div { display:flex; align-items:baseline; gap:var(--sm-space-3); }
+.detail-info dt { flex:0 0 2.5rem; color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.detail-info dd { flex:1; margin:0; }
+.detail-call { color:var(--sm-color-brand-text); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); text-decoration:none; }
+.detail-map-links { display:grid; grid-template-columns:1fr 1fr; gap:var(--sm-space-2); }
+.detail-map-links .btn-map-link { justify-content:center; gap:var(--sm-space-2); border:1px solid var(--sm-color-border); background:var(--sm-color-surface); font-weight:var(--sm-weight-bold); }
+.map-dot { width:.625rem; height:.625rem; border-radius:50%; }
+.map-dot.kakao { background:#fee500; }
+.map-dot.naver { background:#03c75a; }
+.detail-review { padding:var(--sm-space-4); border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-card); }
+.detail-review + .detail-review { margin-top:var(--sm-space-2); }
+.detail-review-head { display:flex; justify-content:space-between; align-items:center; gap:var(--sm-space-2); margin-bottom:var(--sm-space-1); }
+.detail-review-lv { display:inline-flex; align-items:center; gap:var(--sm-space-2); color:var(--sm-color-brand-text); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-bold); }
+.detail-review p { color:var(--sm-color-text-secondary); font-size:var(--sm-text-sm); }
+.detail-empty { color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.detail-actions { position:fixed; bottom:0; left:50%; z-index:var(--sm-z-header); display:grid; grid-template-columns:1fr 1fr; gap:var(--sm-space-2); width:min(100%, 26.875rem); padding:var(--sm-space-3) var(--sm-space-4) max(var(--sm-space-4), env(safe-area-inset-bottom)); transform:translateX(-50%); border-top:1px solid var(--sm-color-border); background:var(--sm-color-surface); }
+.detail-actions .sm-button { justify-content:center; min-height:3rem; font-weight:var(--sm-weight-bold); }
+.detail-actions .btn-open-review { border:1px solid var(--sm-color-border); background:var(--sm-color-surface); }
+/* 목록 카드: 펼치지 않고 상세 화면으로 */
+.card-detail-link { width:100%; justify-content:center; margin-top:var(--sm-space-2); color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); }
+.place-card-item { cursor:pointer; }
+body.detail-open .site-footer { padding-bottom:6rem; }
+
+/* ── 피그마 상단: 회색 검색 알약 + 프로필 동그라미 (모든 화면 공통) ── */
+.header-inner { grid-template-columns:minmax(0,1fr) auto; gap:var(--sm-space-3); padding:var(--sm-space-3) var(--sm-space-4); }
+.site-header { border-bottom:0; }
+.site-header .main-search-bar { display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0; min-width:0; padding:0 var(--sm-space-1); border:0; border-radius:var(--sm-radius-pill); background:#efefef; box-shadow:none; }
+.site-header .main-search-bar .sm-input { flex:1 1 auto; min-width:0; min-height:2.75rem; padding:0 var(--sm-space-1); border:0; background:transparent; font-size:var(--sm-text-md); }
+.site-header .main-search-bar .sm-input:focus { box-shadow:none; }
+.site-header .main-search-bar:focus-within { outline:2px solid var(--sm-color-focus); outline-offset:2px; }
+.site-header .search-submit-btn { flex:0 0 auto; color:var(--sm-color-text); background:transparent; }
+.site-header .search-submit-btn .search-icon svg { width:1.25rem; height:1.25rem; }
+.site-header .btn-input-clear { flex:0 0 auto; color:var(--sm-color-text-muted); }
+.account-guest { border-radius:50%; padding:0; }
+.account-avatar--guest { width:2.75rem; height:2.75rem; background:#dcdcdc; }
+.account-menu .account-summary { padding:0; gap:0; border-radius:50%; }
+.account-menu .account-summary .account-avatar { width:2.75rem; height:2.75rem; font-size:var(--sm-text-md); }
+.account-menu .account-identity, .account-menu .account-chevron { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.hero-card { padding-top:var(--sm-space-2); }
+
+/* ── 혼밥 레벨 카드: 피그마처럼 짧게 (이름 · 한 줄 · LV. 0N · 오른쪽 아래 캐릭터) ── */
+.difficulty-index .index-card { position:relative; display:block; flex:0 0 8.5rem; height:9.5rem; padding:var(--sm-space-3) var(--sm-space-3); overflow:hidden; }
+.difficulty-index .index-info h4 { display:block; margin:0; font-size:var(--sm-text-md); font-weight:800; letter-spacing:-.02em; }
+.difficulty-index .index-info p { display:block; margin-top:2px; overflow:hidden; color:var(--sm-color-text-secondary); font-size:var(--sm-text-xs); white-space:nowrap; text-overflow:ellipsis; -webkit-line-clamp:unset; }
+.difficulty-index .index-level { display:block; min-width:0; min-height:0; margin-top:var(--sm-space-1); padding:0; background:none; color:var(--sm-color-brand-text); font-size:var(--sm-text-xs); font-weight:800; letter-spacing:.02em; }
+.difficulty-index .index-char { position:absolute; right:var(--sm-space-1); bottom:var(--sm-space-1); width:4.75rem; height:4.75rem; margin:0; }
+.difficulty-index .sm-level-meter, .difficulty-index .index-mindset { display:none; }
+
+/* ── 오늘 뭐 먹지 배너: 연한 빨강 바탕 + 빨간 주사위 + 음식 아이콘 ── */
+.hero-card .search-actions-row { display:block; margin-top:var(--sm-space-3); }
+.hero-card .btn-roulette { display:flex; align-items:center; gap:var(--sm-space-3); width:100%; min-height:4.5rem; padding:var(--sm-space-3) var(--sm-space-4); border:0; border-radius:var(--sm-radius-panel); background:var(--sm-color-brand-subtle); color:var(--sm-color-text); text-align:left; }
+.hero-card .btn-roulette:hover { background:#ffe6e6; }
+.btn-roulette .roulette-icon { display:grid; place-items:center; flex:0 0 2.5rem; width:2.5rem; height:2.5rem; border-radius:50%; background:var(--sm-color-brand); color:#fff; }
+.btn-roulette .roulette-icon svg { width:1.25rem; height:1.25rem; }
+.btn-roulette .roulette-text { display:grid; flex:1; min-width:0; }
+.btn-roulette .roulette-label { font-size:var(--sm-text-md); font-weight:800; }
+.btn-roulette .roulette-desc { color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-regular); }
+.btn-roulette .roulette-foods { display:flex; flex:0 0 auto; }
+.btn-roulette .roulette-foods img { width:2.1rem; height:2.1rem; object-fit:contain; }
+.btn-roulette .roulette-foods img + img { margin-left:-.6rem; }
+.hero-card .search-tip { display:none; }
+/* 뽑기 창 */
+.roulette-tag { margin:0; }
+.roulette-heading { font-size:var(--sm-text-xl); font-weight:800; letter-spacing:-.03em; }
+.roulette-card-slot { border:0; border-radius:var(--sm-radius-panel); background:#f7f6f3; }
+.slot-rolling-anim { display:grid; justify-items:center; gap:var(--sm-space-1); }
+.slot-food { width:5.5rem; height:5.5rem; object-fit:contain; }
+.slot-name { font-size:var(--sm-text-lg); font-weight:800; color:var(--sm-color-brand-text); }
+.roulette-card-slot.is-winner { background:var(--sm-color-surface); box-shadow:inset 0 0 0 1px var(--sm-color-border); }
+.winner-icon-wrap { display:grid; place-items:center; width:7rem; height:7rem; margin:0 auto var(--sm-space-2); border-radius:var(--sm-radius-panel); background:var(--level-surface); }
+.winner-char { width:6rem; height:6rem; object-fit:contain; }
+.winner-badges { display:flex; justify-content:center; flex-wrap:wrap; gap:var(--sm-space-2); }
+.winner-meta { display:inline-flex; align-items:center; gap:var(--sm-space-1); }
+.winner-meta svg { width:1rem; height:1rem; }
+#btn-roulette-go { background:var(--sm-color-brand); border-color:var(--sm-color-brand); color:var(--sm-color-on-brand); }
+/* 음식 아이콘 그림이 흰 바탕이라 배너도 흰 카드로 (빨강은 주사위 동그라미만) */
+.hero-card .btn-roulette { background:var(--sm-color-surface); border:1px solid var(--sm-color-border) !important; }
+.hero-card .btn-roulette:hover { background:var(--sm-color-surface); border-color:var(--sm-color-control-border) !important; }
+.roulette-card-slot { background:var(--sm-color-surface); box-shadow:inset 0 0 0 1px var(--sm-color-border); }

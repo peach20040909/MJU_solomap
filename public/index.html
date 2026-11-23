@@ -23,30 +23,21 @@
   <!-- 헤더 네비게이션 -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="/" class="brand" id="logo-home" title="처음 페이지로 이동" style="text-decoration: none; color: inherit; cursor: pointer;">
-        <div class="brand-logo">
-          <img src="/logo-512x512.png" alt="혼밥지도 로고" class="brand-logo-img" width="38" height="38">
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">혼밥지도</span>
-          <span class="brand-sub">SoloMap</span>
-        </div>
-      </a>
-
-      <div class="campus-selector">
-        <span class="campus-pin" data-icon="pin" aria-hidden="true"></span>
-        <span class="campus-name">명지대 인문캠퍼스</span>
-        <span class="campus-sub">서대문구 거북골로</span>
-      </div>
-
-      <div class="header-status">
-        <span class="status-badge live">
-          <span class="pulse-dot"></span> 라이브 검색
-        </span>
-      </div>
+      <h2 class="sm-sr-only">혼밥지도 SoloMap · 명지대 인문캠퍼스</h2>
+      <!-- 피그마 상단: 회색 검색 알약 + 프로필 동그라미. 돋보기 버튼이 검색 실행 -->
+      <form id="search-form" class="main-search-bar" role="search">
+        <button type="submit" class="search-submit-btn sm-button sm-button--icon sm-button--ghost" aria-label="식당 찾기"><span class="search-icon" data-icon="search" aria-hidden="true"></span></button>
+        <input
+          type="text"
+          aria-label="메뉴 또는 식당 검색" id="search-input"
+          placeholder="국밥, 라멘, 돈까스처럼 메뉴나 식당 이름"
+          value="혼밥"
+          autocomplete="off"
+          class="sm-input">
+        <button type="button" id="btn-search-clear" class="btn-input-clear sm-button sm-button--icon sm-button--ghost" title="검색어 지우기" aria-label="검색어 지우기">&times;</button>
+      </form>
       <nav id="account-menu" class="account-menu" aria-label="내 계정" aria-live="polite">
-        <button id="btn-login" type="button" class="sm-button ">로그인</button>
-        <button id="btn-signup" class="account-primary sm-button sm-button--primary" type="button">회원가입</button>
+        <button id="btn-login" type="button" class="account-guest sm-button sm-button--icon sm-button--ghost" aria-label="로그인 · 회원가입"><span class="account-avatar account-avatar--guest" aria-hidden="true"></span></button>
       </nav>
     </div>
   </header>
@@ -65,35 +56,22 @@
         1인석 유무, 매장 분위기, 메뉴 특성까지 고려한 명지대 학우 맞춤형 식당 탐색 서비스
       </p>
 
-      <!-- 고급 검색창 & 랜덤 추천 룰렛 버튼 -->
-      <div class="search-actions-row">
-        <form id="search-form" class="main-search-bar">
-          <div class="search-input-wrap">
-            <span class="search-icon" data-icon="search" aria-hidden="true"></span>
-            <input
-              type="text"
-              aria-label="메뉴 또는 식당 검색" id="search-input"
-              placeholder="국밥, 라멘, 돈까스처럼 메뉴나 식당 이름"
-              value="혼밥"
-              autocomplete="off"
-              class="sm-input">
-            <button type="button" id="btn-search-clear" class="btn-input-clear sm-button sm-button--icon sm-button--ghost" title="검색어 지우기" aria-label="검색어 지우기">&times;</button>
-          </div>
-          <button type="submit" class="search-submit-btn sm-button sm-button--primary">식당 찾기</button>
-        </form>
-
-        <!--  오늘 뭐 먹지? 랜덤 룰렛 버튼 -->
-        <button type="button" id="btn-random-roulette" class="btn-roulette sm-button " title="오늘 뭐 먹을지 고민될 때 눌러보세요!">
-          <span class="roulette-icon" data-icon="dice" aria-hidden="true"></span>
-          <span class="roulette-label">오늘 뭐 먹지? (랜덤 뽑기)</span>
-        </button>
-      </div>
-      <p class="search-tip"><b>TIP</b> 메뉴나 식당 이름으로 검색해 보세요</p>
       <!-- 탐색 흐름을 가리지 않는 간단한 계정 안내. 개인 수치는 서버 응답만 사용한다. -->
     <section id="solo-journey" class="solo-journey" aria-label="나의 혼밥 기록">
       <div id="journey-status" aria-live="polite"></div>
       <button id="btn-growth-guide" type="button" class="journey-guide-link sm-button sm-button--ghost">레벨 안내 <span aria-hidden="true">↗</span></button>
     </section>
+      <!-- 고급 검색창 & 랜덤 추천 룰렛 버튼 -->
+      <div class="search-actions-row">
+
+        <!--  오늘 뭐 먹지? 랜덤 룰렛 버튼 -->
+        <button type="button" id="btn-random-roulette" class="btn-roulette sm-button" title="오늘 뭐 먹을지 고민될 때 눌러보세요!">
+          <span class="roulette-icon" data-icon="dice" aria-hidden="true"></span>
+          <span class="roulette-text"><span class="roulette-label">오늘 뭐 먹지?</span><span class="roulette-desc">고민될 땐 랜덤으로 한 곳 뽑아요</span></span>
+          <span class="roulette-foods" aria-hidden="true"><img src="/food/stew.webp" alt=""><img src="/food/burger.webp" alt=""><img src="/food/noodle.webp" alt=""></span>
+        </button>
+      </div>
+      <p class="search-tip"><b>TIP</b> 메뉴나 식당 이름으로 검색해 보세요</p>
 
       <!-- 빠른 카테고리 칩 (한 줄에 균형 있게 쏙 들어가도록 최적화) -->
       <div class="quick-keywords">
@@ -122,50 +100,35 @@
       <p class="section-sub">카드를 누르면 그 레벨 식당만 모아 볼 수 있어요</p>
     </div>
     <section class="difficulty-index" aria-label="혼밥 레벨 5단계">
-      <div class="index-card sm-card lv-1" data-level="1" role="button" tabindex="0" title="클릭하여 Lv.1 식당 필터링">
-        <div class="index-level lv-1">Lv.1</div>
+      <div class="index-card sm-card lv-1" data-level="1" role="button" tabindex="0" title="Lv.1 입문 혼밥 — 편의점 · 학식 · 버거 · 토스트 · 도시락">
+        <div class="index-info"><h4>입문 혼밥</h4><p>시선 신경 0</p></div>
+        <div class="index-level lv-1">LV. 01</div>
         <img class="index-char" src="/levels/level-1.webp" alt="" width="72" height="72" loading="lazy">
-        <div class="index-info">
-          <h4>입문 혼밥</h4>
-          <p>편의점 · 학식 · 버거 · 토스트 · 도시락</p>
-          <span class="index-mindset">시선 신경 0% · 키오스크 선불</span>
-        </div>
       </div>
-      <div class="index-card sm-card lv-2" data-level="2" role="button" tabindex="0" title="클릭하여 Lv.2 식당 필터링">
-        <div class="index-level lv-2">Lv.2</div>
+      </div>
+      <div class="index-card sm-card lv-2" data-level="2" role="button" tabindex="0" title="Lv.2 혼밥 성지 — 국밥(순대/설렁탕) · 라멘 · 1인 바 테이블">
+        <div class="index-info"><h4>혼밥 성지</h4><p>1인 뚝배기 환영</p></div>
+        <div class="index-level lv-2">LV. 02</div>
         <img class="index-char" src="/levels/level-2.webp" alt="" width="72" height="72" loading="lazy">
-        <div class="index-info">
-          <h4>혼밥 성지</h4>
-          <p>국밥(순대/설렁탕) · 라멘 · 1인 바 테이블</p>
-          <span class="index-mindset">한국인 공인 1위 · 1인 뚝배기 환영</span>
-        </div>
       </div>
-      <div class="index-card sm-card lv-3" data-level="3" role="button" tabindex="0" title="클릭하여 Lv.3 식당 필터링">
-        <div class="index-level lv-3">Lv.3</div>
+      </div>
+      <div class="index-card sm-card lv-3" data-level="3" role="button" tabindex="0" title="Lv.3 일반 밥집 — 백반 · 찌개 · 중식 · 마라탕 · 돈까스">
+        <div class="index-info"><h4>일반 밥집</h4><p>피크엔 눈치 살짝</p></div>
+        <div class="index-level lv-3">LV. 03</div>
         <img class="index-char" src="/levels/level-3.webp" alt="" width="72" height="72" loading="lazy">
-        <div class="index-info">
-          <h4>일반 밥집</h4>
-          <p>백반 · 찌개 · 중식 · 마라탕 · 돈까스</p>
-          <span class="index-mindset">든든한 한 끼 · 피크시간엔 눈치 살짝</span>
-        </div>
       </div>
-      <div class="index-card sm-card lv-4" data-level="4" role="button" tabindex="0" title="클릭하여 Lv.4 식당 필터링">
-        <div class="index-level lv-4">Lv.4</div>
+      </div>
+      <div class="index-card sm-card lv-4" data-level="4" role="button" tabindex="0" title="Lv.4 다인석 식당 — 떡볶이(즉석/엽떡) · 샤브 · 파스타 · 피자">
+        <div class="index-info"><h4>다인석 식당</h4><p>2인 메뉴 위주</p></div>
+        <div class="index-level lv-4">LV. 04</div>
         <img class="index-char" src="/levels/level-4.webp" alt="" width="72" height="72" loading="lazy">
-        <div class="index-info">
-          <h4>다인석 식당</h4>
-          <p>떡볶이(즉석/엽떡) · 샤브 · 파스타 · 피자</p>
-          <span class="index-mindset">2인 냄비 or 데이트 위주 · 혼밥 도전</span>
-        </div>
       </div>
-      <div class="index-card sm-card lv-5" data-level="5" role="button" tabindex="0" title="클릭하여 Lv.5 식당 필터링">
-        <div class="index-level lv-5">Lv.5</div>
+      </div>
+      <div class="index-card sm-card lv-5" data-level="5" role="button" tabindex="0" title="Lv.5 혼밥 끝판왕 — 삼겹살/고깃집 · 곱창/막창 · 횟집 · 술집">
+        <div class="index-info"><h4>혼밥 끝판왕</h4><p>최고난도 도전</p></div>
+        <div class="index-level lv-5">LV. 05</div>
         <img class="index-char" src="/levels/level-5.webp" alt="" width="72" height="72" loading="lazy">
-        <div class="index-info">
-          <h4>혼밥 끝판왕</h4>
-          <p>삼겹살/고깃집 · 곱창/막창 · 횟집 · 술집</p>
-          <span class="index-mindset">불판 구이 & 술자리 회식 · 최고난도 도전</span>
-        </div>
+      </div>
       </div>
     </section>
 
@@ -257,19 +220,22 @@
         </div>
       </div>
     </section>
+
+    <!-- 식당 상세 화면 (피그마 '식당 상세 화면'). ?place=식당ID 로 열린다 -->
+    <section id="place-detail" class="place-detail" aria-label="식당 상세" aria-live="polite"></section>
   </main>
 
   <!--  랜덤 혼밥 추천 룰렛 모달 -->
   <div id="roulette-modal" class="modal-overlay hidden">
     <div class="modal-sheet roulette-sheet sm-card">
       <div class="modal-top">
-        <span class="modal-tag roulette-tag"> 오늘 뭐 먹지?</span>
+        <span class="section-eyebrow roulette-tag">TODAY'S PICK</span>
         <button type="button" id="roulette-close" class="btn-close sm-button sm-button--icon sm-button--ghost" aria-label="닫기">&times;</button>
       </div>
 
       <div class="roulette-content">
         <h3 class="roulette-heading">오늘의 혼밥 메뉴 추천!</h3>
-        <p class="roulette-sub">명지대 주변 식당 중 엄선된 혼밥 추천 결과입니다.</p>
+        <p class="roulette-sub">명지대 근처 밥집 중 한 곳을 골라 드려요</p>
 
         <div id="roulette-card-slot" class="roulette-card-slot">
           <!-- 롤링 중 혹은 당첨 식당 정보 -->
