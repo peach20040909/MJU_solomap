@@ -390,7 +390,7 @@ function getFilteredList() {
 
 // 휴대폰에서는 20곳씩 끊어 보여 준다. 필터·검색이 바뀌면 처음 20곳으로 돌아간다.
 const MOBILE_PAGE_SIZE = 20;
-const mobileQuery = window.matchMedia('(max-width: 679px)');
+const mobileQuery = { matches: true }; // 모바일 전용 화면: PC에서도 같은 폭으로 보여 준다
 let visiblePlaceCount = MOBILE_PAGE_SIZE;
 
 function renderFilteredPlaces(keepCount = false) {
@@ -599,7 +599,7 @@ function spinRoulette() {
     rouletteCardSlot.innerHTML = `
       <div class="slot-rolling-anim">
         <span class="slot-icon-dice">🎲</span>
-        <p style="font-size: 18px; font-weight: 800; color: #ff5226;">${escapeHtml(randomTemp.place_name)}</p>
+        <p style="font-size: 18px; font-weight: 800; color: var(--sm-color-brand-text);">${escapeHtml(randomTemp.place_name)}</p>
         <p class="slot-text-sub">${phrase}</p>
       </div>
     `;

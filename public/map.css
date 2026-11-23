@@ -490,7 +490,7 @@
   border-top: 6px solid #d97706;
 }
 /* 모바일 화면 (768px 이하) 마커 크기 최적화 */
-@media (max-width: 768px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .map-place-marker {
     padding: 2.5px 7px 2.5px 2.5px;
     gap: 4px;
@@ -788,7 +788,7 @@
 .naver-style-zoom-control { border-color:var(--sm-color-border); border-radius:var(--sm-radius-control); box-shadow:var(--sm-shadow-card); }
 .naver-zoom-btn { min-width:var(--sm-control-sm); min-height:var(--sm-control-sm); background:var(--sm-color-surface); color:var(--sm-color-text); }
 .naver-zoom-track-fill, .naver-zoom-handle { background:var(--sm-color-action); }
-@media(max-width:679px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .map-view-container { height:clamp(30rem,72dvh,40rem); }
   .map-floating-controls { top:var(--sm-space-3); right:var(--sm-space-3); left:4rem; max-width:none; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sm-space-1); }
   .map-ctrl-btn { justify-content:center; padding:var(--sm-space-2) var(--sm-space-1); font-size:var(--sm-text-xs); }

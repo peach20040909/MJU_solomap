@@ -33,15 +33,15 @@
   --sm-space-10: 2.5rem;
   --sm-space-12: 3rem;
   --sm-space-16: 4rem;
-  /* 무채색 중심(연회색 바탕 + 흰 카드). 주황은 로고·난이도·핵심 액션에만 아껴 쓴다. */
-  --sm-color-brand: #ff5a1f;
-  --sm-color-brand-hover: #ff7a47;
-  --sm-color-brand-text: #b03508;
-  --sm-color-on-brand: #161615;
+  /* 흰 바탕 + 빨강(#FF2929 계열) 포인트. 빨강은 소제목·레벨 미터·다녀왔어요에만 쓴다. */
+  --sm-color-brand: #e3191f;
+  --sm-color-brand-hover: #ff2929;
+  --sm-color-brand-text: #d11a1a;
+  --sm-color-on-brand: #ffffff;
   --sm-color-action: #212124;
   --sm-color-action-hover: #3d3f45;
   --sm-color-on-action: #ffffff;
-  --sm-color-brand-subtle: #fff4ee;
+  --sm-color-brand-subtle: #fff1f1;
   --sm-color-page: #ffffff;
   --sm-color-surface: #ffffff;
   --sm-color-surface-subtle: #f2f3f6;
@@ -59,17 +59,17 @@
   --sm-color-warning-subtle: #fff5d9;
   --sm-color-danger: #b42332;
   --sm-color-danger-subtle: #fff0f1;
-  /* 난이도: 같은 엠버가 Lv.1(연함) → Lv.5(짙음). fill = 배지 바탕, on = 그 위 글자. */
-  --sm-level-1-fill: #ffe7da;
-  --sm-level-1-on: #7a1d05;
-  --sm-level-2-fill: #ffcdb5;
-  --sm-level-2-on: #7a1d05;
-  --sm-level-3-fill: #ff9e75;
-  --sm-level-3-on: #4a1403;
-  --sm-level-4-fill: #d4420d;
-  --sm-level-4-on: #ffffff;
-  --sm-level-5-fill: #7a1d05;
-  --sm-level-5-on: #ffffff;
+  /* 난이도: 레벨마다 다른 차분한 파스텔 바탕(크림·버터·세이지·스카이·라일락) + 빨간 글자. */
+  --sm-level-1-fill: #fbf3e4;
+  --sm-level-1-on: #b3161b;
+  --sm-level-2-fill: #faedc9;
+  --sm-level-2-on: #b3161b;
+  --sm-level-3-fill: #e8f0de;
+  --sm-level-3-on: #b3161b;
+  --sm-level-4-fill: #e3ecf5;
+  --sm-level-4-on: #b3161b;
+  --sm-level-5-fill: #ede6f4;
+  --sm-level-5-on: #b3161b;
   --sm-level-track: #e9eaee;
   --sm-level-1: var(--sm-level-1-on);
   --sm-level-1-subtle: var(--sm-level-1-fill);
@@ -399,9 +399,7 @@ h4 {
   --level-color: var(--sm-level-5);
   --level-surface: var(--sm-level-5-subtle);
 }
-.sm-level, .lv-1, .lv-2, .lv-3 { --level-meter: var(--sm-level-3-fill); }
-.lv-4 { --level-meter: var(--sm-level-4-fill); }
-.lv-5 { --level-meter: var(--sm-level-5-fill); }
+.sm-level, .lv-1, .lv-2, .lv-3, .lv-4, .lv-5 { --level-meter: #ff2929; }
 /* 레벨 배지: 엠버 바탕 + 같은 계열 글자. 미터는 숫자를 보조해 색만으로 구분하지 않게 한다. */
 .sm-level-badge {
   display: inline-flex;

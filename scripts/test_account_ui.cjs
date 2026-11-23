@@ -85,7 +85,7 @@ const server = createServer(async (req, res) => {
     await page.waitForSelector('.place-card-item');
     await require('./design_system_checks.cjs')(page);
     await page.waitForSelector('#btn-signup');
-    assert(await page.$eval('#solo-journey', e => e.textContent.includes('학교 인증 리뷰')));
+    assert(await page.$eval('#solo-journey', e => e.textContent.includes('학교 인증하고 혼밥 기록')));
     await page.click('#btn-growth-guide');
     await page.waitForSelector('#growth-guide-modal:not(.hidden)');
     await page.click('[data-close="growth-guide-modal"]');
@@ -95,6 +95,7 @@ const server = createServer(async (req, res) => {
     assert.equal(await page.$eval('.place-title', e => e.textContent), '테스트 버거');
     await page.select('#sort-select', 'level-desc');
     assert.equal(await page.$eval('.place-title', e => e.textContent), '테스트 국밥');
+    await page.evaluate(() => showResults('혼밥', false)); // 필터·정렬은 검색 결과 화면
     await page.click('.tab-btn[data-filter="1"]');
     assert.equal(await page.$$eval('.place-card-item', els => els.length), 1);
     await page.click('.tab-btn[data-filter="all"]');
@@ -102,6 +103,7 @@ const server = createServer(async (req, res) => {
     await page.click('.tab-btn[data-filter="fav"]');
     assert.equal(await page.$eval('.place-title', e => e.textContent), '테스트 국밥');
     await page.click('.tab-btn[data-filter="all"]');
+    await page.evaluate(() => showHome());
     await page.click('#btn-random-roulette');
     await page.waitForSelector('#roulette-card-slot.is-winner');
     await page.click('#roulette-close');
@@ -118,6 +120,7 @@ const server = createServer(async (req, res) => {
     await page.type('#verify-code', '123456'); await page.click('#verify-submit');
     await page.waitForSelector('#auth-modal.hidden');
     await page.waitForFunction(() => document.querySelector('#journey-status').textContent.includes('5점'));
+    await page.evaluate(() => showResults('혼밥', false));
     await page.click('#btn-view-map');
     await page.waitForSelector('.map-place-marker');
     assert.equal(await page.$$eval('.marker-conquered', els => els.length), 1, '로그인 직후 기존 정복 위치 표시');

@@ -18,8 +18,8 @@ module.exports = async function auditDesignSystem(page) {
       return {
         bodyFont: parseFloat(getComputedStyle(document.body).fontSize),
         overflow: document.documentElement.scrollWidth > innerWidth,
-        controls: controls.map(selector => { const e = document.querySelector(selector); const r = e.getBoundingClientRect(); return { selector, height: r.height, width: r.width, component: e.classList.contains('sm-button') }; }),
-        token: root.getPropertyValue('--sm-color-action').trim(),
+        controls: controls.map(selector => { document.body.classList.toggle('results-open', ['.tab-btn', '.btn-heart-fav', '.btn-map-link'].includes(selector)); /* 홈·검색 결과는 별도 화면 */ const e = document.querySelector(selector); const r = e.getBoundingClientRect(); return { selector, height: r.height, width: r.width, component: e.classList.contains('sm-button') }; }),
+        token: (document.body.classList.remove('results-open'), root.getPropertyValue('--sm-color-action').trim()),
         columns: getComputedStyle(document.querySelector('.places-container')).gridTemplateColumns.split(' ').length,
       };
     });
@@ -30,7 +30,7 @@ module.exports = async function auditDesignSystem(page) {
       assert(control.height >= 44 && control.width >= 44, `${width}: ${control.selector} 44px 터치 타깃`);
       assert(control.component, `${control.selector} 공통 버튼 사용`);
     }
-    assert.equal(metrics.columns, width < 680 ? 1 : width < 1100 ? 2 : 3, `${width}: 식당 그리드`);
+    assert.equal(metrics.columns, 1, `${width}: 모바일 전용 1열 식당 목록`);
     if (capture) await page.screenshot({ path: path.join(output, `app-${width}.png`), fullPage: true });
     if (capture && [375,1440].includes(width)) {
       await page.screenshot({ path:path.join(output, `app-${width}-top.png`) });
@@ -38,6 +38,7 @@ module.exports = async function auditDesignSystem(page) {
     }
   }
   await page.setViewport({ width: 375, height: 1000 });
+  await page.evaluate(() => document.body.classList.add('results-open')); // 지도 보기는 검색 결과 화면
   await page.click('#btn-view-map');
   assert(await page.evaluate(() => {
     const frame = document.querySelector('#map-view-container').getBoundingClientRect();
@@ -45,6 +46,7 @@ module.exports = async function auditDesignSystem(page) {
   }), '모바일 지도 컨트롤이 잘리지 않고 터치 가능');
   if (capture) await page.screenshot({ path: path.join(output, 'map-375.png'), fullPage: true });
   await page.click('#btn-view-list');
+  await page.evaluate(() => document.body.classList.remove('results-open'));
   const colors = await page.evaluate(() => {
     const css = getComputedStyle(document.documentElement);
     return Object.fromEntries(['--sm-color-action', '--sm-color-action-hover', '--sm-color-on-action', '--sm-color-surface', '--sm-color-text', '--sm-color-text-secondary', '--sm-color-text-muted', '--sm-color-focus', '--sm-color-control-border', ...[1,2,3,4,5].flatMap(i => [`--sm-level-${i}`, `--sm-level-${i}-subtle`])].map(key => [key, css.getPropertyValue(key).trim()]));

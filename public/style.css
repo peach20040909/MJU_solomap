@@ -1006,7 +1006,7 @@ fieldset.input-section legend {
 body.sm-dialog-open {
   overflow:hidden;
 }
-@media (max-width:1099px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .places-container {
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
@@ -1014,7 +1014,7 @@ body.sm-dialog-open {
     display:none;
   }
 }
-@media (max-width:679px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .solo-journey { align-items:flex-end; gap:var(--sm-space-2); padding:var(--sm-space-4); }
   .journey-start-button { margin-left:0; padding-left:0; justify-content:flex-start; text-align:left; }
   .journey-guide-link { padding-left:0; }
@@ -1194,7 +1194,7 @@ body.sm-dialog-open {
 .card-more-actions { display:none; }
 
 /* 휴대폰 홈: 주황 소개 카드 한 덩어리 + 흰 메뉴 시트, 짧은 카드와 20곳씩 보기 */
-@media (max-width:679px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .page-body { padding-top:0; }
   .hero-card {
     margin:0 calc(-1 * var(--sm-space-4));
@@ -1344,7 +1344,7 @@ body.sm-dialog-open {
 .journey-title { color:var(--sm-color-text); font-weight:var(--sm-weight-bold); }
 
 /* 휴대폰 계정 안내: 연한 주황 배너 + 굵은 제목 + 꽉 찬 시작 버튼, 레벨 안내는 오른쪽 위 작은 링크 */
-@media (max-width:679px) {
+@media all { /* 모바일 전용: 항상 적용 */
   .solo-journey {
     position:relative;
     display:block;
@@ -1377,10 +1377,6 @@ body.sm-dialog-open {
   }
 }
 
-/* PC 메뉴 타일 10칸을 한 줄에 맞춘다 */
-@media (min-width:1100px) {
-  .hero-card .quick-keywords { grid-template-columns:repeat(10,minmax(0,1fr)); }
-}
 
 /* 검색 결과는 별도 화면: 홈에서는 목록을 숨기고, 결과 화면에서는 홈 영역을 숨긴다 */
 body:not(.results-open) .catalog-section { display:none; }
@@ -1397,3 +1393,40 @@ body.results-open .page-body { padding-top:var(--sm-space-4); }
   font-size:1.375rem;
   line-height:1;
 }
+
+/* ── 모바일 전용 화면 (2026-11 피그마 리디자인) ──
+   PC에서 열어도 가운데 폰 폭(430px) 화면 하나로 보여 준다. 바깥은 흰 바탕, 앱 영역은 얇은 선으로만 구분. */
+html { background:var(--sm-color-surface); }
+body {
+  max-width:26.875rem;
+  min-height:100dvh;
+  margin-inline:auto;
+  box-shadow:0 0 0 1px var(--sm-color-border);
+}
+.modal-sheet, .account-sheet { max-width:min(26.875rem, 100%); }
+/* 빨간 영문 소제목 (PICK YOUR MENU 등) */
+.section-eyebrow { color:var(--sm-color-brand-text); }
+/* 레벨 카드: 레벨별 파스텔 바탕 + 캐릭터 */
+.index-card { background:var(--level-surface); border-color:transparent !important; box-shadow:none; }
+.index-card .index-level { background:var(--sm-color-surface); }
+.index-card.active { box-shadow:inset 0 0 0 2px var(--sm-color-brand); }
+.index-char { grid-column:1 / -1; justify-self:end; width:4.5rem; height:4.5rem; object-fit:contain; margin-top:calc(-1 * var(--sm-space-2)); }
+/* 다녀왔어요는 빨간 버튼 */
+.btn-checkin { background:var(--sm-color-brand) !important; border-color:var(--sm-color-brand) !important; color:var(--sm-color-on-brand) !important; }
+.btn-checkin:hover { background:var(--sm-color-brand-hover) !important; border-color:var(--sm-color-brand-hover) !important; }
+/* 홈 상단: 주황 그라데이션 대신 흰 바탕 + 빨간 포인트 */
+.hero-card { padding-top:var(--sm-space-6); background:var(--sm-color-surface); color:var(--sm-color-text); }
+.hero-badge { color:var(--sm-color-brand-text); }
+.hero-badge::before { background:var(--sm-color-brand); }
+.hero-headline { color:var(--sm-color-text); }
+.hero-headline .text-gradient { padding:0; background:none; color:var(--sm-color-brand-text); }
+.hero-card .main-search-bar { border:1px solid var(--sm-color-border); box-shadow:0 4px 16px #2121240f; }
+.hero-card .btn-roulette { border:1px solid var(--sm-color-border); background:var(--sm-color-surface-subtle); color:var(--sm-color-text); }
+.hero-card .quick-keywords { margin-top:var(--sm-space-2); }
+.solo-journey { border-color:#ffd6d6 !important; }
+.filter-tabs .tab-btn { min-height:var(--sm-control-sm); }
+/* 글자 200% 확대에서도 가로로 넘치지 않게: 검색 버튼은 다음 줄로, 메뉴 이름은 줄바꿈 */
+.hero-card .main-search-bar { flex-wrap:wrap; }
+.hero-card .search-input-wrap { flex:1 1 10rem; }
+.hero-card .main-search-bar .search-submit-btn { flex:1 0 auto; }
+.hero-card .kw-chip, .hero-card .btn-roulette, .roulette-label { min-width:0; white-space:normal; }
