@@ -1001,7 +1001,7 @@ function initNaverMap() {
       center: new naver.maps.LatLng(MYONGJI_COORDS.lat, MYONGJI_COORDS.lng),
       zoom: 16,
       minZoom: 15, // 🛡️ 명지대·명지전문대·백련시장 권역(800m)에 딱 맞춘 최적 줌 하한선 (휠 축소 이탈 방지)
-      maxZoom: 18, // 🛡️ 편안한 건물/골목 식별 줌 상한선 (휠 과다 확대 방지)
+      maxZoom: 20, // 골목 식당이 붙어 있어 18에선 핀이 겹친다. 20까지 확대해 하나씩 보이게(묶음은 20에서만 풀림)
       zoomControl: true,
       zoomControlOptions: {
         position: naver.maps.Position.TOP_LEFT,
