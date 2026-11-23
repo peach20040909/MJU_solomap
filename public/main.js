@@ -1083,6 +1083,19 @@ mapSheet.className = 'map-place-sheet hidden';
 mapSheet.setAttribute('role', 'dialog');
 mapSheet.setAttribute('aria-label', '선택한 식당');
 document.body.appendChild(mapSheet);
+// 같은 건물 식당 목록 카드
+function showClusterSheet(places) {
+  mapSheet.innerHTML = `<div class="map-popup-card clean-popup compact-popup cluster-list">
+    <button type="button" class="popup-close-btn sm-button sm-button--icon sm-button--ghost" aria-label="닫기" onclick="closeCurrentInfoWindow()">${soloIcon('close')}</button>
+    <h3 class="popup-title">이 건물 식당 ${places.length}곳</h3>
+    <ul>${places.map((p) => { const info = getDynamicSoloIndex(p); return `<li><button type="button" class="cluster-item ${info.pillClass}" data-place-id="${escapeHtml(p.id)}"><strong>${escapeHtml(p.place_name)}</strong><span class="sm-level-badge">${escapeHtml(info.label)}</span></button></li>`; }).join('')}</ul>
+  </div>`;
+  mapSheet.querySelectorAll('.cluster-item').forEach((b) => b.addEventListener('click', () => {
+    const place = places.find((p) => String(p.id) === b.dataset.placeId);
+    if (place) showMapSheet(place);
+  }));
+  mapSheet.classList.remove('hidden');
+}
 function showMapSheet(place) {
   const soloInfo = getDynamicSoloIndex(place);
   mapSheet.innerHTML = createMapPopupHtml(place, soloInfo, formatDistanceWalking(place.distance));
@@ -1144,6 +1157,7 @@ function updateNaverMapMarkers() {
       },
       zIndex: 100,
     });
+    marker.__place = place; // 묶음 목록에서 식당 정보를 꺼내 쓴다
 
     const popupHtml = `<div class="naver-infowindow-wrap">${createMapPopupHtml(place, soloInfo, walk)}</div>`;
 
@@ -1212,11 +1226,14 @@ function clusterNaverMarkers() {
   const proj = naverMap.getProjection();
   const zoom = naverMap.getZoom();
   const maxZoom = naverMap.getMaxZoom ? naverMap.getMaxZoom() : 18;
-  if (!proj || zoom >= maxZoom) { naverMarkers.forEach((m) => m.getMap() || m.setMap(naverMap)); return; }
+  if (!proj) return;
+  // 가장 크게 확대해도 같은 건물 식당은 좌표가 거의 같아 겹친다 → 그때는 아주 가까운 핀만 묶고, 누르면 목록으로 보여 준다
+  const atMax = zoom >= maxZoom;
+  const px = atMax ? 26 : CLUSTER_PX;
   const groups = [];
   naverMarkers.forEach((m) => {
     const pt = proj.fromCoordToOffset(m.getPosition());
-    const g = groups.find((x) => Math.abs(x.x - pt.x) < CLUSTER_PX && Math.abs(x.y - pt.y) < CLUSTER_PX);
+    const g = groups.find((x) => Math.abs(x.x - pt.x) < px && Math.abs(x.y - pt.y) < px);
     if (g) g.items.push(m); else groups.push({ x: pt.x, y: pt.y, items: [m] });
   });
   groups.forEach((g) => {
@@ -1231,7 +1248,10 @@ function clusterNaverMarkers() {
       position: center, map: naverMap, zIndex: 200,
       icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, 눌러서 확대">${g.items.length}<small>곳</small></button>`, anchor: new naver.maps.Point(26, 26) },
     });
-    naver.maps.Event.addListener(c, 'click', () => naverMap.morph(center, Math.min(maxZoom, zoom + 2), { duration: 350, easing: 'easeOutCubic' }));
+    naver.maps.Event.addListener(c, 'click', () => {
+      if (atMax) showClusterSheet(g.items.map((m) => m.__place).filter(Boolean));
+      else naverMap.morph(center, Math.min(maxZoom, zoom + 2), { duration: 350, easing: 'easeOutCubic' });
+    });
     naverClusterMarkers.push(c);
   });
 }

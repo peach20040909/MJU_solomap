@@ -840,3 +840,10 @@ body:not(.results-open) .map-place-sheet, body.detail-open .map-place-sheet { di
 /* 묶음은 레벨 숫자(빨강)와 헷갈리지 않게 검은 동그라미 + '곳' */
 .map-cluster { width:52px; height:52px; background:#111; font-size:16px; display:flex; align-items:baseline; justify-content:center; padding-top:15px; gap:1px; }
 .map-cluster small { font-size:11px; font-weight:700; }
+
+/* 같은 건물 식당 목록 카드 */
+.cluster-list ul { display:grid; gap:var(--sm-space-1); max-height:13rem; margin:0; padding:0; overflow-y:auto; list-style:none; }
+.cluster-item { display:flex; align-items:center; justify-content:space-between; gap:var(--sm-space-2); width:100%; min-height:2.75rem; padding:0 var(--sm-space-2); border:0; border-radius:var(--sm-radius-sm); background:none; text-align:left; cursor:pointer; }
+.cluster-item:hover { background:var(--sm-color-surface-subtle); }
+.cluster-item strong { overflow:hidden; font-size:var(--sm-text-sm); white-space:nowrap; text-overflow:ellipsis; }
+.cluster-item .sm-level-badge { flex:0 0 auto; font-size:.6875rem; padding:2px var(--sm-space-2); }
