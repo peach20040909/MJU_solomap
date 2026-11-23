@@ -75,6 +75,11 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeAccountMenu(true);
 });
 
+// 서버 칭호 'Lv.1 🐣 혼밥 입문자'에서 레벨 표시와 이모지를 뺀 이름만 쓴다 (화면은 캐릭터 그림으로 레벨을 보여 준다)
+function plainTitle(title) {
+  return String(title || '').replace(/^Lv\.\d+\s*/, '').replace(/^[^가-힣A-Za-z0-9]+\s*/, '');
+}
+
 function renderJourney() {
   const status = document.getElementById('journey-status');
   if (!currentUser) {
@@ -85,7 +90,7 @@ function renderJourney() {
   }
   const hasProgress = typeof currentUser.exp === 'number';
   const lv = Math.min(5, Math.max(1, Number(currentUser.level) || 1));
-  const title = String(currentUser.title || '혼밥 여정').replace(/^Lv\.\d+\s*/, '');
+  const title = plainTitle(currentUser.title || '혼밥 여정');
   status.innerHTML = `<span class="journey-lv">LV. 0${lv}</span><img class="journey-char" src="/levels/level-${lv}.webp" alt="" width="96" height="96">
     <span class="journey-level-title">${escapeHtml(title)}</span>
     ${hasProgress ? `<span class="journey-progress"><progress max="100" value="${currentUser.progressPercent}" aria-label="내 혼밥 레벨 진행률" class="sm-progress"></progress><span>${currentUser.exp}점</span></span>
@@ -193,7 +198,7 @@ verifyForm.addEventListener('submit', (event) => {
     if (currentUser) currentUser.isVerified = true;
     renderAccountMenu();
     verifyForm.reset(); authModal.classList.add('hidden');
-    showToast('🎓 학교 메일 인증이 완료되었습니다.');
+    showToast('학교 메일 인증을 완료했어요.');
   });
 });
 document.getElementById('btn-resend-code').addEventListener('click', event => busy(event.currentTarget, async () => {
@@ -366,7 +371,7 @@ btnSubmitReview.addEventListener('click', () => busy(btnSubmitReview, async () =
 function renderReviewList(reviews) {
   document.getElementById('reviews-list-container').innerHTML = reviews.length ? reviews.map(review => `
     <article class="account-review" data-review-id="${escapeHtml(review.id)}">
-      <div class="account-row"><strong>${escapeHtml(review.user?.nickname || '학우')} ${review.user?.isVerified ? '🎓 명지대생 인증' : ''}</strong><span>Lv.${review.soloLevel}</span></div>
+      <div class="account-row"><strong>${escapeHtml(review.user?.nickname || '학우')} ${review.user?.isVerified ? '<span class="verified-chip">명지대생 인증</span>' : ''}</strong><span>Lv.${review.soloLevel}</span></div>
       <p>${escapeHtml(review.content)}</p><small>${escapeHtml(new Date(review.createdAt).toLocaleDateString('ko-KR'))}</small>
       ${review.userId === currentUser?.id ? '<div class="account-card-actions"><button data-action="edit" type="button" class="sm-button ">수정</button><button data-action="delete" type="button" class="sm-button sm-button--danger">삭제</button></div>' : ''}
     </article>`).join('') : '<p class="account-empty">아직 리뷰가 없습니다. 첫 혼밥 팁을 남겨보세요.</p>';
@@ -411,7 +416,7 @@ async function checkInById(placeId, button) {
     const data = await apiRequest(`/api/places/${encodeURIComponent(placeId)}/checkins`, { method: 'POST', body: { placeName } });
     if (currentUser?.id !== userId) return;
     Object.assign(currentUser, data.levelInfo); renderAccountMenu();
-    showToast(data.levelInfo.level > previousLevel ? `체크인 완료! ${data.levelInfo.title} 레벨업 🎉` : '체크인 완료! 혼밥 경험치를 얻었어요.');
+    showToast(data.levelInfo.level > previousLevel ? `체크인 완료! ${plainTitle(data.levelInfo.title)}(으)로 레벨업했어요` : '체크인 완료! 혼밥 경험치를 얻었어요.');
     await loadPersonalPlaces(); updateMapMarkers();
   });
 }
@@ -423,8 +428,14 @@ async function loadPersonalPlaces() {
   recommendedPlaces = suggestions.recommendations.map(toMapPlace);
   [...conqueredPlaces, ...recommendedPlaces].forEach(p => knownPlaces.set(p.id, p));
 }
-async function openMyPage() {
+// 나의 혼밥 기록도 상세 화면처럼 주소(?my=1)가 바뀌는 화면 이동. 뒤로 가기로 닫힌다.
+async function openMyPage(push = true) {
   if (!currentUser) { openAuth(); return; }
+  if (push && !history.state?.my) {
+    const params = new URLSearchParams(location.search); params.delete('place'); params.set('my', '1');
+    history.pushState({ my: true, q: params.get('q') }, '', `?${params}`);
+  }
+  window.scrollTo(0, 0);
   const version = profileVersion;
   const content = document.getElementById('mypage-content');
   content.textContent = '혼밥 기록을 불러오는 중...'; mypageModal.classList.remove('hidden');
@@ -434,7 +445,7 @@ async function openMyPage() {
     const info = level.levelInfo;
     Object.assign(currentUser, info); renderAccountMenu();
     const lv = Math.min(5, Math.max(1, Number(info.level) || 1));
-    const name = String(info.title || '').replace(/^Lv\.\d+\s*/, '').replace(/^[^가-힣A-Za-z0-9]+\s*/, '');
+    const name = plainTitle(info.title);
     const left = info.nextLevelExp === null ? null : info.nextLevelExp - info.exp;
     content.innerHTML = `
       <section class="record-hero lv-${lv}">
@@ -489,6 +500,8 @@ document.getElementById('mypage-content').addEventListener('click', event => {
   const action = button.dataset.profileAction;
   if (action === 'verify') openAuth('verify');
   if (action === 'map') {
+    const params = new URLSearchParams(location.search); params.delete('my');
+    history.replaceState({ q: params.get('q') }, '', params.toString() ? `?${params}` : location.pathname);
     personalMapMode = true;
     mypageModal.classList.add('hidden');
     document.getElementById('personal-map-note').classList.remove('hidden');
@@ -506,12 +519,16 @@ function getMapPlaces() {
   return personalMapMode ? [...conqueredPlaces, ...recommendedPlaces] : getFilteredList();
 }
 function personalMarkerLabel(placeId) {
-  if (conqueredPlaces.some(p => p.id === String(placeId))) return { icon: '✅', className: 'marker-conquered' };
+  if (conqueredPlaces.some(p => p.id === String(placeId))) return { icon: '✓', className: 'marker-conquered' };
   if (recommendedPlaces.some(p => p.id === String(placeId))) return { icon: '★', className: 'marker-recommended' };
   return { icon: null, className: '' };
 }
 
-document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).classList.add('hidden')));
+document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => {
+  // 기록 화면은 주소로 연 화면이라 뒤로 가기로 닫는다
+  if (button.dataset.close === 'mypage-modal' && history.state?.my) { history.back(); return; }
+  document.getElementById(button.dataset.close).classList.add('hidden');
+}));
 [authModal, mypageModal, reviewsListModal, growthGuideModal].forEach(modal => modal.addEventListener('click', event => { if (event.target === modal) modal.classList.add('hidden'); }));
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') [authModal, mypageModal, reviewsListModal, reviewModal, growthGuideModal].forEach(modal => modal.classList.add('hidden'));

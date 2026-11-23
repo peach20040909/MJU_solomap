@@ -400,7 +400,7 @@ function renderFilteredPlaces(keepCount = false) {
 
   if (filtered.length === 0) {
     const emptyMsg = currentFilter === 'fav'
-      ? '아직 찜한 식당이 없습니다! 식당 카드의 하트(❤️) 버튼을 눌러 나만의 혼밥 리스트를 만들어보세요.'
+      ? '아직 찜한 식당이 없습니다! 식당 카드의 하트 버튼을 눌러 나만의 혼밥 리스트를 만들어보세요.'
       : '해당 조건의 식당이 없습니다. 상단 필터를 변경하거나 다른 메뉴를 검색해 보세요.';
 
     placesContainer.innerHTML = soloEmptyState(currentFilter === 'fav' ? '찜한 식당이 비어있습니다' : '일치하는 식당이 없습니다', emptyMsg, { icon: currentFilter === 'fav' ? 'heart' : 'search' });
@@ -487,7 +487,7 @@ window.handleToggleFav = function (placeId, event) {
   btn.classList.add('anim-pop');
   setTimeout(() => btn.classList.remove('anim-pop'), 400);
 
-  showToast(isNowFav ? '내 찜 목록에 추가되었습니다! ❤️' : '찜 목록에서 제외되었습니다.');
+  showToast(isNowFav ? '찜 목록에 추가했어요.' : '찜 목록에서 뺐어요.');
 
   if (currentFilter === 'fav') {
     renderFilteredPlaces();
@@ -546,11 +546,11 @@ function spinRoulette() {
 
   const ROULETTE_FOODS = ['rice', 'stew', 'noodle', 'japanese', 'burger', 'jjajang', 'kimbap', 'snack', 'pho', 'grill'];
   const funnyPhrases = [
-    '🍜 든든한 국밥과 라멘 사이 고민 중...',
-    '🍛 바삭한 돈까스냐 매콤한 마라탕이냐...',
-    '🍔 빠르게 햄버거 세트 한 입?!',
-    '🥘 오늘은 떡볶이에 도전해볼까...',
-    '🥩 당당하게 고깃집 1인분 도전?!',
+    '든든한 국밥과 라멘 사이 고민 중...',
+    '바삭한 돈까스냐 매콤한 마라탕이냐...',
+    '빠르게 햄버거 세트 한 입?',
+    '오늘은 떡볶이에 도전해 볼까...',
+    '당당하게 고깃집 1인분 도전?',
   ];
 
   let step = 0;
@@ -1320,6 +1320,9 @@ function openSearch(q, push = true) {
 window.addEventListener('popstate', () => {
   const params = new URLSearchParams(location.search);
   const q = params.get('q'), place = params.get('place');
+  const myPage = document.getElementById('mypage-modal');
+  if (params.get('my')) { if (myPage.classList.contains('hidden')) openMyPage(false); return; }
+  myPage.classList.add('hidden');
   if (place) { openPlaceDetail(place, false); return; }
   // 상세에서 뒤로 오면 목록을 다시 불러오지 않고 보던 자리로 돌아간다
   if (document.body.classList.contains('detail-open')) { closePlaceDetail(); if (q && q === searchInput.value) return; }
@@ -1387,11 +1390,11 @@ if (sortSelect) {
     updateMapMarkers();
 
     const sortLabels = {
-      'distance': '🚶‍♂️ 가까운 거리순으로 정렬되었습니다.',
-      'level-asc': '🔰 전체 식당이 난이도 낮은 순(Lv.1→5)으로 정렬되었습니다.',
-      'level-desc': '🥩 전체 식당이 난이도 높은 순(Lv.5→1)으로 정렬되었습니다.',
-      'reviews': '학우 리뷰 많은 순으로 정렬되었습니다.',
-      'name': '🔤 식당 가나다순으로 정렬되었습니다.',
+      'distance': '가까운 순으로 정렬했어요.',
+      'level-asc': '혼밥하기 쉬운 순(Lv.1→5)으로 정렬했어요.',
+      'level-desc': '혼밥하기 어려운 순(Lv.5→1)으로 정렬했어요.',
+      'reviews': '학우 리뷰 많은 순으로 정렬했어요.',
+      'name': '이름순으로 정렬했어요.',
     };
     if (sortLabels[currentSort]) {
       showToast(sortLabels[currentSort]);

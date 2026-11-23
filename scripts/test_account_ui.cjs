@@ -175,6 +175,7 @@ const server = createServer(async (req, res) => {
     await page.locator('.account-summary').click();
     await page.waitForSelector('.account-dropdown[open] #btn-mypage');
     await page.click('#btn-mypage'); await page.waitForSelector('#mypage-content progress');
+    assert.equal(new URL(page.url()).searchParams.get('my'), '1', '나의 혼밥 기록은 주소가 바뀌는 화면 이동');
     assert(await page.$eval('#mypage-content', e => e.textContent.includes('추천 식당')));
     assert(await page.$eval('#mypage-close', e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }), '성장 기록이 길어도 닫기 버튼이 화면 안에 있어야 함');
     await page.click('[data-profile-action="map"]');

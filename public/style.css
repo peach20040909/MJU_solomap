@@ -1658,3 +1658,12 @@ body.detail-open .view-switch-tabs { display:none; }
 .view-switch-tabs { left:0; right:0; width:max-content; max-width:calc(100% - 2rem); margin-inline:auto; transform:none; }
 .view-switch-tabs .view-tab-btn .v-icon { display:inline-grid; place-items:center; width:1.125rem; height:1.125rem; }
 .view-switch-tabs .view-tab-btn .v-icon svg { width:1.125rem; height:1.125rem; }
+
+/* ── QA 수정 ── */
+/* 지도로 보기: 숨긴 '목록 보기' 칸까지 2칸 격자로 잡혀 보이는 버튼이 왼쪽으로 밀리던 문제 → 한 줄 배치 */
+.view-switch-tabs { display:flex; gap:0; }
+/* 팝업 위쪽 이름표를 다른 화면과 같은 빨간 소제목으로 */
+.modal-tag { padding:0; background:none; color:var(--sm-color-brand-text); font-size:var(--sm-text-xs); font-weight:800; letter-spacing:.04em; }
+.verified-chip { margin-left:var(--sm-space-1); padding:1px var(--sm-space-2); border-radius:var(--sm-radius-pill); background:var(--sm-color-brand-subtle); color:var(--sm-color-brand-text); font-size:.6875rem; font-weight:var(--sm-weight-bold); }
+/* 카드: 설명과 '자세히 보기' 사이 */
+.card-detail-link { margin-top:0; }
