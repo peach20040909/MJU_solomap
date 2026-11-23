@@ -1229,7 +1229,7 @@ function clusterNaverMarkers() {
     const center = new naver.maps.LatLng(lat / g.items.length, lng / g.items.length);
     const c = new naver.maps.Marker({
       position: center, map: naverMap, zIndex: 200,
-      icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, 눌러서 확대">${g.items.length}</button>`, anchor: new naver.maps.Point(22, 22) },
+      icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, 눌러서 확대">${g.items.length}<small>곳</small></button>`, anchor: new naver.maps.Point(26, 26) },
     });
     naver.maps.Event.addListener(c, 'click', () => naverMap.morph(center, Math.min(maxZoom, zoom + 2), { duration: 350, easing: 'easeOutCubic' }));
     naverClusterMarkers.push(c);

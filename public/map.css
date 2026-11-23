@@ -837,3 +837,6 @@ body:not(.results-open) .map-place-sheet, body.detail-open .map-place-sheet { di
 
 /* 핀 묶음: 빨간 동그라미 + 식당 수 */
 .map-cluster { display:grid; place-items:center; width:44px; height:44px; border:3px solid #fff; border-radius:50%; background:#e3191f; color:#fff; font:800 15px/1 var(--sm-font); box-shadow:0 4px 12px rgba(0,0,0,.25); cursor:pointer; }
+/* 묶음은 레벨 숫자(빨강)와 헷갈리지 않게 검은 동그라미 + '곳' */
+.map-cluster { width:52px; height:52px; background:#111; font-size:16px; display:flex; align-items:baseline; justify-content:center; padding-top:15px; gap:1px; }
+.map-cluster small { font-size:11px; font-weight:700; }
