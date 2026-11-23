@@ -1673,3 +1673,10 @@ body.detail-open .view-switch-tabs { display:none; }
 .catalog-header .filter-tabs { flex-wrap:wrap; overflow:visible; row-gap:var(--sm-space-2); }
 .btn-clear-filter { display:flex; width:100%; justify-content:center; margin-top:var(--sm-space-3); background:var(--sm-color-text); color:var(--sm-color-surface); font-weight:var(--sm-weight-bold); }
 .card-review-count { margin-left:auto; color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-medium); }
+/* 레벨 필터는 한 줄(전체·Lv.1~5 6칸 같은 폭), 찜한 곳은 제목 오른쪽 하트 버튼 */
+.catalog-header .filter-tabs { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:var(--sm-space-1); flex-wrap:nowrap; overflow:visible; }
+.catalog-header .filter-tabs .tab-btn { min-width:0; padding-inline:0; justify-content:center; font-size:var(--sm-text-sm); }
+.title-wrap { display:flex; align-items:center; gap:var(--sm-space-2); }
+.title-wrap .fav-filter-btn { display:inline-flex; align-items:center; gap:var(--sm-space-1); flex:0 0 auto; min-height:2.75rem; margin-left:auto; padding:0 var(--sm-space-3); border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-pill); background:var(--sm-color-surface); color:var(--sm-color-text-secondary); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); }
+.title-wrap .fav-filter-btn .heart-icon svg { width:1rem; height:1rem; }
+.title-wrap .fav-filter-btn.active { border-color:transparent; background:var(--sm-color-brand-subtle); color:var(--sm-color-brand-text); }

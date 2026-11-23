@@ -140,6 +140,10 @@
           <button type="button" id="btn-results-back" class="results-back sm-button sm-button--ghost" aria-label="홈으로 돌아가기">←</button>
           <h2 id="catalog-title" class="catalog-title">"혼밥" 검색 결과</h2>
           <span id="catalog-count" class="catalog-count">0곳</span>
+          <!-- 찜한 곳: 레벨 필터 줄이 한 줄에 맞도록 제목 오른쪽 작은 버튼으로 -->
+          <button type="button" class="tab-btn fav-filter-btn sm-button sm-button--ghost" data-filter="fav" aria-label="찜한 곳만 보기">
+            <span class="heart-icon" data-icon="heart" aria-hidden="true"></span><span id="fav-badge-count">0</span>
+          </button>
         </div>
 
         <!-- 상단 우측 컨트롤 바: 정렬 드롭다운 & 뷰 모드 전환 -->
@@ -182,9 +186,6 @@
           <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="3">Lv.3</button>
           <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="4">Lv.4</button>
           <button type="button" class="tab-btn sm-button sm-button--ghost" data-filter="5">Lv.5</button>
-          <button type="button" class="tab-btn fav-filter-btn sm-button sm-button--ghost" data-filter="fav">
-            <span class="heart-icon" data-icon="heart" aria-hidden="true"></span> <span>찜한 곳 (<span id="fav-badge-count">0</span>)</span>
-          </button>
         </div>
       </div>
 
