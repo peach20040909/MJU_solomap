@@ -41,7 +41,7 @@ module.exports = async function auditDesignSystem(page) {
   await page.click('#btn-view-map');
   assert(await page.evaluate(() => {
     const frame = document.querySelector('#map-view-container').getBoundingClientRect();
-    return [...document.querySelectorAll('.map-floating-controls button')].every(e => { const r = e.getBoundingClientRect(); return r.left >= frame.left && r.right <= frame.right && r.height >= 44; });
+    return [...document.querySelectorAll('.map-floating-controls button')].filter(e => e.offsetParent).every(e => { const r = e.getBoundingClientRect(); return r.left >= frame.left && r.right <= frame.right && r.height >= 44; });
   }), '모바일 지도 컨트롤이 잘리지 않고 터치 가능');
   if (capture) await page.screenshot({ path: path.join(output, 'map-375.png'), fullPage: true });
   await page.click('#btn-view-list');

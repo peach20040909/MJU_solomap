@@ -131,11 +131,11 @@ const server = createServer(async (req, res) => {
     await page.click('#btn-view-map');
     await page.waitForSelector('.map-place-marker');
     assert.equal(await page.$$eval('.marker-conquered', els => els.length), 1, '로그인 직후 기존 정복 위치 표시');
-    await page.click('#btn-map-fullscreen');
+    // 전체화면 버튼은 화면에서 숨겼다(지도 위 버튼은 캠퍼스 이동 3개만)
     await page.$eval('.map-place-marker', e => e.click());
     await page.$eval('.popup-btn.secondary', e => e.click());
     await page.waitForSelector('#reviews-list-modal:not(.hidden)');
-    assert(await page.$eval('#reviews-list-close', e => { const r=e.getBoundingClientRect(); return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2) === e; }), '전체화면 지도 위에 리뷰 모달 표시');
+    assert(await page.$eval('#reviews-list-close', e => { const r=e.getBoundingClientRect(); return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2) === e; }), '지도 위에 리뷰 모달 표시');
     await page.click('#reviews-list-close');
     await page.keyboard.press('Escape');
     await page.click('#btn-view-list');

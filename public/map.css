@@ -809,3 +809,7 @@
 .map-place-marker.marker-conquered .marker-food { border:2px solid var(--sm-color-success); }
 .map-place-marker.marker-conquered .marker-food .marker-level-badge { background:var(--sm-color-success) !important; }
 .map-place-marker.marker-recommended .marker-food { border:2px solid #e3191f; }
+
+/* 지도 위 버튼은 캠퍼스 이동 3개만 (전체보기·오픈맵 전환·전체화면은 숨김. 네이버 지도 실패 시 오픈맵 자동 전환은 그대로) */
+#btn-map-fit-bounds, #btn-toggle-map-engine, #btn-map-fullscreen { display:none !important; }
+.map-floating-controls { grid-template-columns:repeat(3, minmax(0, 1fr)) !important; }
