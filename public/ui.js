@@ -65,6 +65,13 @@ function soloFoodArt(categoryName = '', placeName = '') {
   const [key, label] = soloFoodArtRules.find(([, , pattern]) => pattern.test(text)) || ['etc', '기타'];
   return { key, label, svg: `<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">${soloFoodArtPaths[key]}</svg>` };
 }
+// 지도 핀용 레트로 음식 아이콘(public/food/*.webp, 피그마에서 내보냄) 이름
+const retroFoodByArt = { chicken: 'grill', burger: 'burger', pizza: 'burger', chinese: 'jjajang', japanese: 'japanese', noodle: 'noodle', snack: 'snack', grill: 'grill', stew: 'stew', rice: 'rice', etc: 'rice' };
+function retroFoodKey(categoryName = '', placeName = '') {
+  if (/쌀국수|베트남|태국|아시아/.test(categoryName + placeName)) return 'pho';
+  if (/김밥|도시락/.test(categoryName + placeName)) return 'kimbap';
+  return retroFoodByArt[soloFoodArt(categoryName, placeName).key];
+}
 function soloEscapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
 }

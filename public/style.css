@@ -1550,3 +1550,45 @@ body.detail-open .site-footer { padding-bottom:6rem; }
 .hero-card .btn-roulette { background:var(--sm-color-surface); border:1px solid var(--sm-color-border) !important; }
 .hero-card .btn-roulette:hover { background:var(--sm-color-surface); border-color:var(--sm-color-control-border) !important; }
 .roulette-card-slot { background:var(--sm-color-surface); box-shadow:inset 0 0 0 1px var(--sm-color-border); }
+/* QA: 배너 음식 아이콘 잘림, 검색 알약 돋보기·글자 간격 */
+.btn-roulette { overflow:visible; }
+.btn-roulette .roulette-foods { gap:2px; }
+.btn-roulette .roulette-foods img { width:1.875rem; height:1.875rem; flex:0 0 auto; }
+.btn-roulette .roulette-foods img + img { margin-left:0; }
+.site-header .main-search-bar { min-height:3rem; padding:0 var(--sm-space-1) 0 var(--sm-space-2); }
+.site-header .search-submit-btn { width:2.75rem; min-width:2.75rem; padding:0; justify-content:center; }
+.site-header .main-search-bar .sm-input { padding-left:0; }
+
+/* ── 최종 간격 검수(UI/UX Pro): 좌우 여백 20px 하나, 세로 간격 8px 리듬 ── */
+:root { --gutter:1.25rem; }
+.header-inner { padding-inline:var(--gutter); }
+.page-body { padding-inline:var(--gutter); }
+.hero-card { margin-inline:calc(-1 * var(--gutter)); padding:var(--sm-space-2) var(--gutter) 0; margin-bottom:0; }
+.hero-card .solo-journey { margin-top:var(--sm-space-2); }
+.hero-card .search-actions-row { margin-top:var(--sm-space-3); }
+.hero-card .quick-keywords { margin:var(--sm-space-8) calc(-1 * var(--gutter)) 0; padding:0 var(--gutter); }
+.section-head { margin:var(--sm-space-10) 0 var(--sm-space-4); }
+.difficulty-index { margin:0 calc(-1 * var(--gutter)); padding:0 var(--gutter) var(--sm-space-1); scroll-padding-inline:var(--gutter); }
+.site-footer { margin-top:var(--sm-space-10); }
+.site-header .search-submit-btn .search-icon { position:static; transform:none; display:grid; place-items:center; }
+/* 로그인 전 프로필: 연한 빨강 동그라미 + 사람 아이콘 */
+.account-avatar--guest { display:grid; place-items:center; background:var(--sm-color-brand-subtle); color:var(--sm-color-brand-text); }
+
+/* ── 검색 결과: 피그마 목록 화면처럼 (제목 → 레벨 알약 → 오른쪽 정렬 글자, 아래 떠 있는 지도로 보기) ── */
+.catalog-header { display:flex; flex-direction:column; align-items:stretch; gap:var(--sm-space-3); }
+.catalog-header .filter-tabs { order:2; gap:var(--sm-space-2); }
+.catalog-header .catalog-controls-group { order:3; display:flex; justify-content:flex-end; margin:0; }
+.sort-selector-wrap { width:auto; }
+.sort-select { width:auto; min-height:2.75rem; padding:0 1.75rem 0 var(--sm-space-2); border:0; background-color:transparent; font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); text-align:right; }
+.filter-tabs .tab-btn { padding-inline:var(--sm-space-4); border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-pill); background:var(--sm-color-surface); }
+.filter-tabs .tab-btn.active { border-color:transparent; }
+.view-switch-tabs { position:fixed; bottom:max(var(--sm-space-6), env(safe-area-inset-bottom)); left:50%; z-index:var(--sm-z-header); width:auto; margin:0; padding:0; transform:translateX(-50%); background:none; border:0; box-shadow:none; }
+.view-switch-tabs .view-tab-btn.active { display:none; }
+.view-switch-tabs .view-tab-btn { min-height:3rem; padding-inline:var(--sm-space-5); border:0; border-radius:var(--sm-radius-pill); background:var(--sm-color-text); color:var(--sm-color-surface); box-shadow:0 8px 20px #11111140; font-weight:var(--sm-weight-bold); }
+.view-switch-tabs .view-tab-btn:hover { background:#333; }
+body.detail-open .view-switch-tabs { display:none; }
+.places-container { padding-bottom:var(--sm-space-16); }
+.filter-tabs .tab-btn.active, .filter-tabs .tab-btn[aria-pressed="true"] { background:var(--sm-color-text); color:var(--sm-color-surface); }
+.view-switch-tabs .view-tab-btn { display:inline-flex; align-items:center; gap:var(--sm-space-2); white-space:nowrap; }
+/* 알림은 떠 있는 지도로 보기·상세 화면 아래 버튼을 가리지 않게 그 위에 */
+.toast-popup { bottom:max(6.5rem, env(safe-area-inset-bottom)); }

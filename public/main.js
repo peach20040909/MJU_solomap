@@ -867,7 +867,7 @@ function updateMapMarkers() {
     const markerHtml = `
       <div class="map-marker-anchor-wrap">
         <div class="map-place-marker ${soloInfo.pillClass} ${personalMarkerLabel(place.id).className}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
-          <span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span>
+          <span class="marker-food"><img src="/food/${retroFoodKey(place.category_name, place.place_name)}.webp" alt="" width="32" height="32"><span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span></span>
           <span class="marker-title">${escapeHtml(place.place_name)}</span>
         </div>
       </div>
@@ -1099,7 +1099,7 @@ function updateNaverMapMarkers() {
     const markerHtml = `
       <div class="map-marker-anchor-wrap">
         <div class="map-place-marker ${soloInfo.pillClass} ${personalMarkerLabel(place.id).className}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
-          <span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span>
+          <span class="marker-food"><img src="/food/${retroFoodKey(place.category_name, place.place_name)}.webp" alt="" width="32" height="32"><span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span></span>
           <span class="marker-title">${escapeHtml(place.place_name)}</span>
         </div>
       </div>

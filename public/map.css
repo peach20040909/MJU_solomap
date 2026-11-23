@@ -795,3 +795,17 @@
   .map-ctrl-btn .fs-icon { display:none; }
   .map-legend { bottom:var(--sm-space-3); left:var(--sm-space-3); right:auto; max-width:calc(100% - 1.5rem); gap:var(--sm-space-2); }
 }
+
+/* ── 피그마 지도 핀: 흰 동그라미 안 레트로 음식 아이콘 + 오른쪽 위 빨간 레벨 숫자 + 아래 이름표 ── */
+.map-marker-anchor-wrap { transform:translate(-50%, -21px); }
+.map-place-marker, .map-place-marker[class*="lv-"] { flex-direction:column; gap:3px; padding:0; background:none !important; border:0 !important; box-shadow:none !important; }
+.map-place-marker::after { display:none; }
+.marker-food { position:relative; display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:#fff; border:1.5px solid #dcdcdc; box-shadow:0 3px 8px rgba(0,0,0,.14); transition:transform .15s ease; }
+.marker-food img { width:32px; height:32px; object-fit:contain; }
+.map-place-marker .marker-food .marker-level-badge { position:absolute; top:-5px; right:-7px; width:19px; height:19px; border:2px solid #fff; background:#e3191f !important; color:#fff !important; font-size:10px; }
+.map-place-marker .marker-title { padding:2px 7px; border-radius:999px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.12); font-size:11px; max-width:96px; }
+.map-marker-anchor-wrap:is(:hover, .hover, .active) .marker-food { transform:scale(1.2); border:3px solid #e3191f; }
+.map-marker-anchor-wrap:is(:hover, .hover, .active) .marker-title { background:#111; color:#fff; }
+.map-place-marker.marker-conquered .marker-food { border:2px solid var(--sm-color-success); }
+.map-place-marker.marker-conquered .marker-food .marker-level-badge { background:var(--sm-color-success) !important; }
+.map-place-marker.marker-recommended .marker-food { border:2px solid #e3191f; }

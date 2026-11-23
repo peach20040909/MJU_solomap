@@ -55,10 +55,10 @@ function renderAccountMenu() {
         <div class="account-dropdown-panel">
           <strong>${escapeHtml(currentUser.nickname)}</strong><p class="account-profile-meta">${currentUser.isVerified ? '학교 인증 완료' : '학교 인증 필요'} · Lv.${currentUser.level || 1}</p>
           ${currentUser.isVerified ? '' : '<button id="btn-verify" type="button" class="sm-button sm-button--ghost">학교 메일 인증</button>'}
-          <button id="btn-mypage" type="button" class="sm-button sm-button--ghost">${soloIcon('grow')} 내 성장 기록</button><button id="btn-logout" type="button" class="sm-button sm-button--ghost">로그아웃</button>
+          <button id="btn-mypage" type="button" class="sm-button sm-button--ghost">${soloIcon('grow')} 내 혼밥 기록</button><button id="btn-logout" type="button" class="sm-button sm-button--ghost">로그아웃</button>
         </div>
       </details>`
-    : '<button id="btn-login" type="button" class="account-guest sm-button sm-button--icon sm-button--ghost" aria-label="로그인 · 회원가입"><span class="account-avatar account-avatar--guest" aria-hidden="true"></span></button>';
+    : '<button id="btn-login" type="button" class="account-guest sm-button sm-button--icon sm-button--ghost" aria-label="로그인 · 회원가입"><span class="account-avatar account-avatar--guest" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span></button>';
   renderJourney();
 }
 
@@ -89,8 +89,8 @@ function renderJourney() {
   status.innerHTML = `<span class="journey-lv">LV. 0${lv}</span><img class="journey-char" src="/levels/level-${lv}.webp" alt="" width="96" height="96">
     <span class="journey-level-title">${escapeHtml(title)}</span>
     ${hasProgress ? `<span class="journey-progress"><progress max="100" value="${currentUser.progressPercent}" aria-label="내 혼밥 레벨 진행률" class="sm-progress"></progress><span>${currentUser.exp}점</span></span>
-      <span class="journey-caption">${currentUser.conqueredPlaceCount}곳 정복 · ${currentUser.visitCount}회 방문</span>` : '<span class="journey-caption">성장 기록을 불러오는 중...</span>'}
-    <button type="button" class="journey-start-button sm-button sm-button--ghost" data-journey-action="profile">${currentUser.isVerified ? '내 성장 기록 보기' : '학교 메일 인증하기'} <span aria-hidden="true">→</span></button>`;
+      <span class="journey-caption">${currentUser.conqueredPlaceCount}곳 정복 · ${currentUser.visitCount}회 방문</span>` : '<span class="journey-caption">혼밥 기록을 불러오는 중...</span>'}
+    <button type="button" class="journey-start-button sm-button sm-button--ghost" data-journey-action="profile">${currentUser.isVerified ? '내 혼밥 기록 보기' : '학교 메일 인증하기'} <span aria-hidden="true">→</span></button>`;
 }
 
 function updateAccountAvailability() {
@@ -427,7 +427,7 @@ async function openMyPage() {
   if (!currentUser) { openAuth(); return; }
   const version = profileVersion;
   const content = document.getElementById('mypage-content');
-  content.textContent = '성장 기록을 불러오는 중...'; mypageModal.classList.remove('hidden');
+  content.textContent = '혼밥 기록을 불러오는 중...'; mypageModal.classList.remove('hidden');
   try {
     const [level, mine] = await Promise.all([apiRequest('/api/users/me/level'), apiRequest('/api/users/me/reviews'), loadPersonalPlaces()]);
     if (!currentUser || version !== profileVersion) return;
