@@ -897,8 +897,8 @@ function updateMapMarkers() {
     const popupHtml = createMapPopupHtml(place, soloInfo, walk);
 
     const marker = L.marker([lat, lng], { icon: pinIcon, zIndexOffset: 100 })
-      .addTo(leafletMap)
-      .bindPopup(popupHtml);
+      .addTo(leafletMap);
+    marker.on('click', () => { closeCurrentInfoWindow(); showMapSheet(place); });
 
     marker.on('mouseover', () => {
       marker.setZIndexOffset(9999);
@@ -1012,6 +1012,8 @@ function initNaverMap() {
     const syncMarkerDensity = () => document.getElementById('naver-map-canvas').classList.toggle('map-compact', naverMap.getZoom() <= 16);
     naver.maps.Event.addListener(naverMap, 'zoom_changed', syncMarkerDensity);
     syncMarkerDensity();
+    // 이동·확대가 끝날 때마다 화면 기준으로 핀을 다시 묶는다
+    naver.maps.Event.addListener(naverMap, 'idle', clusterNaverMarkers);
 
     // 1. 명지대학교 인문캠퍼스 마커
     const mjuLandmarkMarker = new naver.maps.Marker({
@@ -1074,7 +1076,22 @@ function initNaverMap() {
 
 let currentOpenedNaverMarker = null;
 
+// 핀을 누르면 핀 위 말풍선 대신 화면 아래 고정 카드로 보여 준다(위쪽 버튼·화면 끝에 가려지지 않게)
+const mapSheet = document.createElement('div');
+mapSheet.id = 'map-place-sheet';
+mapSheet.className = 'map-place-sheet hidden';
+mapSheet.setAttribute('role', 'dialog');
+mapSheet.setAttribute('aria-label', '선택한 식당');
+document.body.appendChild(mapSheet);
+function showMapSheet(place) {
+  const soloInfo = getDynamicSoloIndex(place);
+  mapSheet.innerHTML = createMapPopupHtml(place, soloInfo, formatDistanceWalking(place.distance));
+  mapSheet.classList.remove('hidden');
+}
+
 window.closeCurrentInfoWindow = function () {
+  mapSheet.classList.add('hidden');
+  document.querySelectorAll('.map-marker-anchor-wrap.active').forEach((w) => w.classList.remove('active'));
   naverInfoWindows.forEach((w) => w.close());
   if (currentOpenedNaverMarker) {
     currentOpenedNaverMarker.setZIndex(100);
@@ -1161,17 +1178,13 @@ function updateNaverMapMarkers() {
     naver.maps.Event.addListener(marker, 'click', () => {
       // 이미 열려 있는 마커를 다시 누르면 토글 닫기!
       if (currentOpenedNaverMarker === marker) {
-        infoWindow.close();
-        marker.setZIndex(100);
-        currentOpenedNaverMarker = null;
+        closeCurrentInfoWindow();
         return;
       }
-      if (currentOpenedNaverMarker) {
-        currentOpenedNaverMarker.setZIndex(100);
-      }
-      naverInfoWindows.forEach((w) => w.close());
+      closeCurrentInfoWindow();
       marker.setZIndex(10000);
-      infoWindow.open(naverMap, marker);
+      marker.getElement?.()?.querySelector('.map-marker-anchor-wrap')?.classList.add('active');
+      showMapSheet(place);
       currentOpenedNaverMarker = marker;
     });
 
@@ -1179,10 +1192,47 @@ function updateNaverMapMarkers() {
     naverInfoWindows.push(infoWindow);
   });
 
+  clusterNaverMarkers();
+
   // 지도 빈 곳 클릭 시 열려있는 팝업 자동 닫기
   naver.maps.Event.clearListeners(naverMap, 'click');
   naver.maps.Event.addListener(naverMap, 'click', () => {
     closeCurrentInfoWindow();
+  });
+}
+
+// ── 핀 묶음: '전체'처럼 식당이 많으면 핀이 겹쳐 무엇이 있는지 안 보인다.
+// 화면에서 CLUSTER_PX 안에 모인 핀은 숫자 묶음 하나로 보여 주고, 누르면 그 자리로 확대한다. 가장 크게 확대하면 모두 따로 보인다.
+const CLUSTER_PX = 52;
+let naverClusterMarkers = [];
+function clusterNaverMarkers() {
+  if (!naverMap || !window.naver?.maps || typeof naverMap.getProjection !== 'function') return;
+  naverClusterMarkers.forEach((c) => c.setMap(null));
+  naverClusterMarkers = [];
+  const proj = naverMap.getProjection();
+  const zoom = naverMap.getZoom();
+  const maxZoom = naverMap.getMaxZoom ? naverMap.getMaxZoom() : 18;
+  if (!proj || zoom >= maxZoom) { naverMarkers.forEach((m) => m.getMap() || m.setMap(naverMap)); return; }
+  const groups = [];
+  naverMarkers.forEach((m) => {
+    const pt = proj.fromCoordToOffset(m.getPosition());
+    const g = groups.find((x) => Math.abs(x.x - pt.x) < CLUSTER_PX && Math.abs(x.y - pt.y) < CLUSTER_PX);
+    if (g) g.items.push(m); else groups.push({ x: pt.x, y: pt.y, items: [m] });
+  });
+  groups.forEach((g) => {
+    // 선택한 핀은 묶지 않는다
+    const keepOpen = g.items.includes(currentOpenedNaverMarker);
+    if (g.items.length === 1 || keepOpen) { g.items.forEach((m) => m.getMap() || m.setMap(naverMap)); return; }
+    g.items.forEach((m) => m.setMap(null));
+    let lat = 0, lng = 0;
+    g.items.forEach((m) => { lat += m.getPosition().lat(); lng += m.getPosition().lng(); });
+    const center = new naver.maps.LatLng(lat / g.items.length, lng / g.items.length);
+    const c = new naver.maps.Marker({
+      position: center, map: naverMap, zIndex: 200,
+      icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, 눌러서 확대">${g.items.length}</button>`, anchor: new naver.maps.Point(22, 22) },
+    });
+    naver.maps.Event.addListener(c, 'click', () => naverMap.morph(center, Math.min(maxZoom, zoom + 2), { duration: 350, easing: 'easeOutCubic' }));
+    naverClusterMarkers.push(c);
   });
 }
 
@@ -1221,6 +1271,7 @@ function fitNaverMapBounds() {
 // 목록 보기 ↔ 지도로 보기 뷰 모드 전환 (Leaflet 기본 활성화)
 function switchViewMode(mode) {
   currentViewMode = mode;
+  if (mode === 'list') closeCurrentInfoWindow();
 
   if (mode === 'list') {
     btnViewList.classList.add('active');
@@ -1319,6 +1370,7 @@ function showResults(q, push = true) {
 }
 
 function showHome() {
+  closeCurrentInfoWindow();
   document.body.classList.remove('results-open');
   window.scrollTo(0, 0);
 }

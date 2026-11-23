@@ -828,3 +828,12 @@
 
 /* 핀이 모두 빨간 숫자로 바뀌어 색 범례가 의미 없고, 떠 있는 목록 보기 버튼과 겹쳐서 숨김 */
 .map-legend { display:none; }
+
+/* 지도 핀 고정 카드: 화면 아래(떠 있는 목록 보기 버튼 바로 위), 폰 화면 폭 안 */
+.map-place-sheet { position:fixed; left:0; right:0; bottom:calc(max(var(--sm-space-6), env(safe-area-inset-bottom)) + 3.75rem); z-index:calc(var(--sm-z-header) + 1); width:min(calc(100% - 2rem), 24.875rem); margin-inline:auto; }
+.map-place-sheet.hidden { display:none; }
+.map-place-sheet .map-popup-card.compact-popup { width:100%; max-width:none; box-shadow:0 10px 30px #11111129; border:1px solid var(--sm-color-border); background:var(--sm-color-surface); }
+body:not(.results-open) .map-place-sheet, body.detail-open .map-place-sheet { display:none; }
+
+/* 핀 묶음: 빨간 동그라미 + 식당 수 */
+.map-cluster { display:grid; place-items:center; width:44px; height:44px; border:3px solid #fff; border-radius:50%; background:#e3191f; color:#fff; font:800 15px/1 var(--sm-font); box-shadow:0 4px 12px rgba(0,0,0,.25); cursor:pointer; }
