@@ -153,6 +153,14 @@
               <option value="reviews">리뷰 많은 순</option>
               <option value="name">이름순</option>
             </select>
+            <!-- 드롭다운 대신 한 줄 글자 버튼. 누르면 위 select 값을 바꿔 같은 정렬 코드를 탄다 -->
+            <div class="sort-pills" role="group" aria-label="정렬">
+              <button type="button" class="sort-pill active" data-sort="distance" aria-pressed="true">가까운 순</button>
+              <button type="button" class="sort-pill" data-sort="level-asc" aria-pressed="false">쉬운 순</button>
+              <button type="button" class="sort-pill" data-sort="level-desc" aria-pressed="false">어려운 순</button>
+              <button type="button" class="sort-pill" data-sort="reviews" aria-pressed="false">리뷰 많은 순</button>
+              <button type="button" class="sort-pill" data-sort="name" aria-pressed="false">이름순</button>
+            </div>
           </div>
 
           <!-- 뷰 모드 전환 (목록 보기 vs 지도로 보기) -->
@@ -383,7 +391,7 @@
   </div>
   <div id="mypage-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mypage-title">
     <div class="modal-sheet reviews-list-sheet sm-card">
-      <div class="modal-top"><h2 id="mypage-title">나의 혼밥 기록</h2><button id="mypage-close" type="button" class="btn-close sm-button sm-button--icon sm-button--ghost" data-close="mypage-modal" aria-label="닫기">&times;</button></div>
+      <div class="modal-top record-top"><button id="mypage-close" type="button" class="btn-close sm-button sm-button--icon sm-button--ghost" data-close="mypage-modal" aria-label="닫기">←</button><h2 id="mypage-title">나의 혼밥 기록</h2></div>
       <div id="mypage-content" class="modal-content" aria-live="polite"></div>
     </div>
   </div>

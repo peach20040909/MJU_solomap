@@ -433,16 +433,51 @@ async function openMyPage() {
     if (!currentUser || version !== profileVersion) return;
     const info = level.levelInfo;
     Object.assign(currentUser, info); renderAccountMenu();
-    content.innerHTML = `<section class="growth-card"><h3>${escapeHtml(info.title)}</h3><p>경험치 ${info.exp}점 · ${info.nextLevelExp === null ? '최고 레벨 달성!' : `다음 레벨 ${info.nextLevelExp}점`}</p>
-      <progress max="100" value="${info.progressPercent}" aria-label="다음 레벨 진행률" class="sm-progress"></progress><p>${info.progressPercent}% · ${info.conqueredPlaceCount}곳 정복 · ${info.visitCount}회 방문</p>
-      ${info.level === 4 ? '<small>끝판왕은 50점 이상 + Lv.5 식당 1곳 이상 방문해야 해요.</small>' : ''}
-      ${currentUser.isVerified ? '' : '<button type="button" data-profile-action="verify" class="sm-button ">🎓 학교 메일 인증하기</button>'}</section>
-      <h3>✅ 내가 정복한 식당</h3>${personalPlaceList(conqueredPlaces, true)}
-      <h3>🌟 다음 도전 추천</h3>${personalPlaceList(recommendedPlaces, false)}
-      <button type="button" class="btn-submit sm-button sm-button--primary" data-profile-action="map">🗺️ 정복·추천 지도 보기</button>
-      <h3>✏️ 내가 쓴 리뷰</h3>${mine.reviews.length ? mine.reviews.map(r => `<article class="account-review"><strong>${escapeHtml(r.place.name)}</strong><p>${escapeHtml(r.content)}</p><button type="button" data-profile-action="review" data-place-id="${escapeHtml(r.placeId)}" class="sm-button ">내 리뷰 수정·삭제</button></article>`).join('') : '<p class="account-empty">아직 작성한 리뷰가 없습니다.</p>'}`;
+    const lv = Math.min(5, Math.max(1, Number(info.level) || 1));
+    const name = String(info.title || '').replace(/^Lv\.\d+\s*/, '').replace(/^[^가-힣A-Za-z0-9]+\s*/, '');
+    const left = info.nextLevelExp === null ? null : info.nextLevelExp - info.exp;
+    content.innerHTML = `
+      <section class="record-hero lv-${lv}">
+        <div class="record-hero-text">
+          <p class="section-eyebrow">MY SOLO LEVEL</p>
+          <p class="record-lv">LV. 0${lv}</p>
+          <h3 class="record-name">${escapeHtml(name)}</h3>
+          <div class="record-progress"><progress max="100" value="${info.progressPercent}" aria-label="다음 레벨 진행률" class="sm-progress"></progress><strong>${info.exp}${info.nextLevelExp === null ? '' : ` / ${info.nextLevelExp}`}점</strong></div>
+          <p class="record-next">${left === null ? '최고 레벨이에요! 혼밥 끝판왕' : `다음 레벨 '${RECORD_TIERS[lv].name}'까지 ${left}점 남았어요`}</p>
+          ${info.level === 4 ? '<p class="record-next">끝판왕은 50점 이상 + Lv.5 식당 1곳 이상 방문해야 해요.</p>' : ''}
+        </div>
+        <img class="record-hero-char" src="/levels/level-${lv}.webp" alt="" width="110" height="110">
+      </section>
+      ${currentUser.isVerified ? '' : '<button type="button" data-profile-action="verify" class="sm-button record-verify">학교 메일 인증하기</button>'}
+      <div class="record-stats">
+        <div><strong>${info.conqueredPlaceCount}곳</strong><span>정복한 식당</span></div>
+        <div><strong>${info.visitCount}회</strong><span>다녀왔어요</span></div>
+        <div><strong>${mine.reviews.length}개</strong><span>내가 쓴 리뷰</span></div>
+      </div>
+      <section class="record-section"><p class="section-eyebrow">LEVEL ROAD</p><h3>혼밥 레벨 지도</h3>
+        <ol class="record-road">${RECORD_TIERS.map((t, i) => `<li class="${i + 1 === lv ? 'is-current' : i + 1 < lv ? 'is-done' : ''} lv-${i + 1}"><span class="record-disc"><img src="/levels/level-${i + 1}.webp" alt="" width="48" height="48"></span><span>${t.min}점</span><span class="sm-sr-only">${t.name}</span></li>`).join('')}</ol>
+      </section>
+      <section class="record-section"><p class="section-eyebrow">CONQUERED</p><h3>내가 정복한 식당</h3>${recordPlaceList(conqueredPlaces, true)}</section>
+      <section class="record-section"><p class="section-eyebrow">NEXT CHALLENGE</p><h3>다음 도전 추천</h3><p class="record-sub">내 레벨에 맞는 추천 식당이에요</p>${recordPlaceList(recommendedPlaces, false)}</section>
+      <button type="button" class="record-map-btn sm-button" data-profile-action="map">정복·추천 지도 보기</button>
+      <section class="record-section"><p class="section-eyebrow">MY REVIEWS</p><h3>내가 쓴 리뷰 ${mine.reviews.length}</h3>
+        ${mine.reviews.length ? mine.reviews.map(r => `<article class="record-review lv-${r.soloLevel}"><div class="record-review-head"><strong>${escapeHtml(r.place.name)}</strong><span>Lv.${r.soloLevel} <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></span></div><p>${escapeHtml(r.content)}</p><button type="button" data-profile-action="review" data-place-id="${escapeHtml(r.placeId)}" class="record-edit sm-button sm-button--ghost">수정 · 삭제</button></article>`).join('') : '<p class="account-empty">아직 작성한 리뷰가 없어요. 다녀온 식당에 첫 리뷰를 남겨 보세요.</p>'}
+      </section>`;
     updateMapMarkers();
   } catch { if (version === profileVersion) content.textContent = '기록을 불러오지 못했습니다. 다시 열어주세요.'; }
+}
+// 사용자 레벨 칭호와 시작 점수 (src/services/level.service.ts의 단계와 같다)
+const RECORD_TIERS = [{ name: '혼밥 입문자', min: 0 }, { name: '혼밥 새내기', min: 5 }, { name: '혼밥 숙련자', min: 15 }, { name: '혼밥 고수', min: 30 }, { name: '혼밥 끝판왕', min: 50 }];
+function recordPlaceList(places, visited) {
+  if (!places.length) return `<p class="account-empty">${visited ? '다녀왔어요 버튼으로 첫 방문을 기록해 보세요.' : '지금 추천할 식당이 없어요.'}</p>`;
+  return places.map(p => {
+    const lv = p.displaySolo?.level || 1;
+    const meta = visited ? `${escapeHtml(String(p.lastVisitDate || '').slice(5).replace('-', '.'))} · ${p.visitCount}회` : (p.distance != null ? formatDistanceWalking(p.distance) : '');
+    return `<button type="button" class="record-place lv-${lv}" data-profile-action="place" data-place-id="${escapeHtml(p.id)}">
+      <span class="record-food"><img src="/food/${retroFoodKey(p.category_name, p.place_name)}.webp" alt="" width="38" height="38"></span>
+      <span class="record-place-text"><strong>${escapeHtml(p.place_name)}</strong><span><span class="sm-level-badge">${escapeHtml(String(p.displaySolo?.label || `Lv.${lv}`).replace(' (학우평가)', ''))}</span> ${meta}</span></span>
+      <span class="record-go" aria-hidden="true">${visited ? '›' : '보기'}</span></button>`;
+  }).join('');
 }
 function personalPlaceList(places, visited) {
   return places.length ? places.map(p => `<div class="personal-place"><strong>${escapeHtml(p.place_name)}</strong><span>${escapeHtml(p.displaySolo?.label || '')}</span>
@@ -459,7 +494,8 @@ document.getElementById('mypage-content').addEventListener('click', event => {
     document.getElementById('personal-map-note').classList.remove('hidden');
     switchViewMode('map'); updateMapMarkers();
   }
-  if (action === 'place' || action === 'review') {
+  if (action === 'place') { mypageModal.classList.add('hidden'); openPlaceDetail(button.dataset.placeId); }
+  if (action === 'review') {
     mypageModal.classList.add('hidden');
     openReviewsList(button.dataset.placeId);
   }

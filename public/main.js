@@ -1365,8 +1365,15 @@ filterTabs.forEach((tab) => {
 
 // ⚡ 정렬 기준 변경 이벤트 (PC 및 모바일 터치 완벽 호환)
 if (sortSelect) {
+  const sortPills = document.querySelectorAll('.sort-pill');
+  sortPills.forEach((pill) => pill.addEventListener('click', () => {
+    if (sortSelect.value === pill.dataset.sort) return;
+    sortSelect.value = pill.dataset.sort;
+    sortSelect.dispatchEvent(new Event('change'));
+  }));
   const handleSortChange = () => {
     currentSort = sortSelect.value;
+    sortPills.forEach((p) => { const on = p.dataset.sort === currentSort; p.classList.toggle('active', on); p.setAttribute('aria-pressed', String(on)); });
 
     // ⚡ 난이도 정렬(낮은 순/높은 순)을 선택했을 때 특정 레벨 필터가 켜져 있으면,
     // 사용자는 '전체 식당을 난이도 순으로' 보고 싶어 하므로 자동으로 '전체(all)'로 전환!
