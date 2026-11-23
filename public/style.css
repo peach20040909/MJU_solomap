@@ -1667,3 +1667,9 @@ body.detail-open .view-switch-tabs { display:none; }
 .verified-chip { margin-left:var(--sm-space-1); padding:1px var(--sm-space-2); border-radius:var(--sm-radius-pill); background:var(--sm-color-brand-subtle); color:var(--sm-color-brand-text); font-size:.6875rem; font-weight:var(--sm-weight-bold); }
 /* 카드: 설명과 '자세히 보기' 사이 */
 .card-detail-link { margin-top:0; }
+
+/* ── 사용자 테스트(ChatGPT) 반영 ── */
+/* 레벨 필터는 두 줄로 감싸 Lv.5·찜한 곳이 가려지지 않게 */
+.catalog-header .filter-tabs { flex-wrap:wrap; overflow:visible; row-gap:var(--sm-space-2); }
+.btn-clear-filter { display:flex; width:100%; justify-content:center; margin-top:var(--sm-space-3); background:var(--sm-color-text); color:var(--sm-color-surface); font-weight:var(--sm-weight-bold); }
+.card-review-count { margin-left:auto; color:var(--sm-color-text-muted); font-size:var(--sm-text-xs); font-weight:var(--sm-weight-medium); }

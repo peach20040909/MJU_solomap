@@ -308,7 +308,12 @@ function showToast(message) {
 /* ===================================================
    식당 검색 API 호출 및 렌더링
    =================================================== */
+// 검색할 때마다 번호를 올리고, 응답이 왔을 때 번호가 바뀌었으면(그사이 새 검색) 버린다
+let searchSeq = 0;
 async function loadPlaces(keyword) {
+  const seq = ++searchSeq;
+  currentPlaces = [];
+  updateMapMarkers();
   placesContainer.innerHTML = soloEmptyState('대학가 식당을 찾고 있어요', '명지대 · 명지전문대 · 백련시장 주변 식당을 탐색합니다.');
   catalogTitle.textContent = `"${keyword}" 검색 결과`;
   catalogCount.textContent = '검색 중...';
@@ -316,6 +321,7 @@ async function loadPlaces(keyword) {
   try {
     const res = await fetch(`/api/places/search?query=${encodeURIComponent(keyword)}`, { credentials: 'same-origin' });
     const data = await res.json();
+    if (seq !== searchSeq) return; // 더 최근 검색이 있으면 이 응답은 버린다
 
     if (!data.success) {
       throw new Error(data.message || '식당 정보를 불러오지 못했습니다.');
@@ -326,6 +332,7 @@ async function loadPlaces(keyword) {
     renderFilteredPlaces();
     updateMapMarkers();
   } catch (err) {
+    if (seq !== searchSeq) return;
     console.error(err);
     placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', err.message, { variant: 'error' });
     catalogCount.textContent = '0곳';
@@ -403,7 +410,11 @@ function renderFilteredPlaces(keepCount = false) {
       ? '아직 찜한 식당이 없습니다! 식당 카드의 하트 버튼을 눌러 나만의 혼밥 리스트를 만들어보세요.'
       : '해당 조건의 식당이 없습니다. 상단 필터를 변경하거나 다른 메뉴를 검색해 보세요.';
 
-    placesContainer.innerHTML = soloEmptyState(currentFilter === 'fav' ? '찜한 식당이 비어있습니다' : '일치하는 식당이 없습니다', emptyMsg, { icon: currentFilter === 'fav' ? 'heart' : 'search' });
+    const levelOnly = /^[1-5]$/.test(currentFilter) && currentPlaces.length > 0;
+    placesContainer.innerHTML = levelOnly
+      ? soloEmptyState(`Lv.${currentFilter} 식당은 없어요`, `이 검색 결과에서 Lv.${currentFilter} 조건에 맞는 곳이 없어요. 전체 ${currentPlaces.length}곳을 볼 수 있어요.`, { icon: 'search' })
+        + `<button type="button" class="btn-clear-filter sm-button" data-clear-filter>전체 ${currentPlaces.length}곳 보기</button>`
+      : soloEmptyState(currentFilter === 'fav' ? '찜한 식당이 비어있습니다' : '일치하는 식당이 없습니다', emptyMsg, { icon: currentFilter === 'fav' ? 'heart' : 'search' });
     return;
   }
 
@@ -416,6 +427,7 @@ function renderFilteredPlaces(keepCount = false) {
 
 // 카드 빈 곳을 누르면 식당 상세 화면(위치·전화·지도·리뷰)으로 간다. 버튼·링크 클릭은 그대로 둔다.
 placesContainer.addEventListener('click', (e) => {
+  if (e.target.closest('[data-clear-filter]')) { setFilter('all'); renderFilteredPlaces(); updateMapMarkers(); return; }
   if (e.target.closest('.btn-load-more')) {
     visiblePlaceCount += MOBILE_PAGE_SIZE;
     renderFilteredPlaces(true);
@@ -448,6 +460,7 @@ function createCardHtml(place) {
         <span class="solo-badge-chip sm-level-badge">${soloInfo.label}</span>
         <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         <span class="level-score">${soloInfo.lv}/5</span>
+        <span class="card-review-count">리뷰 ${reviewCount}</span>
       </div>
       <p class="solo-psychology-text">${escapeHtml(soloInfo.psychology)}</p>
       <div class="card-footer-actions">
@@ -515,19 +528,22 @@ btnRouletteAgain.addEventListener('click', () => {
 
 btnRouletteGo.addEventListener('click', () => {
   if (!currentWinningPlace) return;
-  closeRouletteModal();
+  closeRouletteModal(false); // 창 기록은 상세 화면 기록으로 바꾼다(openPlaceDetail)
   // 당첨 식당의 상세 화면으로 바로 간다
   openPlaceDetail(currentWinningPlace.id);
 });
 
 function openRouletteModal() {
+  if (!history.state?.roulette) history.pushState({ ...(history.state || {}), roulette: true }, '', location.href);
   rouletteModal.classList.remove('hidden');
   spinRoulette();
 }
 
-function closeRouletteModal() {
+let rouletteClosing = false; // 닫기 버튼으로 뒤로 간 popstate는 화면을 다시 그리지 않는다
+function closeRouletteModal(viaHistory = true) {
   clearInterval(rouletteInterval);
   rouletteModal.classList.add('hidden');
+  if (viaHistory && history.state?.roulette) { rouletteClosing = true; history.back(); }
 }
 
 function spinRoulette() {
@@ -1297,7 +1313,11 @@ btnViewMap.addEventListener('click', () => switchViewMode('map'));
 function showResults(q, push = true) {
   document.body.classList.add('results-open');
   const url = `?q=${encodeURIComponent(q)}`;
-  if (push && location.search !== url) history.pushState({ q }, '', url);
+  if (push && location.search !== url) {
+    // 결과 화면에서 또 검색하면 기록을 쌓지 않고 바꾼다(뒤로 가기·← 가 이전 검색이 아니라 홈으로)
+    if (document.body.classList.contains('results-open') && history.state?.q) history.replaceState({ q }, '', url);
+    else history.pushState({ q }, '', url);
+  }
   window.scrollTo(0, 0);
 }
 
@@ -1306,7 +1326,14 @@ function showHome() {
   window.scrollTo(0, 0);
 }
 
-function openSearch(q, push = true) {
+const LEVEL_NAMES = { 1: '입문 혼밥', 2: '혼밥 성지', 3: '일반 밥집', 4: '다인석 식당', 5: '혼밥 끝판왕' };
+function setFilter(f) {
+  currentFilter = f;
+  filterTabs.forEach((t) => t.classList.toggle('active', t.dataset.filter === f));
+  document.querySelectorAll('.difficulty-index .index-card').forEach((c) => c.classList.toggle('active', c.dataset.level === f));
+}
+function openSearch(q, push = true, level = 'all') {
+  setFilter(level); // 새 검색은 전체에서 시작(이전 레벨 필터 때문에 0곳으로 보이지 않게)
   searchInput.value = q;
   // 같은 검색어의 메뉴 칸이 있으면 그 칸만, 없으면 아무 칸도 선택하지 않는다.
   kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === q));
@@ -1314,12 +1341,15 @@ function openSearch(q, push = true) {
   // 메뉴 칸으로 연 검색은 실제 검색어(아시아음식) 대신 칸 이름(아시안)으로 제목을 보여 준다
   const chip = [...kwChips].find((c) => c.dataset.query === q);
   if (chip && q !== '혼밥') catalogTitle.textContent = `"${chip.textContent.trim()}" 검색 결과`;
+  if (level !== 'all') catalogTitle.textContent = `Lv.${level} ${LEVEL_NAMES[level]} 식당`;
   showResults(q, push);
 }
 
 window.addEventListener('popstate', () => {
   const params = new URLSearchParams(location.search);
   const q = params.get('q'), place = params.get('place');
+  if (rouletteClosing) { rouletteClosing = false; return; }
+  if (!rouletteModal.classList.contains('hidden')) { closeRouletteModal(false); return; }
   const myPage = document.getElementById('mypage-modal');
   if (params.get('my')) { if (myPage.classList.contains('hidden')) openMyPage(false); return; }
   myPage.classList.add('hidden');
@@ -1600,23 +1630,8 @@ document.querySelectorAll('.difficulty-index .index-card').forEach((card) => {
     if (!level) return;
 
     // 이미 선택된 카드를 다시 누르면 '전체(all)'로 토글 취소!
-    const isAlreadyActive = currentFilter === level;
-    const finalFilter = isAlreadyActive ? 'all' : level;
-
-    filterTabs.forEach((t) => {
-      t.classList.toggle('active', t.dataset.filter === finalFilter);
-    });
-    document.querySelectorAll('.difficulty-index .index-card').forEach((c) => {
-      c.classList.toggle('active', !isAlreadyActive && c === card);
-    });
-
-    currentFilter = finalFilter;
-    renderFilteredPlaces();
-    updateMapMarkers();
-    smoothFitNaverMapBounds(finalFilter);
-
     // 홈의 레벨 카드는 "전체 식당 중 이 레벨"을 결과 화면으로 연다
-    openSearch('혼밥');
+    openSearch('혼밥', true, level);
   });
 });
 

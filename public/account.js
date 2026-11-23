@@ -327,9 +327,10 @@ async function openPlaceDetail(placeId, push = true) {
   box.innerHTML = '<p class="detail-empty">식당 정보를 불러오는 중...</p>';
   document.body.classList.add('detail-open');
   if (push) {
+    const replace = history.state?.roulette; // 오늘 뭐 먹지 창에서 왔으면 창 기록을 상세로 바꾼다
     // 홈에서 연 상세(랜덤 뽑기 등)는 검색어를 주소에 남기지 않는다
     const q = document.body.classList.contains('results-open') ? searchInput.value : '';
-    history.pushState({ place: placeId, q }, '', `?${q ? `q=${encodeURIComponent(q)}&` : ''}place=${encodeURIComponent(placeId)}`);
+    history[replace ? 'replaceState' : 'pushState']({ place: placeId, q }, '', `?${q ? `q=${encodeURIComponent(q)}&` : ''}place=${encodeURIComponent(placeId)}`);
   }
   window.scrollTo(0, 0);
   try {
