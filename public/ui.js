@@ -73,7 +73,8 @@ function soloEmptyState(title, description, { icon = 'search', variant = 'defaul
   return `<div class="sm-empty-state${error ? ' sm-empty-state--error' : ''}" role="${error ? 'alert' : 'status'}"><span class="sm-state-icon">${soloIcon(icon)}</span><h3>${soloEscapeHtml(title)}</h3><p>${soloEscapeHtml(description)}</p></div>`;
 }
 document.querySelectorAll('[data-icon]').forEach(element => { element.innerHTML = soloIcon(element.dataset.icon); });
-document.querySelectorAll('[data-food]').forEach(element => { element.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">${soloFoodArtPaths[element.dataset.food] || soloFoodArtPaths.etc}</svg>`; });
+// 메뉴 칸은 피그마 레트로 음식 아이콘(public/food/*.webp)을 쓴다
+document.querySelectorAll('[data-food]').forEach(element => { element.innerHTML = `<img src="/food/${element.dataset.food}.webp" alt="" width="80" height="80" decoding="async">`; });
 // 모든 모달은 같은 포커스 순환/복원 규칙을 사용한다. 기존 열기·닫기 API는 유지한다.
 document.addEventListener('DOMContentLoaded', () => {
   const previousFocus = new WeakMap();

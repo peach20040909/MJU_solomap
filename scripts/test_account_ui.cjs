@@ -165,7 +165,7 @@ const server = createServer(async (req, res) => {
     await page.click('#reviews-list-close');
     await page.evaluate(() => checkInById('123'));
     await page.waitForFunction(() => document.querySelector('#toast-text').textContent.includes('체크인'));
-    await page.click('.account-summary');
+    await page.locator('.account-summary').click();
     await page.waitForSelector('.account-dropdown[open] #btn-mypage');
     await page.click('#btn-mypage'); await page.waitForSelector('#mypage-content progress');
     assert(await page.$eval('#mypage-content', e => e.textContent.includes('추천 식당')));
@@ -204,7 +204,7 @@ const server = createServer(async (req, res) => {
     await page.click('#auth-submit');
     await page.waitForSelector('#auth-modal.hidden');
     // 로그인 직후 프로필 갱신이 헤더를 다시 렌더링해도 현재 버튼을 찾아 클릭한다.
-    await page.click('.account-summary');
+    await page.locator('.account-summary').click();
     await page.locator('#btn-logout').click();
     await page.waitForSelector('#btn-login');
     assert(calls.some(c => c.url === '/api/auth/logout'));

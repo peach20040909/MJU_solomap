@@ -78,12 +78,16 @@ document.addEventListener('keydown', event => {
 function renderJourney() {
   const status = document.getElementById('journey-status');
   if (!currentUser) {
-    status.innerHTML = `<p class="journey-description"><strong class="journey-title">학교 인증하고 혼밥 기록 쌓기</strong> 리뷰를 나누고 체크인하면 내 혼밥 레벨이 올라가요.</p>
+    status.innerHTML = `<span class="journey-lv">LV. 01</span><img class="journey-char" src="/levels/level-1.webp" alt="" width="96" height="96">
+      <p class="journey-description"><strong class="journey-title">학교 인증하고 혼밥 기록 쌓기</strong> 리뷰를 나누고 체크인하면 내 혼밥 레벨이 올라가요.</p>
       <button type="button" class="journey-start-button sm-button sm-button--ghost" data-journey-action="start">학교 계정으로 시작하기 <span aria-hidden="true">→</span></button>`;
     return;
   }
   const hasProgress = typeof currentUser.exp === 'number';
-  status.innerHTML = `<span class="journey-level-title">${escapeHtml(currentUser.title || `Lv.${currentUser.level || 1} 혼밥 여정`)}</span>
+  const lv = Math.min(5, Math.max(1, Number(currentUser.level) || 1));
+  const title = String(currentUser.title || '혼밥 여정').replace(/^Lv\.\d+\s*/, '');
+  status.innerHTML = `<span class="journey-lv">LV. 0${lv}</span><img class="journey-char" src="/levels/level-${lv}.webp" alt="" width="96" height="96">
+    <span class="journey-level-title">${escapeHtml(title)}</span>
     ${hasProgress ? `<span class="journey-progress"><progress max="100" value="${currentUser.progressPercent}" aria-label="내 혼밥 레벨 진행률" class="sm-progress"></progress><span>${currentUser.exp}점</span></span>
       <span class="journey-caption">${currentUser.conqueredPlaceCount}곳 정복 · ${currentUser.visitCount}회 방문</span>` : '<span class="journey-caption">성장 기록을 불러오는 중...</span>'}
     <button type="button" class="journey-start-button sm-button sm-button--ghost" data-journey-action="profile">${currentUser.isVerified ? '내 성장 기록 보기' : '학교 메일 인증하기'} <span aria-hidden="true">→</span></button>`;
