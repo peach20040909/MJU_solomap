@@ -310,8 +310,10 @@ function showToast(message) {
    =================================================== */
 // 검색할 때마다 번호를 올리고, 응답이 왔을 때 번호가 바뀌었으면(그사이 새 검색) 버린다
 let searchSeq = 0;
+let isLoadingPlaces = false; // 불러오는 동안 정렬·필터를 눌러도 '식당 없음' 대신 로딩 화면을 유지
 async function loadPlaces(keyword) {
   const seq = ++searchSeq;
+  isLoadingPlaces = true;
   currentPlaces = [];
   updateMapMarkers();
   placesContainer.innerHTML = soloEmptyState('대학가 식당을 찾고 있어요', '명지대 · 명지전문대 · 백련시장 주변 식당을 탐색합니다.');
@@ -322,6 +324,7 @@ async function loadPlaces(keyword) {
     const res = await fetch(`/api/places/search?query=${encodeURIComponent(keyword)}`, { credentials: 'same-origin' });
     const data = await res.json();
     if (seq !== searchSeq) return; // 더 최근 검색이 있으면 이 응답은 버린다
+    isLoadingPlaces = false;
 
     if (!data.success) {
       throw new Error(data.message || '식당 정보를 불러오지 못했습니다.');
@@ -333,6 +336,7 @@ async function loadPlaces(keyword) {
     updateMapMarkers();
   } catch (err) {
     if (seq !== searchSeq) return;
+    isLoadingPlaces = false;
     console.error(err);
     placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', err.message, { variant: 'error' });
     catalogCount.textContent = '0곳';
@@ -401,6 +405,7 @@ const mobileQuery = { matches: true }; // 모바일 전용 화면: PC에서도 �
 let visiblePlaceCount = MOBILE_PAGE_SIZE;
 
 function renderFilteredPlaces(keepCount = false) {
+  if (isLoadingPlaces) return;
   if (!keepCount) visiblePlaceCount = MOBILE_PAGE_SIZE;
   const filtered = getFilteredList();
   catalogCount.textContent = `${filtered.length}곳`;

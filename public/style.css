@@ -1680,3 +1680,7 @@ body.detail-open .view-switch-tabs { display:none; }
 .title-wrap .fav-filter-btn { display:inline-flex; align-items:center; gap:var(--sm-space-1); flex:0 0 auto; min-height:2.75rem; margin-left:auto; padding:0 var(--sm-space-3); border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-pill); background:var(--sm-color-surface); color:var(--sm-color-text-secondary); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); }
 .title-wrap .fav-filter-btn .heart-icon svg { width:1rem; height:1rem; }
 .title-wrap .fav-filter-btn.active { border-color:transparent; background:var(--sm-color-brand-subtle); color:var(--sm-color-brand-text); }
+
+/* 전화 걸기 링크도 44px 터치 영역 */
+.detail-call { display:inline-flex; align-items:center; min-height:2.75rem; padding-inline:var(--sm-space-2); margin-right:calc(-1 * var(--sm-space-2)); }
+.detail-info > div { align-items:center; }
