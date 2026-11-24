@@ -550,6 +550,10 @@ rouletteClose.addEventListener('click', () => {
   closeRouletteModal();
 });
 
+// Esc도 닫기 버튼과 같게 기록을 되돌리며 닫는다(ui.js의 공통 Esc는 창만 숨겨 '뽑기 창' 기록이 남고, 나중에 홈 주소에 검색 결과가 남는 원인이 됐다)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !rouletteModal.classList.contains('hidden')) closeRouletteModal();
+}, true);
 rouletteModal.addEventListener('click', (e) => {
   if (e.target === rouletteModal) closeRouletteModal();
 });
@@ -1548,10 +1552,17 @@ function setCatalogTitle(q, level = 'all') {
 window.addEventListener('popstate', () => {
   const params = new URLSearchParams(location.search);
   const q = params.get('q'), place = params.get('place');
-  if (rouletteClosing) { rouletteClosing = false; return; }
+  // 닫기 버튼으로 뒤로 간 경우: 홈이 그대로 보이고 있으면 다시 그리지 않는다(아니면 아래에서 주소에 맞춰 화면을 맞춘다)
+  if (rouletteClosing) { rouletteClosing = false; if (!document.body.classList.contains('results-open') && !document.body.classList.contains('detail-open')) return; }
   if (!rouletteModal.classList.contains('hidden')) { closeRouletteModal(false); return; }
   // 앞으로 가기로 뽑기 기록에 돌아오면 뽑기 창을 다시 연다
-  if (history.state?.roulette) { openRouletteModal(); return; }
+  // 뽑기는 홈 화면의 기능이라, 다른 화면에서 이 기록으로 돌아오면 홈을 보여 준 뒤 연다
+  if (history.state?.roulette) {
+    if (document.body.classList.contains('detail-open')) closePlaceDetail();
+    if (document.body.classList.contains('results-open')) showHome();
+    openRouletteModal();
+    return;
+  }
   // 뒤로·앞으로 가기로 다른 화면에 가면 이전 화면에 떠 있던 안내·로그인·리뷰 창은 닫는다
   ['growth-guide-modal', 'auth-modal', 'reviews-list-modal', 'review-modal'].forEach((id) => document.getElementById(id)?.classList.add('hidden'));
   const myPage = document.getElementById('mypage-modal');

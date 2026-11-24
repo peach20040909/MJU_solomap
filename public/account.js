@@ -336,7 +336,7 @@ function renderDetailMessage(box, message) {
 }
 async function openPlaceDetail(placeId, push = true) {
   placeId = String(placeId);
-  if (!document.body.classList.contains('detail-open')) detailScrollY = window.scrollY;
+  if (!document.body.classList.contains('detail-open')) { detailScrollY = window.scrollY; detailOpener = document.activeElement !== document.body ? document.activeElement : null; }
   detailPlaceId = placeId;
   const box = document.getElementById('place-detail');
   renderDetailMessage(box, '식당 정보를 불러오는 중...');
@@ -359,7 +359,11 @@ function closePlaceDetail() {
   detailPlaceId = null;
   document.body.classList.remove('detail-open');
   window.scrollTo(0, detailScrollY);
+  // 키보드로 상세를 열었던 '자세히 보기' 버튼으로 초점을 돌려, Tab이 맨 위(본문 건너뛰기)부터 다시 시작하지 않게
+  if (detailOpener?.isConnected && detailOpener.offsetParent) detailOpener.focus({ preventScroll: true });
+  detailOpener = null;
 }
+let detailOpener = null;
 window.openPlaceDetail = openPlaceDetail;
 window.closePlaceDetail = closePlaceDetail;
 
