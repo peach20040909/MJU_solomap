@@ -150,7 +150,8 @@
         <div class="catalog-controls-group">
           <!--  거리순/난이도순/리뷰순 다차원 정렬 드롭다운 -->
           <div class="sort-selector-wrap">
-            <select id="sort-select" class="sort-select sm-input" title="식당 정렬 기준 선택">
+            <!-- 화면에는 아래 글자 버튼만 보이므로 select는 Tab·스크린리더에서 뺀다(값만 정렬 코드가 쓴다) -->
+            <select id="sort-select" class="sort-select sm-input" title="식당 정렬 기준 선택" tabindex="-1" aria-hidden="true">
               <option value="distance">거리순 (가까운 순)</option>
               <option value="level-asc">난이도 낮은 순 (Lv.1→5)</option>
               <option value="level-desc">난이도 높은 순 (Lv.5→1)</option>

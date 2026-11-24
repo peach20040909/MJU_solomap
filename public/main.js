@@ -1173,6 +1173,14 @@ window.closeCurrentInfoWindow = function () {
   }
 };
 
+// 지도 핀은 키보드로도 고를 수 있게: Tab으로 가서 Enter·Space를 누르면 클릭과 같게 식당 카드를 연다
+document.addEventListener('keydown', (e) => {
+  const pin = e.target.closest?.('.map-marker-anchor-wrap[role="button"]');
+  if (!pin || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault();
+  pin.click();
+});
+
 function updateNaverMapMarkers() {
   if (!naverMap || !window.naver || !window.naver.maps) return;
 
@@ -1198,7 +1206,7 @@ function updateNaverMapMarkers() {
     const naverUrl = getNaverMapUrl(place);
 
     const markerHtml = `
-      <div class="map-marker-anchor-wrap">
+      <div class="map-marker-anchor-wrap" role="button" tabindex="0" aria-label="${escapeHtml(place.place_name)}, ${escapeHtml(soloInfo.label)}">
         <div class="map-place-marker ${soloInfo.pillClass} ${personalMarkerLabel(place.id).className}" title="${escapeHtml(place.place_name)} (${soloInfo.label})">
           <span class="marker-food"><img src="/food/${retroFoodKey(place.category_name, place.place_name)}.webp" alt="" width="32" height="32"><span class="marker-level-badge">${personalMarkerLabel(place.id).icon || soloInfo.lv}</span></span>
           <span class="marker-title">${escapeHtml(place.place_name)}</span>
@@ -1462,6 +1470,8 @@ function setFilter(f) {
   document.querySelectorAll('.difficulty-index .index-card').forEach((c) => c.classList.toggle('active', c.dataset.level === f));
 }
 function openSearch(q, push = true, level = 'all') {
+  // 상세 화면 위에서 새로 검색하면 상세를 닫고 새 결과를 보여 준다(주소만 바뀌고 이전 식당이 남지 않게)
+  if (document.body.classList.contains('detail-open')) closePlaceDetail();
   setFilter(level); // 새 검색은 전체에서 시작(이전 레벨 필터 때문에 0곳으로 보이지 않게)
   searchInput.value = q;
   // 같은 검색어의 메뉴 칸이 있으면 그 칸만, 없으면 아무 칸도 선택하지 않는다.
@@ -1482,6 +1492,8 @@ window.addEventListener('popstate', () => {
   if (!rouletteModal.classList.contains('hidden')) { closeRouletteModal(false); return; }
   // 앞으로 가기로 뽑기 기록에 돌아오면 뽑기 창을 다시 연다
   if (history.state?.roulette) { openRouletteModal(); return; }
+  // 뒤로·앞으로 가기로 다른 화면에 가면 이전 화면에 떠 있던 안내·로그인·리뷰 창은 닫는다
+  ['growth-guide-modal', 'auth-modal', 'reviews-list-modal', 'review-modal'].forEach((id) => document.getElementById(id)?.classList.add('hidden'));
   const myPage = document.getElementById('mypage-modal');
   if (params.get('my')) {
     // 기록 → 식당 상세 → 뒤로: 상세는 닫고 기록을 다시 보여 준다

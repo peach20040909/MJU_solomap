@@ -174,6 +174,10 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
  */
 export async function getPlaces(req: Request, res: Response, next: NextFunction) {
   try {
+    // ?query=a&query=b 처럼 같은 값이 여러 번 오면 배열이 되어 .trim()에서 500이 나므로 400으로 알린다
+    if (['area', 'soloLevel', 'query'].some((key) => req.query[key] !== undefined && typeof req.query[key] !== 'string')) {
+      return res.status(400).json({ message: '검색 조건은 하나씩만 입력해 주세요.' });
+    }
     const area = req.query.area as string;
     const soloLevel = req.query.soloLevel ? Number(req.query.soloLevel) : undefined;
     const search = req.query.query ? (req.query.query as string).trim() : undefined;

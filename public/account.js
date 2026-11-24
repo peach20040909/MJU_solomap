@@ -262,7 +262,10 @@ async function refreshPlaceAfterReview(placeId) {
    RESTAURANT 이름·메타·레벨 → 혼밥 난이도 상자(캐릭터) → 가게 정보·지도 링크 → 학우 리뷰 → 아래 고정 버튼 */
 let detailPlaceId = null;
 let detailScrollY = 0;
+// reviews가 null이면 리뷰 조회에 실패한 것: '리뷰가 없어요' 대신 불러오지 못했다고 알린다
 function renderPlaceDetail(place, reviews) {
+  const reviewsFailed = reviews === null;
+  reviews = reviews || [];
   const box = document.getElementById('place-detail');
   const info = getDynamicSoloIndex(place);
   const category = (place.category_name || '음식점').split('>').map(t => t.trim()).filter(Boolean).slice(1, 3).join(' · ') || '음식점';
@@ -270,6 +273,7 @@ function renderPlaceDetail(place, reviews) {
   const meter = '<span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
   const reviewHtml = reviews.length
     ? reviews.slice(0, 2).map(r => `<article class="detail-review lv-${r.soloLevel}"><div class="detail-review-head"><strong>${escapeHtml(r.user?.nickname || '학우')}</strong><span class="detail-review-lv">Lv.${r.soloLevel} ${meter}</span></div><p>${escapeHtml(r.content)}</p></article>`).join('')
+    : reviewsFailed ? '<p class="detail-empty">리뷰를 불러오지 못했어요. 잠시 후 다시 열어 주세요.</p>'
     : '<p class="detail-empty">아직 학우 리뷰가 없어요. 첫 리뷰를 남겨 주세요.</p>';
   box.innerHTML = `
     <div class="detail-top">
@@ -345,7 +349,7 @@ async function openPlaceDetail(placeId, push = true) {
   }
   window.scrollTo(0, 0);
   try {
-    const [place, reviews] = await Promise.all([findAccountPlace(placeId), fetchReviews(placeId).catch(() => [])]);
+    const [place, reviews] = await Promise.all([findAccountPlace(placeId), fetchReviews(placeId).catch(() => null)]);
     if (detailPlaceId === placeId) renderPlaceDetail(place, reviews);
   } catch {
     if (detailPlaceId === placeId) renderDetailMessage(box, '식당 정보를 불러오지 못했어요.');
@@ -468,7 +472,7 @@ async function openMyPage(push = true) {
           <p class="record-lv">LV. 0${lv}</p>
           <h3 class="record-name">${escapeHtml(name)}</h3>
           <div class="record-progress"><progress max="100" value="${info.progressPercent}" aria-label="다음 레벨 진행률" class="sm-progress"></progress><strong>${info.exp}${info.nextLevelExp === null ? '' : ` / ${info.nextLevelExp}`}점</strong></div>
-          <p class="record-next">${left === null ? '최고 레벨이에요! 혼밥 끝판왕' : `다음 레벨 '${RECORD_TIERS[lv].name}'까지 ${left}점 남았어요`}</p>
+          <p class="record-next">${left === null ? '최고 레벨이에요! 혼밥 끝판왕' : left <= 0 ? `점수는 다 모았어요! Lv.5 식당 1곳을 다녀오면 '${RECORD_TIERS[lv].name}'이 돼요` : `다음 레벨 '${RECORD_TIERS[lv].name}'까지 ${left}점 남았어요`}</p>
           ${info.level === 4 ? '<p class="record-next">끝판왕은 50점 이상 + Lv.5 식당 1곳 이상 방문해야 해요.</p>' : ''}
         </div>
         <img class="record-hero-char" src="/levels/level-${lv}.webp" alt="" width="110" height="110">
