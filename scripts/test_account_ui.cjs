@@ -79,6 +79,8 @@ const server = createServer(async (req, res) => {
       class LatLngBounds { extend() {} getCenter() { return new LatLng(37.58, 126.92); } }
       window.naver = { maps: { Map, Marker, InfoWindow, LatLng, LatLngBounds, Point: class {}, Position: { TOP_LEFT: 1 }, Event: {
         addListener(object, event, fn) { object.el?.addEventListener(event, e => { if (!(object instanceof Map) || e.target === object.el) fn(e); }); }, clearListeners() {},
+        once(object, event, fn) { object.el?.addEventListener(event, fn, { once: true }); },
+        trigger(object, event) { object.el?.dispatchEvent(new Event(event)); },
       } } };
     });
     await page.goto(`http://127.0.0.1:${server.address().port}`, { waitUntil: 'networkidle0' });

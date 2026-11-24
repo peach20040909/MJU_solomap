@@ -1727,3 +1727,8 @@ body.detail-open .view-switch-tabs { display:none; }
 .catalog-header .filter-tabs { grid-template-columns:repeat(auto-fit, minmax(2.75rem, 1fr)); }
 /* 키보드로 고른 지도 핀이 어디인지 보이게 */
 .map-marker-anchor-wrap:focus-visible { outline:2px solid var(--sm-color-focus); outline-offset:2px; border-radius:var(--sm-radius-sm); }
+/* 글자 확대 시 상단 좌우 여백이 rem과 함께 두 배(40px)가 되어 360px에서 검색어가 잘린다: 평소 값(20px)을 넘지 않게 */
+.header-inner { padding-inline:min(var(--gutter), 20px); }
+/* 네이버 지도 +·− 위에 겹친 44px 투명 누름 영역(main.js addZoomHitAreas) */
+.map-zoom-hit { position:absolute; z-index:5; width:44px; height:44px; padding:0; border:0; border-radius:var(--sm-radius-sm); background:transparent; cursor:pointer; }
+.map-zoom-hit:focus-visible { outline:2px solid var(--sm-color-focus); outline-offset:-4px; }

@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
     }
     if (modal && event.key === 'Escape') modal.classList.add('hidden');
-    const roleButton = event.target.closest('[role="button"]');
+    // 지도 핀은 main.js가 네이버 지도 마커 클릭으로 직접 처리한다(여기서 또 누르면 두 번 눌린다)
+    const roleButton = event.target.closest('[role="button"]:not(.map-marker-anchor-wrap)');
     if (roleButton && ['Enter', ' '].includes(event.key)) { event.preventDefault(); roleButton.click(); }
   });
 });

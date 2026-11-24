@@ -1071,6 +1071,7 @@ function initNaverMap() {
     syncMarkerDensity();
     // 이동·확대가 끝날 때마다 화면 기준으로 핀을 다시 묶는다
     naver.maps.Event.addListener(naverMap, 'idle', clusterNaverMarkers);
+    naver.maps.Event.once(naverMap, 'idle', addZoomHitAreas);
 
     // 1. 명지대학교 인문캠퍼스 마커
     const mjuLandmarkMarker = new naver.maps.Marker({
@@ -1173,13 +1174,37 @@ window.closeCurrentInfoWindow = function () {
   }
 };
 
-// 지도 핀은 키보드로도 고를 수 있게: Tab으로 가서 Enter·Space를 누르면 클릭과 같게 식당 카드를 연다
+// 지도 핀은 키보드로도 고를 수 있게: Tab으로 가서 Enter·Space를 누르면 클릭과 같게 식당 카드를 연다.
+// 화면 요소를 click()하면 네이버 지도가 좌표 없는 클릭으로 오류를 내서, 그 핀의 마커 클릭 이벤트를 직접 일으킨다
 document.addEventListener('keydown', (e) => {
   const pin = e.target.closest?.('.map-marker-anchor-wrap[role="button"]');
   if (!pin || (e.key !== 'Enter' && e.key !== ' ')) return;
   e.preventDefault();
-  pin.click();
+  const marker = naverMarkers.find((m) => m.getElement?.()?.contains(pin));
+  if (marker) naver.maps.Event.trigger(marker, 'click');
 });
+
+// 네이버 지도 +·− 버튼은 28×22px이라 손가락으로 누르기 작다. 모양은 그대로 두고, 그 위에 44×44px 투명 버튼을 겹쳐 누르는 영역만 넓힌다
+function addZoomHitAreas() {
+  const canvas = document.getElementById('naver-map-canvas');
+  const host = canvas.parentElement;
+  if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+  [['지도 확대', 1], ['지도 축소', -1]].forEach(([label, step]) => {
+    const link = canvas.querySelector(`img[alt="${label}"]`)?.closest('a');
+    if (!link || host.querySelector(`[data-zoom-hit="${step}"]`)) return;
+    link.tabIndex = -1; // 키보드·스크린리더는 겹친 버튼 하나만 만나게
+    const r = link.getBoundingClientRect(), h = host.getBoundingClientRect();
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'map-zoom-hit';
+    btn.dataset.zoomHit = step;
+    btn.setAttribute('aria-label', label);
+    btn.style.left = `${r.left - h.left + r.width / 2 - 22}px`;
+    btn.style.top = `${r.top - h.top + r.height / 2 - 22}px`;
+    btn.addEventListener('click', () => naverMap.setZoom(naverMap.getZoom() + step, true));
+    host.appendChild(btn);
+  });
+}
 
 function updateNaverMapMarkers() {
   if (!naverMap || !window.naver || !window.naver.maps) return;
@@ -1451,7 +1476,8 @@ function showResults(q, push = true) {
   const url = `?q=${encodeURIComponent(q)}`;
   if (push && location.search !== url) {
     // 결과 화면에서 또 검색하면 기록을 쌓지 않고 바꾼다(뒤로 가기·← 가 이전 검색이 아니라 홈으로)
-    if (document.body.classList.contains('results-open') && history.state?.q) history.replaceState({ q }, '', url);
+    // depth: 결과 → 상세 → 새 검색처럼 상세 기록을 새 결과로 바꾸면, 밑에 이전 결과 기록이 쌓인 수(← 는 그만큼 더 뒤로 가서 홈으로)
+    if (document.body.classList.contains('results-open') && history.state?.q) history.replaceState({ q, depth: (history.state.depth || 0) + (history.state.place ? 1 : 0) }, '', url);
     else history.pushState({ q }, '', url);
   }
   window.scrollTo(0, 0);
@@ -1510,7 +1536,7 @@ window.addEventListener('popstate', () => {
 });
 
 document.getElementById('btn-results-back')?.addEventListener('click', () => {
-  if (history.state?.q) history.back();
+  if (history.state?.q) history.go(-1 - (history.state.depth || 0));
   else {
     history.replaceState(null, '', location.pathname);
     showHome();
