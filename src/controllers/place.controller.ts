@@ -5,7 +5,7 @@
  * Prisma 데이터베이스의 학우 평가 난이도(avgSoloLevel)를 통합하여 응답합니다.
  */
 
-import type { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { searchPlacesByKeyword, MYONGJI_SEOUL_COORDS, type KakaoPlaceDocument } from '../lib/kakao.js';
 import fs from 'fs';
 import path from 'path';
@@ -15,6 +15,12 @@ import { getPlaceCuration } from '../lib/gemini.js';
 import { calculateDisplaySoloLevel } from '../services/review.service.js';
 import { createRequire } from 'module';
 import { searchTerms, matchesTerms, filterKakaoResults } from '../lib/searchRelevance.js';
+
+// 09강 방식: Controller는 RequestHandler<경로 매개변수, 응답 본문, 요청 본문, 쿼리>로 타입을 지정한다
+type PlaceParams = { id: string };
+// 같은 이름이 여러 번 오면 배열이 되므로(?query=a&query=b) string[]도 받아서 컨트롤러에서 400으로 거른다
+type SearchQuery = { query?: string | string[] };
+type ListQuery = { query?: string | string[]; area?: string | string[]; soloLevel?: string | string[] };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,7 +61,7 @@ function distanceFromMyongji(place: { x: string; y: string }): number {
  * 1. 식당 키워드 검색 컨트롤러: GET /api/places/search?query=...
  * (대동명지도 + 카카오 실시간 검색 + AI 큐레이션 + DB 학우 평가 난이도 융합)
  */
-export async function searchPlaces(req: Request, res: Response, next: NextFunction) {
+export const searchPlaces: RequestHandler<Record<string, never>, unknown, unknown, SearchQuery> = async (req, res, next) => {
   try {
     // ?query=a&query=b 처럼 배열로 오면 문자열이 아니라서 400으로 알린다
     const rawQuery = req.query.query;
@@ -180,16 +186,16 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * 2. 식당 목록 조회 컨트롤러: GET /api/places
  * (DB의 Place 테이블 기반 목록 + 학우 평가 난이도 집계)
  */
-export async function getPlaces(req: Request, res: Response, next: NextFunction) {
+export const getPlaces: RequestHandler<Record<string, never>, unknown, unknown, ListQuery> = async (req, res, next) => {
   try {
     // ?query=a&query=b 처럼 같은 값이 여러 번 오면 배열이 되어 .trim()에서 500이 나므로 400으로 알린다
-    if (['area', 'soloLevel', 'query'].some((key) => req.query[key] !== undefined && typeof req.query[key] !== 'string')) {
+    if ((['area', 'soloLevel', 'query'] as const).some((key) => req.query[key] !== undefined && typeof req.query[key] !== 'string')) {
       return res.status(400).json({ message: '검색 조건은 하나씩만 입력해 주세요.' });
     }
     const area = req.query.area as string;
@@ -243,13 +249,13 @@ export async function getPlaces(req: Request, res: Response, next: NextFunction)
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * 3. 식당 상세 정보 조회 컨트롤러: GET /api/places/:id
  * (기본 정보 + 최신 리뷰 5개 + 학우 평가 평균 난이도 + Gemini 큐레이션 통합)
  */
-export async function getPlaceDetail(req: Request, res: Response, next: NextFunction) {
+export const getPlaceDetail: RequestHandler<PlaceParams> = async (req, res, next) => {
   try {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
@@ -351,4 +357,4 @@ export async function getPlaceDetail(req: Request, res: Response, next: NextFunc
   } catch (error) {
     next(error);
   }
-}
+};

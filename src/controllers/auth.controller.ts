@@ -4,14 +4,20 @@
  * 내 정보 조회 요청을 받아 서비스 계층에 전달하고 HTTP 상태 코드를 응답하는 컨트롤러입니다.
  */
 
-import type { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import passport from '../lib/passport.js';
 import * as authService from '../services/auth.service.js';
+
+// 09강 방식: Controller는 RequestHandler<경로 매개변수, 응답 본문, 요청 본문, 쿼리>로 타입을 지정한다
+type NoParams = Record<string, never>;
+type SignupBody = { email?: string; password?: string; nickname?: string };
+type LoginBody = { email?: string; password?: string };
+type VerifyBody = { code?: string };
 
 /**
  * 1. 회원가입 컨트롤러: POST /api/auth/signup
  */
-export async function signup(req: Request, res: Response, next: NextFunction) {
+export const signup: RequestHandler<NoParams, unknown, SignupBody> = async (req, res, next) => {
   try {
     const user = await authService.registerUser(req.body);
     res.status(201).json({
@@ -21,12 +27,12 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * 2. 로그인 컨트롤러: POST /api/auth/login
  */
-export function login(req: Request, res: Response, next: NextFunction) {
+export const login: RequestHandler<NoParams, unknown, LoginBody> = (req, res, next) => {
   // 빈 입력은 Passport의 영어 'Missing credentials'(401) 대신 400으로 안내한다
   if (!req.body?.email || !req.body?.password) {
     return res.status(400).json({ message: '이메일과 비밀번호를 모두 입력해주세요.' });
@@ -58,12 +64,12 @@ export function login(req: Request, res: Response, next: NextFunction) {
       });
     });
   })(req, res, next);
-}
+};
 
 /**
  * 3. 로그아웃 컨트롤러: POST /api/auth/logout
  */
-export function logout(req: Request, res: Response, next: NextFunction) {
+export const logout: RequestHandler<NoParams> = (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);
@@ -79,12 +85,12 @@ export function logout(req: Request, res: Response, next: NextFunction) {
       return res.status(204).send(); // 삭제 완료 시 204 No Content
     });
   });
-}
+};
 
 /**
  * 4. 내 정보 및 혼밥 레벨 조회: GET /api/auth/me
  */
-export async function getMe(req: Request, res: Response, next: NextFunction) {
+export const getMe: RequestHandler<NoParams> = async (req, res, next) => {
   try {
     const profile = await authService.getUserProfile(req.user!.id);
     res.status(200).json({
@@ -93,24 +99,24 @@ export async function getMe(req: Request, res: Response, next: NextFunction) {
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * 5. 인증 코드 재발송 컨트롤러: POST /api/auth/verify/send
  */
-export async function sendVerifyCode(req: Request, res: Response, next: NextFunction) {
+export const sendVerifyCode: RequestHandler<NoParams> = async (req, res, next) => {
   try {
     const result = await authService.sendVerificationCode(req.user!.id);
     res.status(200).json(result);
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * 6. 6자리 인증 코드 확인 컨트롤러: POST /api/auth/verify
  */
-export async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+export const verifyEmail: RequestHandler<NoParams, unknown, VerifyBody> = async (req, res, next) => {
   try {
     const result = await authService.verifyEmailCode(req.user!.id, req.body?.code);
     // 세션 정보의 isVerified도 즉시 true로 동기화
@@ -121,4 +127,4 @@ export async function verifyEmail(req: Request, res: Response, next: NextFunctio
   } catch (error) {
     next(error);
   }
-}
+};
