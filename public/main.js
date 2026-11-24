@@ -591,6 +591,8 @@ function spinRoulette() {
   // 룰렛 추천 시 순수 밥집(식사) 식당만, 고른 난이도가 있으면 그 난이도만
   // 홈에 들어오자마자 뽑으면 식당 목록이 아직 오는 중이다: 불러오는 중이라고 보여 주고, 다 오면 loadPlaces가 다시 뽑는다
   if (placesError) loadPlaces(lastSearchKeyword);
+  // 홈의 뽑기는 직전 검색(0곳일 수도 있는 국밥·zzz 등)이 아니라 명지대 주변 전체 식당에서 고른다
+  else if (!document.body.classList.contains('results-open') && lastSearchKeyword !== '혼밥' && !isLoadingPlaces) loadPlaces('혼밥');
   if (isLoadingPlaces) {
     rouletteCardSlot.classList.remove('is-winner');
     btnRouletteGo.disabled = true;
