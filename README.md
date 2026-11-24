@@ -37,7 +37,7 @@ Express API가 외부 검색과 식당 큐레이션을 처리하고, 정적 웹 
 
 ## 현재 범위와 후속 작업
 
-1~5단계 코드가 구현되어 있습니다. 학교 이메일 가입·인증, 세션 로그인·로그아웃, 공유 리뷰 CRUD, 방문 체크인, 개인 레벨·추천, 성장 기록과 정복 지도를 연결했습니다. 리뷰는 서버 API를 사용하고 찜은 브라우저 localStorage에 남깁니다.
+1~5단계 코드가 구현되어 있습니다. 학교 이메일 가입·인증, 세션 로그인·로그아웃, 공유 리뷰 CRUD, 방문 체크인, 개인 레벨·추천, 나의 혼밥 기록과 정복 지도를 연결했습니다. 리뷰는 서버 API를 사용하고 찜은 브라우저 localStorage에 남깁니다.
 
 **2026-11-09:** SoloMap 전용 Supabase를 연결하고 실제 가입·인증·리뷰 CRUD·체크인·프로세스 재시작 후 세션/기록 유지를 검증했습니다. 학교 인증 통합 테스트는 로컬 개발 코드로 수행했습니다. 이후 로컬 Gmail SMTP 설정 및 TLS/계정 인증 확인도 완료했으며 실제 학교 메일 수신 확인은 남아 있습니다. [DB 연결 기록](docs/SUPABASE_CONNECTION.md) · [검증 결과](docs/VERIFICATION.md). 2026-11-09에 디자인 수정과 DB·SMTP 설정을 Vercel 운영 환경에 배포했습니다. `PLAN.md`는 초기 아이디어 문서이며, 현재 규칙은 이 README와 실제 서비스 코드가 기준입니다.
 
@@ -237,6 +237,6 @@ DB 통합 확인은 `npm run reset` 직후 [requests.http](requests.http)를 01�
 - `public/`: 지도와 식당 탐색 화면
 - `public/design-system.css`, `public/ui.js`: 토큰·공통 컴포넌트·SVG·모달 접근성
 - `public/style.css`, `public/map.css`: 앱 레이아웃과 지도 엔진 어댑터
-- `public/account.js`: 계정·서버 리뷰·성장 기록·개인 지도 연동
+- `public/account.js`: 계정·서버 리뷰·나의 혼밥 기록·식당 상세 화면·개인 지도 연동
 - `src/services/`: 인증·리뷰 집계·레벨 규칙
 - `prisma/schema.prisma`, `prisma/seed.ts`: 모델과 식당 시드

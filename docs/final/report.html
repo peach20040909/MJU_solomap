@@ -100,7 +100,6 @@
   <tr><td>AI 난이도 보정</td><td>Gemini가 규칙 난이도에서 ±1단계 안에서만 보정</td><td>미리 생성해 저장한 큐레이션(<code>aiCurations.json</code>, 164곳)의 난이도를 시드 기본 난이도로 쓰고, 없으면 규칙 난이도. 실시간 Gemini는 4초 안에 응답할 때만 사용</td><td>검색할 때마다 AI를 부르면 응답이 수십 초씩 걸려 검색이 멈춤. 결과를 저장해 재사용하고, 늦으면 규칙 문구로 바로 응답</td></tr>
   <tr><td>식당 데이터</td><td>카카오·네이버 장소 검색 결과</td><td>명지대 대학가 맛집 지도(대동명지도) 125곳을 시드로 넣고, 카카오 실시간 검색 결과를 합침</td><td>학생들이 이미 다녀온 식당을 기본으로 보여 주고, 카카오 키가 없어도 검색이 동작하게 함</td></tr>
   <tr><td>화면 구성</td><td>-</td><td>모바일 전용 화면. PC에서 열어도 가운데 430px 폭의 휴대폰 화면 하나로 보이고, 빨강 포인트와 혼밥 레벨 캐릭터로 디자인을 바꿈</td><td>혼밥 식당은 밖에서 휴대폰으로 찾는 경우가 대부분이고, 화면 하나에 집중해 디자인 품질을 높이기 위함</td></tr>
-  <tr><td>식당 상세 화면</td><td>별도의 식당 상세 화면</td><td>목록 카드의 "자세히 보기"를 펼쳐 주소·전화·지도 링크·리뷰를 보여 주고, 검색 결과는 별도 화면(<code>?q=</code>)으로 분리</td><td>휴대폰에서 화면을 옮기지 않고 여러 식당을 비교할 수 있게 함(사용자 피드백 반영)</td></tr>
   <tr><td>추가 기능</td><td>-</td><td>메뉴 칸 10개(국밥·라멘·돈까스 등), "오늘 뭐 먹지?" 랜덤 뽑기</td><td>무엇을 먹을지 정하지 못한 학생도 바로 식당을 고를 수 있게 함</td></tr>
 </table>
 
@@ -223,7 +222,7 @@
   <figure><img src="shots/04-map.png"><figcaption>③ 지도로 보기 — 난이도 숫자 마커(네이버 지도)</figcaption></figure>
 </div>
 <div class="grid3">
-  <figure><img src="shots/03-card-detail.png"><figcaption>④ 식당 상세(카드 펼침) — 주소·전화·지도 링크·리뷰 작성</figcaption></figure>
+  <figure><img src="shots/03-card-detail.png"><figcaption>④ 식당 상세 화면 — 혼밥 난이도·가게 정보·카카오/네이버 지도·학우 리뷰·다녀왔어요</figcaption></figure>
   <figure><img src="shots/05-signup.png"><figcaption>⑤ 회원가입</figcaption></figure>
   <figure><img src="shots/07-login.png"><figcaption>⑥ 로그인</figcaption></figure>
 </div>
@@ -235,7 +234,7 @@
 <div class="grid3">
   <figure><img src="shots/11-checkin.png"><figcaption>⑩ 다녀왔어요(체크인) 후 알림</figcaption></figure>
   <figure><img src="shots/08-logged-in.png"><figcaption>⑪ 로그인 후 메인 — 내 레벨·경험치</figcaption></figure>
-  <figure><img src="shots/12-mypage.png"><figcaption>⑫ 나의 혼밥 성장 기록 — 레벨, 정복 식당, 다음 도전 추천</figcaption></figure>
+  <figure><img src="shots/12-mypage.png"><figcaption>⑫ 나의 혼밥 기록 — 레벨, 정복 식당, 다음 도전 추천, 내가 쓴 리뷰</figcaption></figure>
 </div>
 <div class="grid3">
   <figure><img src="shots/13-level-guide.png"><figcaption>⑬ 레벨 안내</figcaption></figure>
@@ -285,8 +284,8 @@
   <div class="step ok"><b>응답 → 화면</b>201 + levelInfo → "체크인 완료!" 또는 "레벨업" 알림, 내 기록 바·지도 정복 마커 갱신</div>
 </div><div class="fail">실패: 409 → "오늘은 이미 체크인했어요" / 404 → 없는 식당 / 401·403 → 로그인·인증 창</div></div>
 
-<div class="flow"><h4>⑥ 나의 혼밥 성장 기록 조회</h4><div class="steps">
-  <div class="step user"><b>사용자 동작</b>계정 메뉴 → "내 성장 기록"</div><div class="arrow">→</div>
+<div class="flow"><h4>⑥ 나의 혼밥 기록 조회</h4><div class="steps">
+  <div class="step user"><b>사용자 동작</b>오른쪽 위 프로필 → "내 혼밥 기록"</div><div class="arrow">→</div>
   <div class="step"><b>fetch</b><code>openMyPage()</code> → <code>GET /api/users/me/level</code>, <code>/me/reviews</code>, <code>/me/checkins</code>, <code>/me/recommendations</code></div><div class="arrow">→</div>
   <div class="step"><b>Router · Controller</b>user.routes → <code>getMyLevel()</code> 등</div><div class="arrow">→</div>
   <div class="step"><b>Service · DB</b><code>getUserLevelInfo()</code>, <code>getUserConqueredPlaces()</code>, <code>getRecommendedPlaces()</code></div><div class="arrow">→</div>
@@ -313,7 +312,7 @@
   <tr><td><code>src/routes/place.routes.ts</code></td><td><code>POST /:id/checkins</code> — requireAuth, requireVerified 뒤에 createCheckIn 연결</td></tr>
   <tr><td><code>src/controllers/checkin.controller.ts</code></td><td><code>createCheckIn()</code> 201 응답, <code>getMyLevel()</code>, <code>getMyCheckIns()</code>, <code>getMyRecommendations()</code></td></tr>
   <tr><td><code>src/services/level.service.ts</code></td><td><code>checkInPlace()</code> 중복 검사·저장, <code>getKSTDateString()</code> 한국 날짜, <code>calculateLevelFromCheckIns()</code> 경험치·레벨, <code>getRecommendedPlaces()</code> 추천</td></tr>
-  <tr><td><code>public/account.js</code></td><td><code>checkInById()</code> 요청·레벨업 알림, <code>openMyPage()</code> 성장 기록 표시</td></tr>
+  <tr><td><code>public/account.js</code></td><td><code>checkInById()</code> 요청·레벨업 알림, <code>openMyPage()</code> 나의 혼밥 기록 표시</td></tr>
 </table>
 <h4>거부 시 응답</h4>
 <table>
