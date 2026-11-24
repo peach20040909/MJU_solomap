@@ -1481,14 +1481,17 @@ btnViewMap.addEventListener('click', () => switchViewMode('map'));
    =================================================== */
 /* 검색 결과는 홈 아래로 이어 붙이지 않고 별도 화면(body.results-open)으로 연다.
    주소에 ?q=검색어를 남겨서 휴대폰 뒤로 가기로 홈에 돌아오고, 그 주소로 바로 들어와도 결과가 열린다. */
-function showResults(q, push = true) {
+function showResults(q, push = true, level = 'all') {
+  const wasResults = document.body.classList.contains('results-open');
   document.body.classList.add('results-open');
   const url = `?q=${encodeURIComponent(q)}`;
   if (push && location.search !== url) {
-    // 결과 화면에서 또 검색하면 기록을 쌓지 않고 바꾼다(뒤로 가기·← 가 이전 검색이 아니라 홈으로)
+    // 결과 화면·상세 화면에서 또 검색하면 기록을 쌓지 않고 바꾼다(뒤로 가기·← 가 이전 검색이 아니라 홈으로)
     // depth: 결과 → 상세 → 새 검색처럼 상세 기록을 새 결과로 바꾸면, 밑에 이전 결과 기록이 쌓인 수(← 는 그만큼 더 뒤로 가서 홈으로)
-    if (document.body.classList.contains('results-open') && history.state?.q) history.replaceState({ q, depth: (history.state.depth || 0) + (history.state.place ? 1 : 0) }, '', url);
-    else history.pushState({ q }, '', url);
+    // level: 레벨 카드로 연 결과는 뒤로·앞으로 가기로 돌아와도 그 레벨을 다시 고른다
+    const st = history.state;
+    if (st?.place || (wasResults && st?.q)) history.replaceState({ q, level, depth: (st.depth || 0) + (st.place && st.q ? 1 : 0) }, '', url);
+    else history.pushState({ q, level }, '', url);
   }
   window.scrollTo(0, 0);
 }
@@ -1514,11 +1517,15 @@ function openSearch(q, push = true, level = 'all') {
   kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === q));
   loadPlaces(q);
   // 메뉴 칸으로 연 검색은 실제 검색어(아시아음식) 대신 칸 이름(아시안)으로 제목을 보여 준다
+  setCatalogTitle(q, level);
+  showResults(q, push, level);
+}
+// 결과 제목: 레벨(1~5)이면 'Lv.4 다인석 식당', 메뉴 칸 검색이면 칸 이름, 아니면 검색어
+function setCatalogTitle(q, level = 'all') {
   const chip = [...kwChips].find((c) => c.dataset.query === q);
-  if (chip && q !== '혼밥') catalogTitle.textContent = `"${chip.textContent.trim()}" 검색 결과`;
   // '다인석 식당 식당'처럼 겹치지 않게, 이름이 '식당'으로 끝나면 덧붙이지 않는다
-  if (level !== 'all') catalogTitle.textContent = `Lv.${level} ${LEVEL_NAMES[level]}${LEVEL_NAMES[level].endsWith('식당') ? '' : ' 식당'}`;
-  showResults(q, push);
+  if (/^[1-5]$/.test(level)) catalogTitle.textContent = `Lv.${level} ${LEVEL_NAMES[level]}${LEVEL_NAMES[level].endsWith('식당') ? '' : ' 식당'}`;
+  else catalogTitle.textContent = `"${chip && q !== '혼밥' ? chip.textContent.trim() : q}" 검색 결과`;
 }
 
 window.addEventListener('popstate', () => {
@@ -1541,7 +1548,7 @@ window.addEventListener('popstate', () => {
   if (place) { openPlaceDetail(place, false); return; }
   // 상세에서 뒤로 오면 목록을 다시 불러오지 않고 보던 자리로 돌아간다
   if (document.body.classList.contains('detail-open')) { closePlaceDetail(); if (q && q === searchInput.value) return; }
-  if (q) openSearch(q, false);
+  if (q) openSearch(q, false, history.state?.level || 'all');
   else showHome();
 });
 
@@ -1575,6 +1582,10 @@ filterTabs.forEach((tab) => {
       c.classList.toggle('active', c.dataset.level === finalFilter);
     });
     currentFilter = finalFilter;
+    // 레벨 카드로 연 '혼밥' 결과는 제목도 고른 레벨에 맞춘다(전체로 바꿨는데 'Lv.4'가 남지 않게)
+    if (searchInput.value === '혼밥') setCatalogTitle('혼밥', finalFilter);
+    // 뒤로·앞으로 가기로 이 결과에 돌아와도 고른 필터가 남게 기록에 적어 둔다
+    if (history.state?.q && !history.state.place) history.replaceState({ ...history.state, level: finalFilter }, '');
     renderFilteredPlaces();
     updateMapMarkers();
     smoothFitNaverMapBounds(finalFilter);
@@ -1827,11 +1838,15 @@ updateFavBadge();
 // ?q=검색어로 들어오면 결과 화면부터, 아니면 홈에서 시작(목록 데이터는 미리 받아 둔다)
 const initialQuery = new URLSearchParams(location.search).get('q');
 const initialParams = new URLSearchParams(location.search);
-// 공유받은 검색 링크(?q=)로 처음 들어오면 밑에 홈 기록을 하나 깔아 둔다: '홈으로 돌아가기'·뒤로 가기가 사이트 밖이 아니라 홈으로 간다
-// (새로고침은 이미 기록이 있어 건너뛰고, 상세·기록 주소가 함께 오면 그쪽 처리에 맡긴다)
-if (initialQuery && !history.state && !initialParams.get('place') && !initialParams.get('my')) {
+// 공유받은 검색·식당 링크(?q= / ?place=)로 처음 들어오면 밑에 홈(과 검색 결과) 기록을 깔아 둔다:
+// '홈으로 돌아가기'·뒤로 가기가 사이트 밖이나 이전 상세가 아니라 홈으로 간다
+// (새로고침은 이미 기록이 있어 건너뛰고, 기록 화면 주소(?my=1)는 account.js가 따로 처리한다)
+const sharedPlace = initialParams.get('place');
+if ((initialQuery || sharedPlace) && !history.state && !initialParams.get('my')) {
+  const sharedUrl = location.search;
   history.replaceState(null, '', location.pathname);
-  history.pushState({ q: initialQuery }, '', `?q=${encodeURIComponent(initialQuery)}`);
+  if (initialQuery) history.pushState({ q: initialQuery }, '', `?q=${encodeURIComponent(initialQuery)}`);
+  if (sharedPlace) history.pushState({ place: sharedPlace, q: initialQuery || '', depth: 0 }, '', sharedUrl);
 }
 if (initialQuery) openSearch(initialQuery, false);
 else loadPlaces('혼밥');
