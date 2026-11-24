@@ -338,6 +338,8 @@ async function loadPlaces(keyword) {
     currentPlaces = (data.places || []).filter(isMealRestaurant);
     renderFilteredPlaces();
     updateMapMarkers();
+    // 불러오는 동안 뽑기 창을 열었으면 다 받은 지금 뽑는다
+    if (!rouletteModal.classList.contains('hidden')) spinRoulette();
   } catch (err) {
     if (seq !== searchSeq) return;
     isLoadingPlaces = false;
@@ -348,6 +350,11 @@ async function loadPlaces(keyword) {
     placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', message, { variant: 'error' })
       + '<button type="button" class="btn-clear-filter sm-button" data-retry-search>다시 시도</button>';
     catalogCount.textContent = '불러오기 실패';
+    // 뽑기 창이 기다리고 있었으면 실패를 알린다(다시 뽑기를 누르면 다시 불러온다)
+    if (!rouletteModal.classList.contains('hidden')) {
+      btnRouletteAgain.disabled = false;
+      rouletteCardSlot.innerHTML = '<p style="color: #64748b; font-size: 14px;">식당을 불러오지 못했어요. 다시 뽑기를 눌러 주세요.</p>';
+    }
   }
 }
 
@@ -571,6 +578,14 @@ document.querySelectorAll('[data-roulette-level]').forEach((btn) => btn.addEvent
 
 function spinRoulette() {
   // 룰렛 추천 시 순수 밥집(식사) 식당만, 고른 난이도가 있으면 그 난이도만
+  // 홈에 들어오자마자 뽑으면 식당 목록이 아직 오는 중이다: 불러오는 중이라고 보여 주고, 다 오면 loadPlaces가 다시 뽑는다
+  if (placesError) loadPlaces(lastSearchKeyword);
+  if (isLoadingPlaces) {
+    rouletteCardSlot.classList.remove('is-winner');
+    btnRouletteGo.disabled = true;
+    rouletteCardSlot.innerHTML = '<p style="color: #64748b; font-size: 14px;">근처 밥집을 불러오는 중이에요...</p>';
+    return;
+  }
   const meals = (currentPlaces || []).filter(isMealRestaurant);
   const places = rouletteLevel === 'all' ? meals : meals.filter((p) => String(getDynamicSoloIndex(p).lv) === rouletteLevel);
   if (places.length === 0) {
