@@ -150,7 +150,7 @@ function openAuth(mode = 'login') {
 }
 
 function requireAccount() {
-  if (!currentUser) { openAuth(); showToast('로그인 후 이용해주세요.'); return false; }
+  if (!currentUser) { openAuth(); showToast('로그인하면 쓸 수 있어요.'); return false; }
   if (!currentUser.isVerified) { openAuth('verify'); showToast('학교 메일 인증 후 이용 가능'); return false; }
   return true;
 }
@@ -165,7 +165,7 @@ document.getElementById('account-menu').addEventListener('click', (event) => {
   if (button.id === 'btn-mypage') busy(button, openMyPage);
   if (button.id === 'btn-logout') busy(button, async () => {
     await apiRequest('/api/auth/logout', { method: 'POST' });
-    clearAccount(); showToast('로그아웃되었습니다.');
+    clearAccount(); showToast('로그아웃했어요.');
   });
 });
 document.getElementById('auth-mode-toggle').addEventListener('click', () => openAuth(authMode === 'login' ? 'signup' : 'login'));
@@ -187,7 +187,7 @@ authForm.addEventListener('submit', (event) => {
     if (currentUser.isVerified) authModal.classList.add('hidden');
     else openAuth('verify');
     try { await refreshAccount(); } catch { /* 로그인 응답의 사용자 정보 유지 */ }
-    showToast(signup ? '가입 완료! 학교 메일의 인증 코드를 확인해주세요.' : '로그인되었습니다.');
+    showToast(signup ? '가입했어요! 학교 메일로 온 인증 코드를 입력해 주세요.' : '로그인했어요.');
   });
 });
 verifyForm.addEventListener('submit', (event) => {
@@ -351,7 +351,7 @@ window.closePlaceDetail = closePlaceDetail;
 btnSubmitReview.addEventListener('click', () => busy(btnSubmitReview, async () => {
   if (!targetReviewPlace || !requireAccount()) return;
   const content = document.getElementById('review-textarea').value.trim();
-  if (!content || content.length > 500) { showToast('리뷰는 1~500자로 작성해주세요.'); return; }
+  if (!content || content.length > 500) { showToast('리뷰는 1~500자로 써 주세요.'); return; }
   const place = targetReviewPlace;
   try {
     await apiRequest(editingReviewId ? `/api/reviews/${encodeURIComponent(editingReviewId)}` : '/api/reviews', {
@@ -361,12 +361,12 @@ btnSubmitReview.addEventListener('click', () => busy(btnSubmitReview, async () =
     if (error.status === 409 && error.reviewId) {
       const reviews = await fetchReviews(place.id);
       const existing = reviews.find(r => r.id === error.reviewId && r.userId === currentUser?.id);
-      if (existing) { fillReviewEditor(place, existing); showToast('이미 작성한 리뷰를 수정해주세요.'); }
+      if (existing) { fillReviewEditor(place, existing); showToast('이미 쓴 리뷰가 있어요. 수정해 주세요.'); }
     }
     return;
   }
   reviewModal.classList.add('hidden');
-  showToast('리뷰가 저장되었습니다.');
+  showToast('리뷰를 저장했어요.');
   await refreshPlaceAfterReview(place.id);
 }));
 
@@ -403,7 +403,7 @@ document.getElementById('reviews-list-container').addEventListener('click', even
   else busy(button, async () => {
     const placeId = activeReviewListPlace;
     await apiRequest(`/api/reviews/${encodeURIComponent(review.id)}`, { method: 'DELETE' });
-    showToast('리뷰가 삭제되었습니다.');
+    showToast('리뷰를 삭제했어요.');
     await refreshPlaceAfterReview(placeId);
     if (activeReviewListPlace === placeId) renderReviewList(getPlaceReviews(placeId));
   });
@@ -477,7 +477,7 @@ async function openMyPage(push = true) {
         ${mine.reviews.length ? mine.reviews.map(r => `<article class="record-review lv-${r.soloLevel}"><div class="record-review-head"><strong>${escapeHtml(r.place.name)}</strong><span>Lv.${r.soloLevel} <span class="sm-level-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></span></div><p>${escapeHtml(r.content)}</p><button type="button" data-profile-action="review" data-place-id="${escapeHtml(r.placeId)}" class="record-edit sm-button sm-button--ghost">수정 · 삭제</button></article>`).join('') : '<p class="account-empty">아직 작성한 리뷰가 없어요. 다녀온 식당에 첫 리뷰를 남겨 보세요.</p>'}
       </section>`;
     updateMapMarkers();
-  } catch { if (version === profileVersion) content.textContent = '기록을 불러오지 못했습니다. 다시 열어주세요.'; }
+  } catch { if (version === profileVersion) content.textContent = '기록을 불러오지 못했어요. 다시 열어 주세요.'; }
 }
 // 사용자 레벨 칭호와 시작 점수 (src/services/level.service.ts의 단계와 같다)
 const RECORD_TIERS = [{ name: '혼밥 입문자', min: 0 }, { name: '혼밥 새내기', min: 5 }, { name: '혼밥 숙련자', min: 15 }, { name: '혼밥 고수', min: 30 }, { name: '혼밥 끝판왕', min: 50 }];
@@ -507,7 +507,10 @@ document.getElementById('mypage-content').addEventListener('click', event => {
     personalMapMode = true;
     mypageModal.classList.add('hidden');
     document.getElementById('personal-map-note').classList.remove('hidden');
+    // 지도는 검색 결과 화면 안에 있다. 홈에서 열었으면 결과 화면부터 연다
+    if (!document.body.classList.contains('results-open')) showResults(searchInput.value || '혼밥');
     switchViewMode('map'); updateMapMarkers();
+    document.getElementById('personal-map-note').scrollIntoView({ block: 'start' });
   }
   if (action === 'place') { mypageModal.classList.add('hidden'); openPlaceDetail(button.dataset.placeId); }
   if (action === 'review') {
@@ -533,7 +536,10 @@ document.querySelectorAll('[data-close]').forEach(button => button.addEventListe
 }));
 [authModal, mypageModal, reviewsListModal, growthGuideModal].forEach(modal => modal.addEventListener('click', event => { if (event.target === modal) modal.classList.add('hidden'); }));
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') [authModal, mypageModal, reviewsListModal, reviewModal, growthGuideModal].forEach(modal => modal.classList.add('hidden'));
+  if (event.key !== 'Escape') return;
+  // 기록 화면은 주소(?my=1)로 연 화면이라 Esc도 뒤로 가기로 닫는다(주소에 my가 남지 않게)
+  if (!mypageModal.classList.contains('hidden') && history.state?.my) { history.back(); return; }
+  [authModal, mypageModal, reviewsListModal, reviewModal, growthGuideModal].forEach(modal => modal.classList.add('hidden'));
 });
 document.getElementById('btn-growth-guide').addEventListener('click', () => growthGuideModal.classList.remove('hidden'));
 document.querySelectorAll('#solo-journey, #growth-guide-modal').forEach(section => section.addEventListener('click', event => {
@@ -552,4 +558,12 @@ apiRequest('/api/config', { quiet: true }).then(config => {
   accountConfigured = config.accountConfigured === true;
   updateAccountAvailability();
 }).catch(() => { accountConfigured = false; updateAccountAvailability(); });
-refreshAccount().catch(error => { if (error.status !== 401) showToast('로그인 상태를 확인하지 못했습니다. 다시 로그인해주세요.'); });
+refreshAccount()
+  // ?my=1 주소로 새로고침해도 나의 혼밥 기록을 다시 연다(로그인 확인 뒤, 로그인 안 했으면 주소에서 뺀다)
+  .then(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.get('my')) return;
+    if (currentUser) openMyPage(false);
+    else { params.delete('my'); history.replaceState(null, '', params.toString() ? `?${params}` : location.pathname); }
+  })
+  .catch(error => { if (error.status !== 401) showToast('로그인 상태를 확인하지 못했어요. 다시 로그인해 주세요.'); });

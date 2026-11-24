@@ -25,6 +25,8 @@ test('DB 오류 처리 HTTP 회귀', async t => {
   app.get('/unexpected', () => { throw new Error('PRIVATE_DATABASE_QUERY'); });
   app.get('/validation', () => { throw new HttpError(400, '입력을 확인해주세요.'); });
   app.get('/database', () => { throw dbError('P2021'); });
+  // 응답을 보낸 뒤 난 오류(세션 저장 중 DB 끊김 등)
+  app.get('/late', (_req, res, next) => { res.status(200).json({ ok: true }); next(new Error('late')); });
   app.use('/reviews', reviewRouter);
   app.post('/places/:id/checkins', createCheckIn);
   app.use(errorHandler);
@@ -43,6 +45,7 @@ test('DB 오류 처리 HTTP 회귀', async t => {
   try {
     await t.test('예상 밖 서버 오류 원문을 숨긴다', () => request('/unexpected', 500));
     await t.test('Prisma 오류 원문을 숨긴다', () => request('/database', 500));
+    await t.test('응답을 보낸 뒤 난 오류는 다시 응답하지 않는다(ERR_HTTP_HEADERS_SENT 없음)', async () => assert.equal((await request('/late', 200)).ok, true));
     await t.test('기존 입력 오류 메시지는 유지한다', async () => assert.equal((await request('/validation', 400)).message, '입력을 확인해주세요.'));
     await t.test('리뷰 DB 장애는 빈 목록 성공이 아니다', async () => {
       patch(prisma.review, 'findMany', fault('P1001'));

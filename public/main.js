@@ -1228,6 +1228,8 @@ function clusterNaverMarkers() {
   if (!naverMap || !window.naver?.maps || typeof naverMap.getProjection !== 'function') return;
   naverClusterMarkers.forEach((c) => c.setMap(null));
   naverClusterMarkers = [];
+  // 내 정복·추천 지도는 몇 곳뿐이고 색으로 구분해야 해서 묶지 않는다
+  if (typeof personalMapMode !== 'undefined' && personalMapMode) { naverMarkers.forEach((m) => m.getMap() || m.setMap(naverMap)); return; }
   const proj = naverMap.getProjection();
   const zoom = naverMap.getZoom();
   const maxZoom = naverMap.getMaxZoom ? naverMap.getMaxZoom() : 18;
@@ -1425,7 +1427,12 @@ window.addEventListener('popstate', () => {
   if (rouletteClosing) { rouletteClosing = false; return; }
   if (!rouletteModal.classList.contains('hidden')) { closeRouletteModal(false); return; }
   const myPage = document.getElementById('mypage-modal');
-  if (params.get('my')) { if (myPage.classList.contains('hidden')) openMyPage(false); return; }
+  if (params.get('my')) {
+    // 기록 → 식당 상세 → 뒤로: 상세는 닫고 기록을 다시 보여 준다
+    if (document.body.classList.contains('detail-open')) closePlaceDetail();
+    if (myPage.classList.contains('hidden')) openMyPage(false);
+    return;
+  }
   myPage.classList.add('hidden');
   if (place) { openPlaceDetail(place, false); return; }
   // 상세에서 뒤로 오면 목록을 다시 불러오지 않고 보던 자리로 돌아간다

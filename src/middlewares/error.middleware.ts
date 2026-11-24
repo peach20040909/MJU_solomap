@@ -31,6 +31,9 @@ export function errorHandler(
     console.warn(`[ClientError ${statusCode}] ${req.method} ${req.originalUrl}: ${message}`);
   }
 
+  // 이미 응답을 보낸 뒤 난 오류(예: 세션 저장 중 DB 끊김)는 다시 보낼 수 없으므로 Express 기본 처리에 넘긴다
+  if (res.headersSent) return next(err);
+
   // 모든 오류 응답은 { message } JSON 형식으로 반환
   res.status(statusCode).json({
     message,

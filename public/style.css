@@ -1684,3 +1684,21 @@ body.detail-open .view-switch-tabs { display:none; }
 /* 전화 걸기 링크도 44px 터치 영역 */
 .detail-call { display:inline-flex; align-items:center; min-height:2.75rem; padding-inline:var(--sm-space-2); margin-right:calc(-1 * var(--sm-space-2)); }
 .detail-info > div { align-items:center; }
+
+/* 내 정복·추천 지도 안내 띠 (빨강 디자인) */
+.personal-map-note { justify-content:space-between; flex-wrap:nowrap; padding:var(--sm-space-3) var(--sm-space-4); border-radius:var(--sm-radius-card); background:var(--sm-color-brand-subtle); color:var(--sm-color-text); }
+.personal-map-note .section-eyebrow { margin:0 0 2px; }
+.personal-map-legend { display:flex; align-items:center; gap:var(--sm-space-1); margin:0; font-size:var(--sm-text-xs); font-weight:var(--sm-weight-bold); }
+.personal-map-legend .dot { width:.625rem; height:.625rem; border-radius:50%; }
+.personal-map-legend .dot.done { background:var(--sm-color-success); }
+.personal-map-legend .dot.next { margin-left:var(--sm-space-2); background:var(--sm-color-brand); }
+#btn-exit-personal-map { flex:0 0 auto; min-height:2.75rem; border:0; background:var(--sm-color-text); color:var(--sm-color-surface); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); }
+/* 나의 혼밥 기록: 글자 200% 확대에서도 넘치지 않게 줄바꿈 */
+.record-hero { flex-wrap:wrap; }
+.record-hero-text { flex:1 1 10rem; }
+.record-hero-char { width:min(6.5rem, 30vw); height:auto; aspect-ratio:1; }
+.record-stats { grid-template-columns:repeat(auto-fit, minmax(min(100%, 6rem), 1fr)); }
+.record-stats > div { min-width:0; }
+.record-road { flex-wrap:wrap; justify-content:space-around; row-gap:var(--sm-space-2); }
+.record-place-text strong, .record-review-head strong { min-width:0; }
+.record-review-head { flex-wrap:wrap; }
