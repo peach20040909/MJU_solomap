@@ -184,7 +184,12 @@ function isMealRestaurant(place) {
    =================================================== */
 const STORAGE_KEYS = {
   FAVORITES: 'solo_map_favorites_v1',
+  FAVORITE_PLACES: 'solo_map_favorite_places_v1', // 찜한 식당 정보(다른 메뉴를 검색해도 찜 목록에 보이게)
 };
+
+function getFavoritePlaces() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.FAVORITE_PLACES)) || {}; } catch { return {}; }
+}
 
 function getFavorites() {
   try {
@@ -198,12 +203,17 @@ function getFavorites() {
 function toggleFavorite(placeId) {
   let favs = getFavorites();
   const exists = favs.includes(placeId);
+  const saved = getFavoritePlaces();
   if (exists) {
     favs = favs.filter((id) => id !== placeId);
+    delete saved[placeId];
   } else {
     favs.push(placeId);
+    const place = currentPlaces.find((p) => p.id === placeId);
+    if (place) saved[placeId] = place;
   }
   localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favs));
+  try { localStorage.setItem(STORAGE_KEYS.FAVORITE_PLACES, JSON.stringify(saved)); } catch { /* 저장 공간이 없으면 지금 검색 결과에서만 보인다 */ }
   updateFavBadge();
   return !exists;
 }
@@ -398,8 +408,9 @@ function sortPlacesList(list, sortBy = currentSort) {
 function getFilteredList() {
   let list = [];
   if (currentFilter === 'fav') {
-    const favs = getFavorites();
-    list = currentPlaces.filter((p) => favs.includes(p.id));
+    // 지금 검색 결과에 없는 찜 식당도 저장해 둔 정보로 보여 준다(찜 개수와 목록이 어긋나지 않게)
+    const saved = getFavoritePlaces();
+    list = getFavorites().map((id) => currentPlaces.find((p) => p.id === id) || saved[id]).filter(Boolean);
   } else if (currentFilter === 'all') {
     list = currentPlaces;
   } else {
@@ -1459,7 +1470,8 @@ function openSearch(q, push = true, level = 'all') {
   // 메뉴 칸으로 연 검색은 실제 검색어(아시아음식) 대신 칸 이름(아시안)으로 제목을 보여 준다
   const chip = [...kwChips].find((c) => c.dataset.query === q);
   if (chip && q !== '혼밥') catalogTitle.textContent = `"${chip.textContent.trim()}" 검색 결과`;
-  if (level !== 'all') catalogTitle.textContent = `Lv.${level} ${LEVEL_NAMES[level]} 식당`;
+  // '다인석 식당 식당'처럼 겹치지 않게, 이름이 '식당'으로 끝나면 덧붙이지 않는다
+  if (level !== 'all') catalogTitle.textContent = `Lv.${level} ${LEVEL_NAMES[level]}${LEVEL_NAMES[level].endsWith('식당') ? '' : ' 식당'}`;
   showResults(q, push);
 }
 
