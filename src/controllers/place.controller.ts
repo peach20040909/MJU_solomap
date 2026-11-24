@@ -42,6 +42,15 @@ try {
 }
 
 
+// 명지대 인문캠 좌표에서 식당까지의 직선거리(m). 시드 식당(daedongPlaces.json)의 distance와 같은 기준
+function distanceFromMyongji(place: { x: string; y: string }): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const lat1 = Number(MYONGJI_SEOUL_COORDS.y), lat2 = Number(place.y);
+  const dLat = toRad(lat2 - lat1), dLng = toRad(Number(place.x) - Number(MYONGJI_SEOUL_COORDS.x));
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return Math.round(6371000 * 2 * Math.asin(Math.sqrt(a)));
+}
+
 /**
  * 1. 식당 키워드 검색 컨트롤러: GET /api/places/search?query=...
  * (대동명지도 + 카카오 실시간 검색 + AI 큐레이션 + DB 학우 평가 난이도 융합)
@@ -114,7 +123,8 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
         if (!existingIds.has(place.id) && !existingNames.has(normName)) {
           existingIds.add(place.id);
           existingNames.add(normName);
-          combinedPlaces.push(place);
+          // 카카오의 distance는 그 거점(전문대·백련시장) 기준이라, 화면의 '도보 N분'이 모두 명지대 기준이 되게 다시 잰다
+          combinedPlaces.push({ ...place, distance: String(distanceFromMyongji(place)) });
         }
       }
     }
