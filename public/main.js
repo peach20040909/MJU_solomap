@@ -1181,28 +1181,38 @@ document.addEventListener('keydown', (e) => {
   if (!pin || (e.key !== 'Enter' && e.key !== ' ')) return;
   e.preventDefault();
   const marker = naverMarkers.find((m) => m.getElement?.()?.contains(pin));
-  if (marker) naver.maps.Event.trigger(marker, 'click');
+  if (!marker) return;
+  naver.maps.Event.trigger(marker, 'click');
+  // 키보드로 연 카드는 초점을 카드 안(상세 보기)으로 옮기고, Esc로 닫으면 그 핀으로 돌아온다
+  if (!mapSheet.classList.contains('hidden')) { lastKeyboardPin = pin; mapSheet.querySelector('.popup-btn, button')?.focus(); }
+});
+let lastKeyboardPin = null;
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || mapSheet.classList.contains('hidden')) return;
+  const fromSheet = mapSheet.contains(document.activeElement);
+  closeCurrentInfoWindow();
+  if (fromSheet && lastKeyboardPin?.isConnected) lastKeyboardPin.focus();
 });
 
-// 네이버 지도 +·− 버튼은 28×22px이라 손가락으로 누르기 작다. 모양은 그대로 두고, 그 위에 44×44px 투명 버튼을 겹쳐 누르는 영역만 넓힌다
+// 네이버 지도 +·− 버튼은 28×22px이라 손가락으로 누르기 작다. 모양은 그대로 두고, 그 위에 44×44px 투명 버튼을 겹쳐 누르는 영역만 넓힌다.
+// 버튼을 +·− 바로 옆(같은 부모)에 두어, 지도 위 다른 요소 높이가 바뀌어도 위치가 어긋나지 않게 한다
 function addZoomHitAreas() {
   const canvas = document.getElementById('naver-map-canvas');
-  const host = canvas.parentElement;
-  if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
   [['지도 확대', 1], ['지도 축소', -1]].forEach(([label, step]) => {
     const link = canvas.querySelector(`img[alt="${label}"]`)?.closest('a');
-    if (!link || host.querySelector(`[data-zoom-hit="${step}"]`)) return;
+    const box = link?.parentElement;
+    if (!box || box.querySelector(`[data-zoom-hit="${step}"]`)) return;
     link.tabIndex = -1; // 키보드·스크린리더는 겹친 버튼 하나만 만나게
-    const r = link.getBoundingClientRect(), h = host.getBoundingClientRect();
+    if (getComputedStyle(box).position === 'static') box.style.position = 'relative';
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'map-zoom-hit';
     btn.dataset.zoomHit = step;
     btn.setAttribute('aria-label', label);
-    btn.style.left = `${r.left - h.left + r.width / 2 - 22}px`;
-    btn.style.top = `${r.top - h.top + r.height / 2 - 22}px`;
+    btn.style.left = `${link.offsetLeft + link.offsetWidth / 2 - 22}px`;
+    btn.style.top = `${link.offsetTop + link.offsetHeight / 2 - 22}px`;
     btn.addEventListener('click', () => naverMap.setZoom(naverMap.getZoom() + step, true));
-    host.appendChild(btn);
+    box.appendChild(btn);
   });
 }
 
@@ -1816,6 +1826,13 @@ document.querySelectorAll('.difficulty-index .index-card').forEach((card) => {
 updateFavBadge();
 // ?q=검색어로 들어오면 결과 화면부터, 아니면 홈에서 시작(목록 데이터는 미리 받아 둔다)
 const initialQuery = new URLSearchParams(location.search).get('q');
+const initialParams = new URLSearchParams(location.search);
+// 공유받은 검색 링크(?q=)로 처음 들어오면 밑에 홈 기록을 하나 깔아 둔다: '홈으로 돌아가기'·뒤로 가기가 사이트 밖이 아니라 홈으로 간다
+// (새로고침은 이미 기록이 있어 건너뛰고, 상세·기록 주소가 함께 오면 그쪽 처리에 맡긴다)
+if (initialQuery && !history.state && !initialParams.get('place') && !initialParams.get('my')) {
+  history.replaceState(null, '', location.pathname);
+  history.pushState({ q: initialQuery }, '', `?q=${encodeURIComponent(initialQuery)}`);
+}
 if (initialQuery) openSearch(initialQuery, false);
 else loadPlaces('혼밥');
 // ?place=식당ID로 들어오면 상세 화면부터 연다 (상세 화면 코드는 account.js에 있어 모든 스크립트가 읽힌 뒤 연다)
