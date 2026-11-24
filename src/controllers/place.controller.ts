@@ -48,7 +48,12 @@ try {
  */
 export async function searchPlaces(req: Request, res: Response, next: NextFunction) {
   try {
-    const query = (req.query.query as string) || '혼밥';
+    // ?query=a&query=b 처럼 배열로 오면 문자열이 아니라서 400으로 알린다
+    const rawQuery = req.query.query;
+    if (rawQuery !== undefined && typeof rawQuery !== 'string') {
+      return res.status(400).json({ message: '검색어는 하나만 입력해 주세요.' });
+    }
+    const query = rawQuery || '혼밥';
 
     // 1-1. 대동명지도에서 검색어 매칭 식당 우선 추출
     const qLower = query.toLowerCase().trim();

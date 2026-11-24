@@ -314,17 +314,27 @@ function renderPlaceDetail(place, reviews) {
       <button type="button" class="btn-open-review sm-button" onclick="openReviewModalById('${place.id}')">${soloIcon('edit')} 리뷰 쓰기</button>
       <button type="button" class="btn-checkin sm-button" onclick="checkInById('${place.id}', this)">${soloIcon('check')} 다녀왔어요</button>
     </div>`;
-  box.querySelector('.detail-back').addEventListener('click', () => {
-    if (history.state?.place) history.back();
-    else { closePlaceDetail(); history.replaceState(null, '', searchInput.value ? `?q=${encodeURIComponent(searchInput.value)}` : location.pathname); }
-  });
+  box.querySelector('.detail-back').addEventListener('click', leavePlaceDetail);
+}
+// 상세 화면 나가기: 앱 안에서 연 상세는 뒤로 가기, 주소로 바로 연 상세는 검색 결과나 홈으로
+function leavePlaceDetail() {
+  if (history.state?.place) { history.back(); return; }
+  closePlaceDetail();
+  // 밑에 검색 결과가 열려 있으면 그 주소로, 아니면 홈 주소로
+  const q = document.body.classList.contains('results-open') && searchInput.value;
+  history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
+}
+// 불러오는 중·실패 화면에도 뒤로 가기 버튼을 남긴다(잘못된 ?place= 주소로 들어와도 빠져나갈 수 있게)
+function renderDetailMessage(box, message) {
+  box.innerHTML = `<div class="detail-top"><button type="button" class="detail-back sm-button sm-button--icon sm-button--ghost" aria-label="뒤로 가기">←</button></div><p class="detail-empty">${message}</p>`;
+  box.querySelector('.detail-back').addEventListener('click', leavePlaceDetail);
 }
 async function openPlaceDetail(placeId, push = true) {
   placeId = String(placeId);
   if (!document.body.classList.contains('detail-open')) detailScrollY = window.scrollY;
   detailPlaceId = placeId;
   const box = document.getElementById('place-detail');
-  box.innerHTML = '<p class="detail-empty">식당 정보를 불러오는 중...</p>';
+  renderDetailMessage(box, '식당 정보를 불러오는 중...');
   document.body.classList.add('detail-open');
   if (push) {
     const replace = history.state?.roulette; // 오늘 뭐 먹지 창에서 왔으면 창 기록을 상세로 바꾼다
@@ -337,7 +347,7 @@ async function openPlaceDetail(placeId, push = true) {
     const [place, reviews] = await Promise.all([findAccountPlace(placeId), fetchReviews(placeId).catch(() => [])]);
     if (detailPlaceId === placeId) renderPlaceDetail(place, reviews);
   } catch {
-    if (detailPlaceId === placeId) box.innerHTML = '<p class="detail-empty">식당 정보를 불러오지 못했어요.</p>';
+    if (detailPlaceId === placeId) renderDetailMessage(box, '식당 정보를 불러오지 못했어요.');
   }
 }
 function closePlaceDetail() {
@@ -529,17 +539,26 @@ function personalMarkerLabel(placeId) {
   return { icon: null, className: '' };
 }
 
+// 기록 화면은 주소(?my=1)로 연 화면이라 닫기·Esc 모두 뒤로 가기로 닫는다(주소에 my가 남지 않게)
+function closeMyPage() {
+  if (history.state?.my) history.back();
+  else mypageModal.classList.add('hidden');
+}
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => {
-  // 기록 화면은 주소로 연 화면이라 뒤로 가기로 닫는다
-  if (button.dataset.close === 'mypage-modal' && history.state?.my) { history.back(); return; }
+  if (button.dataset.close === 'mypage-modal') { closeMyPage(); return; }
   document.getElementById(button.dataset.close).classList.add('hidden');
 }));
-[authModal, mypageModal, reviewsListModal, growthGuideModal].forEach(modal => modal.addEventListener('click', event => { if (event.target === modal) modal.classList.add('hidden'); }));
+[authModal, mypageModal, reviewsListModal, growthGuideModal].forEach(modal => modal.addEventListener('click', event => {
+  if (event.target !== modal) return;
+  if (modal === mypageModal) closeMyPage(); else modal.classList.add('hidden');
+}));
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;
-  // 기록 화면은 주소(?my=1)로 연 화면이라 Esc도 뒤로 가기로 닫는다(주소에 my가 남지 않게)
-  if (!mypageModal.classList.contains('hidden') && history.state?.my) { history.back(); return; }
-  [authModal, mypageModal, reviewsListModal, reviewModal, growthGuideModal].forEach(modal => modal.classList.add('hidden'));
+  // 위에 뜬 창부터 닫고, 창이 없으면 기록 화면 → 식당 상세 순서로 한 단계 뒤로
+  const popups = [authModal, reviewsListModal, reviewModal, growthGuideModal].filter(modal => !modal.classList.contains('hidden'));
+  if (popups.length) { popups.forEach(modal => modal.classList.add('hidden')); return; }
+  if (!mypageModal.classList.contains('hidden')) { closeMyPage(); return; }
+  if (document.body.classList.contains('detail-open')) leavePlaceDetail();
 });
 document.getElementById('btn-growth-guide').addEventListener('click', () => growthGuideModal.classList.remove('hidden'));
 document.querySelectorAll('#solo-journey, #growth-guide-modal').forEach(section => section.addEventListener('click', event => {
@@ -559,11 +578,14 @@ apiRequest('/api/config', { quiet: true }).then(config => {
   updateAccountAvailability();
 }).catch(() => { accountConfigured = false; updateAccountAvailability(); });
 refreshAccount()
-  // ?my=1 주소로 새로고침해도 나의 혼밥 기록을 다시 연다(로그인 확인 뒤, 로그인 안 했으면 주소에서 뺀다)
+  .catch(error => { if (error.status !== 401) showToast('로그인 상태를 확인하지 못했어요. 다시 로그인해 주세요.'); })
+  // ?my=1 주소로 바로 들어오거나 새로고침해도 나의 혼밥 기록을 연다(로그인 확인 뒤)
   .then(() => {
     const params = new URLSearchParams(location.search);
     if (!params.get('my')) return;
-    if (currentUser) openMyPage(false);
-    else { params.delete('my'); history.replaceState(null, '', params.toString() ? `?${params}` : location.pathname); }
-  })
-  .catch(error => { if (error.status !== 401) showToast('로그인 상태를 확인하지 못했어요. 다시 로그인해 주세요.'); });
+    params.delete('my');
+    // my 없는 기록을 밑에 하나 깔아 두면 닫기·뒤로 가기가 사이트 안에서 끝나고 주소에 my가 남지 않는다
+    history.replaceState({ q: params.get('q') }, '', params.toString() ? `?${params}` : location.pathname);
+    if (currentUser) openMyPage();
+    else openAuth('login'); // 로그인 안 했으면 로그인 창으로 안내
+  });

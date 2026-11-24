@@ -311,9 +311,13 @@ function showToast(message) {
 // 검색할 때마다 번호를 올리고, 응답이 왔을 때 번호가 바뀌었으면(그사이 새 검색) 버린다
 let searchSeq = 0;
 let isLoadingPlaces = false; // 불러오는 동안 정렬·필터를 눌러도 '식당 없음' 대신 로딩 화면을 유지
+let placesError = false; // 불러오기에 실패하면 필터를 눌러도 '0곳' 대신 오류 안내와 다시 시도 버튼을 유지
+let lastSearchKeyword = '';
 async function loadPlaces(keyword) {
   const seq = ++searchSeq;
   isLoadingPlaces = true;
+  placesError = false;
+  lastSearchKeyword = keyword;
   currentPlaces = [];
   updateMapMarkers();
   placesContainer.innerHTML = soloEmptyState('대학가 식당을 찾고 있어요', '명지대 · 명지전문대 · 백련시장 주변 식당을 탐색합니다.');
@@ -338,8 +342,12 @@ async function loadPlaces(keyword) {
     if (seq !== searchSeq) return;
     isLoadingPlaces = false;
     console.error(err);
-    placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', err.message, { variant: 'error' });
-    catalogCount.textContent = '0곳';
+    placesError = true;
+    // 'Failed to fetch' 같은 브라우저 영어 오류 대신 연결 안내를 보여 준다
+    const message = err instanceof TypeError || err instanceof SyntaxError ? '인터넷 연결을 확인하고 다시 시도해 주세요.' : err.message;
+    placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', message, { variant: 'error' })
+      + '<button type="button" class="btn-clear-filter sm-button" data-retry-search>다시 시도</button>';
+    catalogCount.textContent = '불러오기 실패';
   }
 }
 
@@ -405,7 +413,7 @@ const mobileQuery = { matches: true }; // 모바일 전용 화면: PC에서도 �
 let visiblePlaceCount = MOBILE_PAGE_SIZE;
 
 function renderFilteredPlaces(keepCount = false) {
-  if (isLoadingPlaces) return;
+  if (isLoadingPlaces || placesError) return;
   if (!keepCount) visiblePlaceCount = MOBILE_PAGE_SIZE;
   const filtered = getFilteredList();
   catalogCount.textContent = `${filtered.length}곳`;
@@ -432,6 +440,7 @@ function renderFilteredPlaces(keepCount = false) {
 
 // 카드 빈 곳을 누르면 식당 상세 화면(위치·전화·지도·리뷰)으로 간다. 버튼·링크 클릭은 그대로 둔다.
 placesContainer.addEventListener('click', (e) => {
+  if (e.target.closest('[data-retry-search]')) { loadPlaces(lastSearchKeyword); return; }
   if (e.target.closest('[data-clear-filter]')) { setFilter('all'); renderFilteredPlaces(); updateMapMarkers(); return; }
   if (e.target.closest('.btn-load-more')) {
     visiblePlaceCount += MOBILE_PAGE_SIZE;
@@ -548,12 +557,27 @@ function closeRouletteModal(viaHistory = true) {
   if (viaHistory && history.state?.roulette) { rouletteClosing = true; history.back(); }
 }
 
+// 뽑기 창 안에서 고르는 난이도(홈에는 결과 화면의 레벨 필터가 없어서 창 안에서 고른다)
+let rouletteLevel = 'all';
+document.querySelectorAll('[data-roulette-level]').forEach((btn) => btn.addEventListener('click', () => {
+  rouletteLevel = btn.dataset.rouletteLevel;
+  document.querySelectorAll('[data-roulette-level]').forEach((b) => {
+    const on = b === btn;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  spinRoulette();
+}));
+
 function spinRoulette() {
-  // 룰렛 추천 시 순수 밥집(식사) 식당만 엄선하여 추천
-  const places = (currentPlaces || []).filter(isMealRestaurant);
+  // 룰렛 추천 시 순수 밥집(식사) 식당만, 고른 난이도가 있으면 그 난이도만
+  const meals = (currentPlaces || []).filter(isMealRestaurant);
+  const places = rouletteLevel === 'all' ? meals : meals.filter((p) => String(getDynamicSoloIndex(p).lv) === rouletteLevel);
   if (places.length === 0) {
+    rouletteCardSlot.classList.remove('is-winner');
+    btnRouletteGo.disabled = true;
     rouletteCardSlot.innerHTML = `
-      <p style="color: #64748b; font-size: 14px;">추천 가능한 밥집 식당이 없습니다. 먼저 식당을 검색해 주세요!</p>
+      <p style="color: #64748b; font-size: 14px;">${meals.length ? `Lv.${rouletteLevel} 식당이 없어요. 다른 난이도를 골라 보세요.` : '추천 가능한 밥집 식당이 없습니다. 먼저 식당을 검색해 주세요!'}</p>
     `;
     return;
   }
@@ -1253,7 +1277,7 @@ function clusterNaverMarkers() {
     const center = new naver.maps.LatLng(lat / g.items.length, lng / g.items.length);
     const c = new naver.maps.Marker({
       position: center, map: naverMap, zIndex: 200,
-      icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, 눌러서 확대">${g.items.length}<small>곳</small></button>`, anchor: new naver.maps.Point(26, 26) },
+      icon: { content: `<button type="button" class="map-cluster" aria-label="식당 ${g.items.length}곳 묶음, ${atMax ? '눌러서 목록 보기' : '눌러서 확대'}">${g.items.length}<small>곳</small></button>`, anchor: new naver.maps.Point(26, 26) },
     });
     naver.maps.Event.addListener(c, 'click', () => {
       if (atMax) showClusterSheet(g.items.map((m) => m.__place).filter(Boolean));
@@ -1426,6 +1450,8 @@ window.addEventListener('popstate', () => {
   const q = params.get('q'), place = params.get('place');
   if (rouletteClosing) { rouletteClosing = false; return; }
   if (!rouletteModal.classList.contains('hidden')) { closeRouletteModal(false); return; }
+  // 앞으로 가기로 뽑기 기록에 돌아오면 뽑기 창을 다시 연다
+  if (history.state?.roulette) { openRouletteModal(); return; }
   const myPage = document.getElementById('mypage-modal');
   if (params.get('my')) {
     // 기록 → 식당 상세 → 뒤로: 상세는 닫고 기록을 다시 보여 준다

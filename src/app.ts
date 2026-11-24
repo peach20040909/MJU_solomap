@@ -92,6 +92,11 @@ app.use('/reviews', reviewRouter);
 app.use('/api/users', userRouter);
 app.use('/users', userRouter);
 
+// 등록되지 않은 API 주소도 HTML 대신 { message } JSON 404로 응답한다
+app.use(['/api', '/auth', '/places', '/reviews', '/users'], (_req, res) => {
+  res.status(404).json({ message: '요청한 API를 찾을 수 없습니다.' });
+});
+
 // 6. 전역 에러 핸들러 미들웨어 등록 (라우터 하단에 위치)
 app.use(errorHandler);
 

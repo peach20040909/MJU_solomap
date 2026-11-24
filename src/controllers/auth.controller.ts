@@ -27,6 +27,10 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
  * 2. 로그인 컨트롤러: POST /api/auth/login
  */
 export function login(req: Request, res: Response, next: NextFunction) {
+  // 빈 입력은 Passport의 영어 'Missing credentials'(401) 대신 400으로 안내한다
+  if (!req.body?.email || !req.body?.password) {
+    return res.status(400).json({ message: '이메일과 비밀번호를 모두 입력해주세요.' });
+  }
   passport.authenticate('local', (err: any, user: any, info: any) => {
     if (err) {
       return next(err);

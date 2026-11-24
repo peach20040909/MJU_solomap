@@ -1702,3 +1702,15 @@ body.detail-open .view-switch-tabs { display:none; }
 .record-road { flex-wrap:wrap; justify-content:space-around; row-gap:var(--sm-space-2); }
 .record-place-text strong, .record-review-head strong { min-width:0; }
 .record-review-head { flex-wrap:wrap; }
+
+/* 좁은 폰 + 글자 확대: 상세 화면이 옆으로 넘치지 않게. 평소 폭에서는 지금 모양 그대로(지도 버튼 두 개 나란히) */
+.place-detail { grid-template-columns:minmax(0, 1fr); }
+.detail-map-links { grid-template-columns:repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.detail-actions { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+.detail-actions .sm-button { white-space:normal; }
+
+/* 뽑기 창 난이도 버튼: 결과 화면 레벨 필터와 같은 알약 모양 */
+.roulette-level-title { margin-bottom:var(--sm-space-2); color:var(--sm-color-text-muted); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); text-align:left; }
+.roulette-levels { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 2.75rem), 1fr)); gap:var(--sm-space-1); }
+.roulette-level { min-height:44px; padding-inline:0; justify-content:center; border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-pill); background:var(--sm-color-surface); color:var(--sm-color-text); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); }
+.roulette-level.active { border-color:transparent; background:var(--sm-color-text); color:var(--sm-color-surface); }

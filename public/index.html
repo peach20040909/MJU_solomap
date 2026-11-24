@@ -251,10 +251,15 @@
         </div>
 
         <div class="roulette-options">
-          <label class="roulette-opt-label">
-            <input type="checkbox" id="roulette-filter-scoped" />
-            <span>현재 선택된 난이도 필터 범위 내에서만 추천하기</span>
-          </label>
+          <p class="roulette-level-title" id="roulette-level-title">뽑을 난이도</p>
+          <div class="roulette-levels" role="group" aria-labelledby="roulette-level-title">
+            <button type="button" class="roulette-level sm-button active" data-roulette-level="all" aria-pressed="true">전체</button>
+            <button type="button" class="roulette-level sm-button" data-roulette-level="1" aria-pressed="false">Lv.1</button>
+            <button type="button" class="roulette-level sm-button" data-roulette-level="2" aria-pressed="false">Lv.2</button>
+            <button type="button" class="roulette-level sm-button" data-roulette-level="3" aria-pressed="false">Lv.3</button>
+            <button type="button" class="roulette-level sm-button" data-roulette-level="4" aria-pressed="false">Lv.4</button>
+            <button type="button" class="roulette-level sm-button" data-roulette-level="5" aria-pressed="false">Lv.5</button>
+          </div>
         </div>
 
         <div class="roulette-footer-actions">
