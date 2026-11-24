@@ -618,6 +618,8 @@ function spinRoulette() {
   }
 
   rouletteCardSlot.classList.remove('is-winner');
+  // 다시 뽑기를 키보드로 눌렀으면, 뽑는 동안 버튼이 꺼져 초점이 사라지므로 다 뽑은 뒤 그 버튼으로 되돌린다
+  const refocusAgain = document.activeElement === btnRouletteAgain;
   btnRouletteAgain.disabled = true;
   btnRouletteGo.disabled = true;
 
@@ -677,6 +679,7 @@ function spinRoulette() {
 
     btnRouletteAgain.disabled = false;
     btnRouletteGo.disabled = false;
+    if (refocusAgain && !rouletteModal.classList.contains('hidden')) btnRouletteAgain.focus();
   }, 1500);
 }
 
