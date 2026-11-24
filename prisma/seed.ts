@@ -198,8 +198,8 @@ async function main() {
   console.log(`✅ [Prisma Seed] 테스트 사용자 ${SEED_USERS.length}명 등록 (${SEED_USERS.map(u => u.email).join(', ')})`);
 }
 
-// requests.http와 설명 문서에 적는 시드 계정(테스트 전용). 로그인 비밀번호는 seedpass1234이고,
-// DB에는 아래 bcrypt 해시(비용 인자 10, 60자)만 저장된다 — bcrypt.hash('seedpass1234', 10)으로 만든 값
+// requests.http와 설명 문서에 적는 시드 계정(테스트 전용). 로그인 비밀번호는 설명 문서의 시드 계정 표에 있고,
+// 여기와 DB에는 그 비밀번호를 bcrypt.hash(비밀번호, 10)으로 만든 해시(60자)만 둔다
 const SEED_PASSWORD_HASH = '$2b$10$kprkhxaADeC8bbBgPoGWPevUO5GxUFY8E557cR8uRaLsZ5ycD0zxK';
 const SEED_USERS = [
   { email: 'seed-a@mju.ac.kr', nickname: '시드학우A' },
