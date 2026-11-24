@@ -157,6 +157,7 @@ const server = createServer(async (req, res) => {
     assert(calls.some(c => c.method === 'PATCH'));
     await page.evaluate(() => openReviewsList('123'));
     await page.waitForSelector('[data-review-id="mine"] [data-action="delete"]');
+    page.once('dialog', dialog => dialog.accept());
     await page.click('[data-review-id="mine"] [data-action="delete"]');
     await page.waitForFunction(() => !document.querySelector('[data-review-id="mine"]'));
     assert(calls.some(c => c.method === 'DELETE'));

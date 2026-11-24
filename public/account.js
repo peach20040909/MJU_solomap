@@ -410,7 +410,8 @@ document.getElementById('reviews-list-container').addEventListener('click', even
   const review = getPlaceReviews(activeReviewListPlace).find(r => r.id === button.closest('[data-review-id]').dataset.reviewId);
   if (!review || review.userId !== currentUser?.id) return;
   if (button.dataset.action === 'edit') busy(button, async () => fillReviewEditor(await findAccountPlace(activeReviewListPlace), review));
-  else busy(button, async () => {
+  // 지운 리뷰는 되살릴 수 없어서, 폰에서 잘못 눌러도 바로 지워지지 않게 한 번 묻는다
+  else if (confirm('이 리뷰를 삭제할까요? 삭제하면 되돌릴 수 없어요.')) busy(button, async () => {
     const placeId = activeReviewListPlace;
     await apiRequest(`/api/reviews/${encodeURIComponent(review.id)}`, { method: 'DELETE' });
     showToast('리뷰를 삭제했어요.');

@@ -898,6 +898,8 @@ function initLeafletMap() {
 }
 
 function updateMapMarkers() {
+  // 레벨 필터·검색이 바뀌어 지도에서 빠진 식당의 정보 카드는 닫는다
+  if (!mapSheet.classList.contains('hidden') && !getMapPlaces().some((p) => String(p.id) === mapSheet.dataset.placeId)) closeCurrentInfoWindow();
   if (currentMapEngine === 'naver' && naverMap) {
     updateNaverMapMarkers();
   }
@@ -1143,6 +1145,7 @@ function showClusterSheet(places) {
 function showMapSheet(place) {
   const soloInfo = getDynamicSoloIndex(place);
   mapSheet.innerHTML = createMapPopupHtml(place, soloInfo, formatDistanceWalking(place.distance));
+  mapSheet.dataset.placeId = place.id;
   mapSheet.classList.remove('hidden');
 }
 
