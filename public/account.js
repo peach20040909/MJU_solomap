@@ -336,7 +336,9 @@ function renderDetailMessage(box, message) {
 }
 async function openPlaceDetail(placeId, push = true) {
   placeId = String(placeId);
-  if (!document.body.classList.contains('detail-open')) { detailScrollY = window.scrollY; detailOpener = document.activeElement !== document.body ? document.activeElement : null; }
+  if (!document.body.classList.contains('detail-open')) { detailScrollY = window.scrollY; detailOpener = document.activeElement !== document.body ? document.activeElement : null;
+    // 지도 카드의 '상세 보기'는 누르는 순간 카드가 닫혀 초점이 사라진다 → 키보드로 골랐던 지도 핀을 돌아올 곳으로 삼는다
+    if ((!detailOpener || mapSheet.contains(detailOpener)) && currentViewMode === 'map' && lastKeyboardPin?.isConnected) detailOpener = lastKeyboardPin; }
   detailPlaceId = placeId;
   const box = document.getElementById('place-detail');
   renderDetailMessage(box, '식당 정보를 불러오는 중...');
