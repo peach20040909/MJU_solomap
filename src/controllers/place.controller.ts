@@ -54,6 +54,10 @@ export async function searchPlaces(req: Request, res: Response, next: NextFuncti
       return res.status(400).json({ message: '검색어는 하나만 입력해 주세요.' });
     }
     const query = rawQuery || '혼밥';
+    // '%', '#', '?'처럼 글자·숫자가 하나도 없는 검색어는 카카오가 '명지대' 주변 아무 식당이나 돌려준다 → 결과 없음으로 답한다
+    if (!/[\p{L}\p{N}]/u.test(query)) {
+      return res.json({ success: true, meta: { total_count: 0, pageable_count: 0, is_end: true, daedong_count: 0 }, places: [] });
+    }
 
     // 1-1. 대동명지도에서 검색어 매칭 식당 우선 추출
     const qLower = query.toLowerCase().trim();

@@ -360,6 +360,7 @@ async function loadPlaces(keyword) {
     placesContainer.innerHTML = soloEmptyState('식당 정보를 가져올 수 없습니다', message, { variant: 'error' })
       + '<button type="button" class="btn-clear-filter sm-button" data-retry-search>다시 시도</button>';
     catalogCount.textContent = '불러오기 실패';
+    syncMapEmptyState();
     // 뽑기 창이 기다리고 있었으면 실패를 알린다(다시 뽑기를 누르면 다시 불러온다)
     if (!rouletteModal.classList.contains('hidden')) {
       btnRouletteAgain.disabled = false;
@@ -439,7 +440,9 @@ function renderFilteredPlaces(keepCount = false) {
   if (filtered.length === 0) {
     const emptyMsg = currentFilter === 'fav'
       ? '아직 찜한 식당이 없습니다! 식당 카드의 하트 버튼을 눌러 나만의 혼밥 리스트를 만들어보세요.'
-      : '해당 조건의 식당이 없습니다. 상단 필터를 변경하거나 다른 메뉴를 검색해 보세요.';
+      : currentFilter === 'all'
+        ? '이 검색어로 찾은 밥집이 없어요. 다른 메뉴나 식당 이름으로 검색해 보세요.' // 필터를 안 골랐는데 '필터를 변경하라'고 하지 않게
+        : '해당 조건의 식당이 없습니다. 상단 필터를 변경하거나 다른 메뉴를 검색해 보세요.';
 
     const levelOnly = /^[1-5]$/.test(currentFilter) && currentPlaces.length > 0;
     placesContainer.innerHTML = levelOnly
@@ -911,6 +914,7 @@ function initLeafletMap() {
 }
 
 function updateMapMarkers() {
+  syncMapEmptyState();
   // 레벨 필터·검색이 바뀌어 지도에서 빠진 식당의 정보 카드는 닫는다
   if (!mapSheet.classList.contains('hidden') && !getMapPlaces().some((p) => String(p.id) === mapSheet.dataset.placeId)) closeCurrentInfoWindow();
   if (currentMapEngine === 'naver' && naverMap) {
@@ -1394,6 +1398,13 @@ function fitNaverMapBounds() {
 }
 
 // 목록 보기 ↔ 지도로 보기 뷰 모드 전환 (Leaflet 기본 활성화)
+// 지도로 보기에서 식당이 0곳(또는 불러오기 실패)이면 빈 지도만 보이지 않게, 목록 칸의 안내 문구를 지도 위에 함께 보여 준다
+function syncMapEmptyState() {
+  if (currentViewMode !== 'map') return;
+  const empty = !isLoadingPlaces && (placesError || getMapPlaces().length === 0);
+  placesContainer.classList.toggle('hidden', !empty);
+}
+
 function switchViewMode(mode) {
   currentViewMode = mode;
   if (mode === 'list') closeCurrentInfoWindow();
@@ -1408,6 +1419,7 @@ function switchViewMode(mode) {
     btnViewList.classList.remove('active');
     placesContainer.classList.add('hidden');
     mapViewContainer.classList.remove('hidden');
+    syncMapEmptyState();
 
     const naverCanvas = document.getElementById('naver-map-canvas');
     const leafletCanvas = document.getElementById('leaflet-map');
@@ -1501,6 +1513,9 @@ function showResults(q, push = true, level = 'all') {
 function showHome() {
   closeCurrentInfoWindow();
   document.body.classList.remove('results-open');
+  // 홈에는 직전 검색어(0곳이던 zzz 등)를 남기지 않고 처음처럼 '혼밥'·'전체' 칸으로 돌린다
+  searchInput.value = '혼밥';
+  kwChips.forEach((c) => c.classList.toggle('active', c.dataset.query === '혼밥'));
   window.scrollTo(0, 0);
 }
 
