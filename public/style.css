@@ -1714,3 +1714,6 @@ body.detail-open .view-switch-tabs { display:none; }
 .roulette-levels { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 2.75rem), 1fr)); gap:var(--sm-space-1); }
 .roulette-level { min-height:44px; padding-inline:0; justify-content:center; border:1px solid var(--sm-color-border); border-radius:var(--sm-radius-pill); background:var(--sm-color-surface); color:var(--sm-color-text); font-size:var(--sm-text-sm); font-weight:var(--sm-weight-bold); }
 .roulette-level.active { border-color:transparent; background:var(--sm-color-text); color:var(--sm-color-surface); }
+
+/* 리뷰 난이도 버튼: 이름을 다른 화면과 같게 맞추면서 길이가 달라져, 다섯 개 모두 두 줄(index.html의 <br>)로 맞춰 높이·정렬을 같게 */
+.level-opt .opt-desc { line-height:1.3; }

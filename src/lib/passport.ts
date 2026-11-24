@@ -33,14 +33,15 @@ passport.use(
           where: { email: cleanEmail },
         });
 
+        // 없는 이메일과 틀린 비밀번호를 같은 안내로 답한다(어떤 이메일이 가입됐는지 알아낼 수 없게)
         if (!user) {
-          return done(null, false, { message: '가입되지 않은 이메일입니다.' });
+          return done(null, false, { message: '이메일 또는 비밀번호가 일치하지 않습니다.' });
         }
 
         // 2. 비밀번호 해시 비교
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
-          return done(null, false, { message: '비밀번호가 일치하지 않습니다.' });
+          return done(null, false, { message: '이메일 또는 비밀번호가 일치하지 않습니다.' });
         }
 
         // 3. 인증 성공: 비밀번호 제외한 세션 객체 전달

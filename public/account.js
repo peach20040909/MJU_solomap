@@ -233,6 +233,7 @@ function fillReviewEditor(place, review = null) {
   selectedReviewLevel = review?.soloLevel || 1;
   levelOptions.forEach(b => b.classList.toggle('active', Number(b.dataset.level) === selectedReviewLevel));
   btnSubmitReview.textContent = review ? '리뷰 수정하기' : '리뷰 등록하기';
+  document.getElementById('review-modal-tag').textContent = review ? '혼밥 리뷰 수정' : '혼밥 리뷰 작성';
   reviewsListModal.classList.add('hidden');
   mypageModal.classList.add('hidden');
   reviewModal.classList.remove('hidden');
